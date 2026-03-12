@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Warm paper palette — from the grid-paper artwork */
+  /* Warm paper palette */
   --background: oklch(0.935 0.008 85);
   --foreground: oklch(0.18 0.005 250);
   --card: oklch(0.945 0.006 85);
@@ -21,11 +21,10 @@
   --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.78 0.008 85);
+  --border: oklch(0.82 0.006 85);
   --input: oklch(0.92 0.005 85);
   --ring: oklch(0.50 0.008 250);
 
-  /* Diagram accent colors — pulled from artwork swatches */
   --chart-1: oklch(0.58 0.20 25);
   --chart-2: oklch(0.58 0.12 230);
   --chart-3: oklch(0.62 0.16 155);
@@ -34,13 +33,9 @@
 
   --radius: 0rem;
 
-  /* Technical drawing tokens */
-  --grid-fine: oklch(0.84 0.005 85);
-  --grid-major: oklch(0.74 0.008 250 / 0.35);
-  --construction: oklch(0.55 0.12 230);
-  --annotation-color: oklch(0.42 0.008 250);
-  --dimension-line: oklch(0.55 0.19 25);
-  --paper-edge: oklch(0.70 0.01 85);
+  /* Grid lines */
+  --grid-fine: oklch(0.87 0.004 85);
+  --grid-major: oklch(0.78 0.006 85 / 0.3);
 
   --sidebar: oklch(0.935 0.008 85);
   --sidebar-foreground: oklch(0.18 0.005 250);
@@ -93,7 +88,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* ===== GRID PAPER BACKGROUND ===== */
+/* Grid paper — this IS the identity of the site, not decoration */
 .grid-paper {
   background-image:
     linear-gradient(var(--grid-fine) 1px, transparent 1px),
@@ -112,7 +107,7 @@
     -1px -1px;
 }
 
-/* ===== PAPER TEXTURE OVERLAY ===== */
+/* Paper texture — subtle enough to feel tactile without being noisy */
 .paper-texture {
   position: relative;
 }
@@ -122,37 +117,23 @@
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.035;
+  opacity: 0.03;
   pointer-events: none;
   z-index: 1;
 }
 
-/* ===== ANNOTATION / LABEL CLASS ===== */
-.annotation {
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--annotation-color);
-  font-family: var(--font-mono);
-}
-
-/* ===== FLOOR MARKER ===== */
+/* Section label in left margin — rotated text for wayfinding */
 .floor-marker {
   writing-mode: vertical-lr;
   transform: rotate(180deg);
-  font-size: 10px;
-  letter-spacing: 0.25em;
-  color: var(--muted-foreground);
   font-family: var(--font-mono);
 }
 
-/* ===== SELECTION ===== */
 ::selection {
   background: var(--accent);
   color: var(--accent-foreground);
 }
 
-/* ===== BASE RESETS ===== */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -166,9 +147,9 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ===== SCROLLBAR ===== */
+/* Scrollbar — thin and unobtrusive */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 ::-webkit-scrollbar-track {
   background: var(--background);
@@ -179,30 +160,3 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
 }
-
-/* ===== DIMENSION LINE ANIMATION ===== */
-@keyframes draw-line {
-  from { stroke-dashoffset: 100; }
-  to   { stroke-dashoffset: 0; }
-}
-
-/* ===== STAGGER FADE-IN ===== */
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-up {
-  animation: fade-up 0.6s ease-out both;
-}
-
-.fade-up-delay-1 { animation-delay: 0.1s; }
-.fade-up-delay-2 { animation-delay: 0.2s; }
-.fade-up-delay-3 { animation-delay: 0.3s; }
-.fade-up-delay-4 { animation-delay: 0.4s; }
