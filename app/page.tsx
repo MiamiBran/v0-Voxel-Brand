@@ -19,7 +19,7 @@ export default function Portfolio() {
 
   return (
     <DocumentFrame>
-      <TitleBlock 
+      <TitleBlock
         onProjectsClick={() => scrollTo(projectsRef)}
         onInfoClick={() => scrollTo(infoRef)}
         onContactClick={() => scrollTo(contactRef)}

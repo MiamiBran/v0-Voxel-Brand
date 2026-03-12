@@ -8,99 +8,109 @@ interface TitleBlockProps {
 
 export function TitleBlock({ onProjectsClick, onInfoClick, onContactClick }: TitleBlockProps) {
   return (
-    <header className="border-b border-border py-6 md:py-8" data-section="S0">
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-        {/* Main title block - like a technical drawing header */}
-        <div className="flex-1">
-          <div className="border border-border p-4 md:p-6 bg-card/50">
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                <div>
-                  <h1 className="text-xl md:text-2xl lg:text-3xl font-mono font-bold tracking-tight text-foreground leading-none">
-                    ISOMETRIC STRATA
-                  </h1>
-                  <p className="text-xs md:text-sm font-mono text-muted-foreground mt-2 tracking-wide">
-                    ARCHITECTURAL DIAGRAM STUDIES
-                  </p>
-                </div>
-                <div className="flex gap-1">
-                  <ColorSwatch color="#E85D4C" />
-                  <ColorSwatch color="#4A90A4" />
-                  <ColorSwatch color="#F5C842" />
-                  <ColorSwatch color="#45B07C" />
-                  <ColorSwatch color="#9B59B6" />
-                </div>
-              </div>
-              
-              <div className="h-px bg-border" />
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-mono">
-                <div>
-                  <span className="text-muted-foreground block">VIEW:</span>
-                  <span className="text-foreground">AXONOMETRIC</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground block">DETAIL:</span>
-                  <span className="text-foreground">TECHNICAL</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground block">DENSITY:</span>
-                  <span className="text-foreground">MODERATE</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground block">PALETTE:</span>
-                  <span className="text-foreground">MULTI</span>
-                </div>
-              </div>
+    <header className="border-b border-border pb-6 pt-4 md:pt-6 md:pb-8" data-section="S0">
+      {/* ── UPPER META ROW ── */}
+      <div className="flex items-center justify-between mb-4 md:mb-6">
+        <div className="flex items-center gap-3">
+          <ColorSwatch color="#E85D4C" label="R" />
+          <ColorSwatch color="#4A90A4" label="B" />
+          <ColorSwatch color="#F5C842" label="Y" />
+          <ColorSwatch color="#45B07C" label="G" />
+          <ColorSwatch color="#9B59B6" label="V" />
+        </div>
+        <div className="hidden sm:flex items-center gap-6">
+          <span className="annotation text-muted-foreground/60">DATE: 2026.03</span>
+          <span className="annotation text-muted-foreground/60">CHK: A.S.</span>
+        </div>
+      </div>
+
+      {/* ── MAIN TITLE BLOCK ── */}
+      <div className="flex flex-col lg:flex-row lg:items-stretch gap-px bg-border">
+        {/* Title area */}
+        <div className="flex-1 bg-card p-5 md:p-7">
+          <div className="flex flex-col gap-4">
+            <div>
+              <div className="annotation text-muted-foreground/50 mb-2">PROJECT TITLE</div>
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-mono font-bold tracking-tight text-foreground leading-none text-balance">
+                ISOMETRIC STRATA
+              </h1>
+              <p className="text-xs md:text-sm font-mono text-muted-foreground mt-2 tracking-widest">
+                ARCHITECTURAL DIAGRAM STUDIES
+              </p>
+            </div>
+
+            <div className="h-px bg-border" />
+
+            {/* Technical metadata grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 text-xs font-mono">
+              <MetaField label="VIEW" value="AXONOMETRIC" />
+              <MetaField label="DETAIL" value="TECHNICAL" />
+              <MetaField label="DENSITY" value="MODERATE" />
+              <MetaField label="PALETTE" value="MULTI" />
             </div>
           </div>
         </div>
 
-        {/* Navigation - styled as legend/index */}
-        <nav className="md:w-48">
-          <div className="border border-border p-4 bg-card/50">
-            <span className="annotation block mb-3 pb-2 border-b border-border">INDEX</span>
-            <ul className="space-y-2 text-xs font-mono">
-              <li>
-                <button 
-                  onClick={onProjectsClick}
-                  className="flex items-center gap-2 hover:text-accent transition-colors w-full text-left group min-h-[44px] md:min-h-0"
-                >
-                  <span className="w-3 h-3 border border-current group-hover:bg-accent group-hover:border-accent transition-colors" />
-                  <span>PROJECTS</span>
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={onInfoClick}
-                  className="flex items-center gap-2 hover:text-accent transition-colors w-full text-left group min-h-[44px] md:min-h-0"
-                >
-                  <span className="w-3 h-3 border border-current group-hover:bg-accent group-hover:border-accent transition-colors" />
-                  <span>INFO</span>
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={onContactClick}
-                  className="flex items-center gap-2 hover:text-accent transition-colors w-full text-left group min-h-[44px] md:min-h-0"
-                >
-                  <span className="w-3 h-3 border border-current group-hover:bg-accent group-hover:border-accent transition-colors" />
-                  <span>CONTACT</span>
-                </button>
-              </li>
-            </ul>
+        {/* DWG info block */}
+        <div className="w-full lg:w-44 bg-card p-5 md:p-7 flex flex-col justify-between">
+          <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 text-xs font-mono">
+            <MetaField label="DWG NO." value="IS-2026" />
+            <MetaField label="SHEET" value="1 / 1" />
+            <MetaField label="REV" value="01" />
+            <MetaField label="SCALE" value="1:100" />
           </div>
+        </div>
+
+        {/* Navigation — INDEX panel */}
+        <nav className="w-full lg:w-48 bg-card p-5 md:p-7">
+          <span className="annotation block mb-3 pb-2 border-b border-border text-muted-foreground/60">
+            INDEX
+          </span>
+          <ul className="flex flex-col gap-1">
+            <NavItem label="PROJECTS" section="S2" onClick={onProjectsClick} />
+            <NavItem label="METHODOLOGY" section="S3" onClick={onInfoClick} />
+            <NavItem label="CONTACT" section="S4" onClick={onContactClick} />
+          </ul>
         </nav>
       </div>
     </header>
   )
 }
 
-function ColorSwatch({ color }: { color: string }) {
+function MetaField({ label, value }: { label: string; value: string }) {
   return (
-    <div 
-      className="w-4 h-4 md:w-5 md:h-5 border border-foreground/20"
-      style={{ backgroundColor: color }}
-    />
+    <div>
+      <span className="text-muted-foreground/60 block text-[10px] tracking-widest">{label}</span>
+      <span className="text-foreground">{value}</span>
+    </div>
+  )
+}
+
+function ColorSwatch({ color, label }: { color: string; label: string }) {
+  return (
+    <div className="flex flex-col items-center gap-0.5">
+      <div
+        className="w-4 h-4 md:w-5 md:h-5 border border-foreground/10"
+        style={{ backgroundColor: color }}
+      />
+      <span className="text-[7px] font-mono text-muted-foreground/40">{label}</span>
+    </div>
+  )
+}
+
+function NavItem({ label, section, onClick }: { label: string; section: string; onClick: () => void }) {
+  return (
+    <li>
+      <button
+        onClick={onClick}
+        className="flex items-center justify-between gap-2 w-full text-left group py-2 md:py-1.5 min-h-[44px] md:min-h-0"
+      >
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 border border-current group-hover:bg-accent group-hover:border-accent transition-colors" />
+          <span className="text-xs font-mono group-hover:text-accent transition-colors">{label}</span>
+        </div>
+        <span className="text-[9px] font-mono text-muted-foreground/40">{section}</span>
+      </button>
+    </li>
   )
 }
