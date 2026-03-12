@@ -12,6 +12,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
 
   useEffect(() => {
     const handleScroll = () => {
+      if (typeof document === "undefined" || typeof window === "undefined") return
       const total = document.body.scrollHeight - window.innerHeight
       if (total > 0) setScrollPercent(Math.round((window.scrollY / total) * 100))
 
