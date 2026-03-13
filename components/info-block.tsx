@@ -75,16 +75,16 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
       {/* Floating floor container with depth */}
       <div className="border border-border bg-card/50 backdrop-blur-sm max-w-3xl">
         {/* Section header */}
-        <div className="flex items-baseline justify-between px-6 md:px-8 py-5 border-b border-border">
-          <div className="flex items-baseline gap-4">
-            <h2 className="text-lg md:text-xl font-mono font-bold tracking-tight text-foreground">SYSTEMS DESIGN</h2>
-            <span className="text-[10px] font-mono text-foreground/30 tracking-[0.3em]">F2</span>
+        <div className="flex items-baseline justify-between px-4 md:px-5 py-3 border-b border-border">
+          <div className="flex items-baseline gap-3">
+            <h2 className="text-xs font-mono font-bold tracking-wide text-foreground">SYSTEMS DESIGN</h2>
+            <span className="text-[9px] font-mono text-foreground/35 tracking-[0.2em]">F2</span>
           </div>
         </div>
 
         {/* Methodology description */}
-        <div className="px-6 md:px-8 py-6 border-b border-border">
-          <p className="text-sm md:text-base leading-[1.8] text-foreground/65 max-w-xl">
+        <div className="px-4 md:px-5 py-4 border-b border-border">
+          <p className="text-[10px] font-mono leading-relaxed text-foreground/60 max-w-xl">
             Operational environments fail when information, sequencing, and responsibility drift apart.
             I approach complex challenges like an architect approaches a building: 
             understanding the load-bearing requirements before designing the structure.
@@ -107,18 +107,18 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
                 <span className="text-[8px] font-mono text-foreground/40">{phase.num}</span>
               </div>
 
-              <div className="flex-1 px-5 py-5 sm:border-r sm:border-border">
-                <h3 className="text-sm md:text-base font-mono font-bold text-foreground tracking-tight">
+              <div className="flex-1 px-4 py-3 sm:border-r sm:border-border">
+                <h3 className="text-[11px] font-mono font-bold text-foreground tracking-wide">
                   {phase.name}
                 </h3>
-                <p className="text-xs md:text-sm text-foreground/50 leading-[1.7] mt-3">
+                <p className="text-[10px] font-mono text-foreground/55 leading-relaxed mt-2">
                   {phase.description}
                 </p>
               </div>
 
-              <div className="w-44 shrink-0 hidden sm:flex flex-col justify-center px-5 py-5 gap-2">
+              <div className="w-40 shrink-0 hidden sm:flex flex-col justify-center px-4 py-3 gap-1.5">
                 {phase.outputs.map((output) => (
-                  <span key={output} className="text-[10px] font-mono text-foreground/40 tracking-wide">{output}</span>
+                  <span key={output} className="text-[9px] font-mono text-foreground/40 tracking-wide">{output}</span>
                 ))}
               </div>
             </div>

@@ -45,14 +45,12 @@ export function TitleBlock({
           {/* Main area */}
           <div className="flex flex-col md:flex-row md:items-stretch">
             {/* Title */}
-            <div className="flex-1 px-5 py-6 md:py-8 md:border-r md:border-border">
-              <h1 className="text-3xl md:text-5xl font-mono font-bold tracking-tighter text-foreground leading-[0.9]">
-                BRANDON<br className="hidden md:block" /> BARTLETT
+            <div className="flex-1 px-5 py-5 md:border-r md:border-border">
+              <h1 className="text-xl md:text-2xl font-mono font-bold tracking-tight text-foreground">
+                BRANDON BARTLETT
               </h1>
-              <p className="text-xs md:text-sm text-foreground/50 mt-4 tracking-wide leading-relaxed">
-                Execution Architect<br className="md:hidden" />
-                <span className="hidden md:inline"> • </span>Field Operations<br className="md:hidden" />
-                <span className="hidden md:inline"> • </span>Systems Builder
+              <p className="text-[10px] font-mono text-foreground/45 mt-2 tracking-wider">
+                Execution Architect • Field Operations • Systems Builder
               </p>
             </div>
 
