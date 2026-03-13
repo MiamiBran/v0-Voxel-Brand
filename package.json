@@ -9,7 +9,6 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@react-three/drei": "^9.117.3",
     "@react-three/fiber": "^8.17.10",
     "three": "^0.169.0",
     "@hookform/resolvers": "^3.9.1",

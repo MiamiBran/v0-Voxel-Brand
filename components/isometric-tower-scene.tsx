@@ -1,9 +1,29 @@
 "use client"
 
-import { useRef, useMemo } from "react"
-import { Canvas, useFrame } from "@react-three/fiber"
-import { OrthographicCamera, Line, Text } from "@react-three/drei"
+import { useRef, useMemo, useEffect } from "react"
+import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
+
+// Custom orthographic camera setup
+function IsometricCamera() {
+  const { camera, size } = useThree()
+  
+  useEffect(() => {
+    if (camera instanceof THREE.OrthographicCamera) {
+      const aspect = size.width / size.height
+      const frustumSize = 10
+      camera.left = -frustumSize * aspect
+      camera.right = frustumSize * aspect
+      camera.top = frustumSize
+      camera.bottom = -frustumSize
+      camera.position.set(10, 8, 10)
+      camera.lookAt(0, 2, 0)
+      camera.updateProjectionMatrix()
+    }
+  }, [camera, size])
+
+  return null
+}
 
 // Wireframe box component
 function WireframeBox({ 
@@ -23,7 +43,7 @@ function WireframeBox({
   return (
     <lineSegments position={position}>
       <primitive object={edges} attach="geometry" />
-      <lineBasicMaterial color={color} linewidth={1} />
+      <lineBasicMaterial color={color} />
     </lineSegments>
   )
 }
@@ -86,6 +106,32 @@ function WireframeGrid({
   )
 }
 
+// Simple line component using BufferGeometry
+function SimpleLine({ 
+  start, 
+  end, 
+  color, 
+  opacity = 1 
+}: { 
+  start: [number, number, number]
+  end: [number, number, number]
+  color: string
+  opacity?: number
+}) {
+  const geometry = useMemo(() => {
+    const geo = new THREE.BufferGeometry()
+    const positions = new Float32Array([...start, ...end])
+    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3))
+    return geo
+  }, [start, end])
+
+  return (
+    <line geometry={geometry}>
+      <lineBasicMaterial color={color} transparent opacity={opacity} />
+    </line>
+  )
+}
+
 // Construction lines radiating from center
 function ConstructionLines({ y }: { y: number }) {
   const lines = useMemo(() => {
@@ -95,10 +141,8 @@ function ConstructionLines({ y }: { y: number }) {
       const length = 8 + (i % 3) * 2
       const endY = y + ((i % 4) - 1.5) * 3
       return {
-        points: [
-          new THREE.Vector3(0, y, 0),
-          new THREE.Vector3(Math.cos(angle) * length, endY, Math.sin(angle) * length)
-        ],
+        start: [0, y, 0] as [number, number, number],
+        end: [Math.cos(angle) * length, endY, Math.sin(angle) * length] as [number, number, number],
         color
       }
     })
@@ -107,13 +151,12 @@ function ConstructionLines({ y }: { y: number }) {
   return (
     <>
       {lines.map((line, i) => (
-        <Line
+        <SimpleLine
           key={i}
-          points={line.points}
+          start={line.start}
+          end={line.end}
           color={line.color}
-          lineWidth={1}
           opacity={0.7}
-          transparent
         />
       ))}
     </>
@@ -123,7 +166,7 @@ function ConstructionLines({ y }: { y: number }) {
 // Blueprint grid on the ground plane
 function BlueprintGrid() {
   const gridLines = useMemo(() => {
-    const lines: { start: THREE.Vector3; end: THREE.Vector3 }[] = []
+    const lines: { start: [number, number, number]; end: [number, number, number] }[] = []
     const size = 20
     const divisions = 40
     const step = size / divisions
@@ -131,12 +174,12 @@ function BlueprintGrid() {
     for (let i = -divisions / 2; i <= divisions / 2; i++) {
       const pos = i * step
       lines.push({
-        start: new THREE.Vector3(-size / 2, -0.01, pos),
-        end: new THREE.Vector3(size / 2, -0.01, pos)
+        start: [-size / 2, -0.01, pos],
+        end: [size / 2, -0.01, pos]
       })
       lines.push({
-        start: new THREE.Vector3(pos, -0.01, -size / 2),
-        end: new THREE.Vector3(pos, -0.01, size / 2)
+        start: [pos, -0.01, -size / 2],
+        end: [pos, -0.01, size / 2]
       })
     }
     return lines
@@ -145,52 +188,13 @@ function BlueprintGrid() {
   return (
     <>
       {gridLines.map((line, i) => (
-        <Line
+        <SimpleLine
           key={i}
-          points={[line.start, line.end]}
+          start={line.start}
+          end={line.end}
           color="#1a2744"
-          lineWidth={0.5}
           opacity={0.5}
-          transparent
         />
-      ))}
-    </>
-  )
-}
-
-// Floor markers along the left side
-function FloorMarkers() {
-  const floors = [
-    { label: "F1", y: 0 },
-    { label: "F2", y: 1.2 },
-    { label: "F3", y: 2.8 },
-    { label: "F4", y: 4.5 },
-  ]
-
-  return (
-    <>
-      {floors.map((floor) => (
-        <group key={floor.label} position={[-7, floor.y, 0]}>
-          <Text
-            fontSize={0.3}
-            color="#3a4a6a"
-            anchorX="right"
-            anchorY="middle"
-            font="/fonts/GeistMono-Regular.ttf"
-          >
-            {floor.label}
-          </Text>
-          <Line
-            points={[
-              new THREE.Vector3(0.2, 0, 0),
-              new THREE.Vector3(1.5, 0, 0)
-            ]}
-            color="#2a3a5a"
-            lineWidth={0.5}
-            opacity={0.4}
-            transparent
-          />
-        </group>
       ))}
     </>
   )
@@ -294,16 +298,12 @@ function Tower() {
 
       {/* Vertical support pillars */}
       {[[-0.8, -0.8], [0.8, -0.8], [-0.8, 0.8], [0.8, 0.8]].map(([x, z], i) => (
-        <Line
+        <SimpleLine
           key={i}
-          points={[
-            new THREE.Vector3(x, 0.4, z),
-            new THREE.Vector3(x, 2.4, z)
-          ]}
+          start={[x, 0.4, z]}
+          end={[x, 2.4, z]}
           color="#2a2a4a"
-          lineWidth={1}
           opacity={0.5}
-          transparent
         />
       ))}
 
@@ -313,20 +313,13 @@ function Tower() {
   )
 }
 
-// Scene component with camera
+// Scene component
 function Scene() {
   return (
     <>
-      <OrthographicCamera
-        makeDefault
-        position={[10, 8, 10]}
-        zoom={55}
-        near={0.1}
-        far={100}
-      />
+      <IsometricCamera />
       <ambientLight intensity={1} />
       <BlueprintGrid />
-      <FloorMarkers />
       <Tower />
     </>
   )
@@ -335,6 +328,8 @@ function Scene() {
 export function IsometricTowerScene() {
   return (
     <Canvas
+      orthographic
+      camera={{ zoom: 55, position: [10, 8, 10], near: 0.1, far: 100 }}
       gl={{ antialias: true, alpha: false }}
       dpr={[1, 2]}
       style={{ background: "#0a0f1a" }}
