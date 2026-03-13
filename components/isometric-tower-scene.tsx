@@ -1,5 +1,6 @@
 "use client"
 
+// 3D Isometric Tower Scene - built with @react-three/fiber and THREE.js
 import { useRef, useMemo, useEffect } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
