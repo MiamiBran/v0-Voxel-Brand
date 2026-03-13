@@ -41,30 +41,33 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
   return (
     <section 
       ref={ref} 
-      className="py-12 md:py-20 border-t-2 px-5 md:px-10 relative" 
+      className="py-12 md:py-20 px-5 md:px-10" 
       data-section="PROCESS"
-      style={{ borderTopColor: "#4A90A4" }}
     >
-      {/* Floor indicator accent */}
-      <div className="absolute top-0 left-0 w-1 h-full opacity-10" style={{ backgroundColor: "#4A90A4" }} />
-      <div className="flex items-baseline justify-between mb-8">
-        <div className="flex items-baseline gap-3">
-          <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">PROCESS</h2>
-          <span className="text-[8px] font-mono text-foreground/30 tracking-[0.2em]">SEC. 02</span>
+      {/* Floating floor container with depth */}
+      <div className="border border-border bg-card/50 backdrop-blur-sm relative max-w-3xl">
+        {/* Floor color indicator - subtle left edge */}
+        <div className="absolute left-0 top-0 w-0.5 h-full" style={{ backgroundColor: "#4A90A4" }} />
+
+        {/* Section header inside the card */}
+        <div className="flex items-baseline justify-between px-5 md:px-6 py-4 border-b border-border">
+          <div className="flex items-baseline gap-3">
+            <div className="w-2.5 h-2.5 border border-border/50" style={{ backgroundColor: "#4A90A4" }} />
+            <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">PROCESS</h2>
+            <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">SEC. 02</span>
+          </div>
         </div>
-      </div>
 
-      {/* Methodology description */}
-      <div className="max-w-2xl mb-12">
-        <p className="text-xs md:text-sm font-mono leading-relaxed text-foreground/70">
-          I approach complex operational challenges like an architect approaches a building: 
-          understanding the load-bearing requirements before designing the structure. 
-          Every system I build is meant to outlast my involvement.
-        </p>
-      </div>
+        {/* Methodology description */}
+        <div className="px-5 md:px-6 py-5 border-b border-border">
+          <p className="text-xs md:text-sm font-mono leading-relaxed text-foreground/70">
+            I approach complex operational challenges like an architect approaches a building: 
+            understanding the load-bearing requirements before designing the structure. 
+            Every system I build is meant to outlast my involvement.
+          </p>
+        </div>
 
-      {/* Process phases table */}
-      <div className="border border-border max-w-3xl">
+        {/* Process phases table */}
         <div className="hidden sm:flex items-center border-b border-border text-[8px] font-mono text-foreground/35 tracking-[0.15em]">
           <span className="w-10 px-3 py-2 border-r border-border text-center">PHASE</span>
           <span className="flex-1 px-4 py-2 border-r border-border">APPROACH</span>

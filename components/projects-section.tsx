@@ -92,27 +92,30 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
   return (
     <section 
       ref={ref} 
-      className="py-12 md:py-20 border-t-2 px-5 md:px-10 relative" 
+      className="py-12 md:py-20 px-5 md:px-10" 
       data-section="PROJECTS"
-      style={{ borderTopColor: "#E85D4C" }}
     >
-      {/* Floor indicator accent */}
-      <div className="absolute top-0 left-0 w-1 h-full opacity-10" style={{ backgroundColor: "#E85D4C" }} />
-      {/* Section header */}
-      <div className="flex items-baseline justify-between mb-8">
-        <div className="flex items-baseline gap-3">
-          <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">
-            PROJECT INDEX
-          </h2>
-          <span className="text-[7px] font-mono text-muted-foreground/25 tracking-[0.2em]">SEC. 02</span>
+      {/* Floating floor container with depth */}
+      <div className="border border-border bg-card/50 backdrop-blur-sm relative">
+        {/* Floor color indicator - subtle left edge */}
+        <div className="absolute left-0 top-0 w-0.5 h-full" style={{ backgroundColor: "#E85D4C" }} />
+        
+        {/* Section header inside the card */}
+        <div className="flex items-baseline justify-between px-5 md:px-6 py-4 border-b border-border">
+          <div className="flex items-baseline gap-3">
+            <div className="w-2.5 h-2.5 border border-border/50" style={{ backgroundColor: "#E85D4C" }} />
+            <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">
+              PROJECT INDEX
+            </h2>
+            <span className="text-[7px] font-mono text-muted-foreground/35 tracking-[0.2em]">SEC. 01</span>
+          </div>
+          <span className="text-[8px] font-mono text-muted-foreground/40 tabular-nums">
+            {String(projects.length).padStart(2, "0")} PLATES
+          </span>
         </div>
-        <span className="text-[8px] font-mono text-muted-foreground/30 tabular-nums">
-          {String(projects.length).padStart(2, "0")} PLATES
-        </span>
-      </div>
 
-      {/* Project index table */}
-      <div className="border border-border">
+        {/* Project index table */}
+        <div className="border-t-0">
         {/* Table header */}
         <div className="hidden md:flex items-center border-b border-border text-[7px] font-mono text-muted-foreground/25 tracking-[0.15em]">
           <span className="w-10 px-3 py-1.5 border-r border-border text-center">NO.</span>
@@ -130,6 +133,7 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
             onToggle={() => setExpandedId(expandedId === project.id ? null : project.id)}
           />
         ))}
+        </div>
       </div>
     </section>
   )

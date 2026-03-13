@@ -6,26 +6,25 @@ export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref
   return (
     <section 
       ref={ref} 
-      className="py-12 md:py-20 border-t-2 px-5 md:px-10 relative" 
+      className="py-12 md:py-20 px-5 md:px-10" 
       data-section="CONTACT"
-      style={{ borderTopColor: "#45B07C" }}
     >
-      {/* Floor indicator accent */}
-      <div className="absolute top-0 left-0 w-1 h-full opacity-10" style={{ backgroundColor: "#45B07C" }} />
-      <div className="flex items-baseline justify-between mb-8">
-        <div className="flex items-baseline gap-3">
-          <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">CONTACT</h2>
-          <span className="text-[7px] font-mono text-muted-foreground/25 tracking-[0.2em]">SEC. 04</span>
-        </div>
-      </div>
+      {/* Floating floor container with depth */}
+      <div className="border border-border bg-card/50 backdrop-blur-sm relative max-w-lg">
+        {/* Floor color indicator - subtle left edge */}
+        <div className="absolute left-0 top-0 w-0.5 h-full" style={{ backgroundColor: "#45B07C" }} />
 
-      {/* Contact block -- styled as a revision/approval block on a drawing sheet */}
-      <div className="border border-border max-w-lg">
-        <div className="border-b border-border px-4 py-1.5 text-[7px] font-mono text-muted-foreground/25 tracking-[0.2em]">
-          INQUIRIES
+        {/* Section header inside the card */}
+        <div className="flex items-baseline justify-between px-5 md:px-6 py-4 border-b border-border">
+          <div className="flex items-baseline gap-3">
+            <div className="w-2.5 h-2.5 border border-border/50" style={{ backgroundColor: "#45B07C" }} />
+            <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">CONTACT</h2>
+            <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">SEC. 03</span>
+          </div>
         </div>
 
-        <div className="px-4 py-5">
+        {/* Contact content */}
+        <div className="px-5 md:px-6 py-5">
           <p className="text-[10px] md:text-xs font-mono text-foreground/60 leading-relaxed mb-5">
             For print editions, commissions, licensing, or collaboration.
           </p>
