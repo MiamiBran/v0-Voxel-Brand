@@ -79,8 +79,13 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
   const animationRef = useRef<number>()
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 100)
+    return () => clearTimeout(timer)
+  }, [])
   
-  const isDark = resolvedTheme === "dark"
+  const isDark = mounted && resolvedTheme === "dark"
   
   // Get floor color based on theme
   const getFloorColor = useCallback((floor: typeof FLOORS[0]) => {
@@ -89,11 +94,6 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
 
   // Is any floor hovered - triggers expansion
   const isHovering = hoveredFloor !== null
-
-  useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 100)
-    return () => clearTimeout(timer)
-  }, [])
 
   // Sync rotation to parent context
   useEffect(() => {
