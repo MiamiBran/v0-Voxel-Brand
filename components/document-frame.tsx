@@ -125,15 +125,15 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
               <button
                 key={s.id}
                 onClick={() => scrollToSection(s.id)}
-                className="absolute left-1/2 -translate-x-1/2 group"
-                style={{ top: `${s.percent}%` }}
+                className="absolute left-0 right-0 flex justify-center group"
+                style={{ top: `${s.percent}%`, transform: 'translateY(-50%)' }}
                 aria-label={`Go to ${s.id}`}
               >
                 <span
-                  className={`block text-[10px] font-mono tracking-wide px-1.5 py-0.5 rounded transition-all duration-200 ${
+                  className={`block text-[9px] font-mono tracking-wider px-1 py-0.5 transition-all duration-200 ${
                     active 
-                      ? "text-foreground bg-background border border-foreground/20 font-medium" 
-                      : "text-muted-foreground/40 hover:text-foreground/60 hover:bg-background/80"
+                      ? "text-foreground font-medium" 
+                      : "text-muted-foreground/50 hover:text-foreground/70"
                   }`}
                 >
                   {s.label}
