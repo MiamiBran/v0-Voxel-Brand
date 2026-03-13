@@ -90,31 +90,29 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   return (
-    <section ref={ref} className="py-12 md:py-20 border-t border-border px-5 md:px-8" data-section="PROJECTS">
-      {/* Section header — technical drawing style */}
-      <div className="flex items-baseline justify-between mb-6 md:mb-10">
+    <section ref={ref} className="py-12 md:py-20 border-t border-border px-5 md:px-10" data-section="PROJECTS">
+      {/* Section header */}
+      <div className="flex items-baseline justify-between mb-8">
         <div className="flex items-baseline gap-3">
-          <h2 className="text-base md:text-lg font-mono font-bold tracking-tight text-foreground">
+          <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">
             PROJECT INDEX
           </h2>
-          <span className="text-[8px] font-mono text-muted-foreground/30 tracking-widest">
-            SEC. 02
-          </span>
+          <span className="text-[7px] font-mono text-muted-foreground/25 tracking-[0.2em]">SEC. 02</span>
         </div>
-        <span className="text-[9px] font-mono text-muted-foreground/40 tabular-nums">
+        <span className="text-[8px] font-mono text-muted-foreground/30 tabular-nums">
           {String(projects.length).padStart(2, "0")} PLATES
         </span>
       </div>
 
-      {/* Project list — technical index table */}
+      {/* Project index table */}
       <div className="border border-border">
         {/* Table header */}
-        <div className="hidden sm:flex items-center border-b border-border text-[8px] font-mono text-muted-foreground/30 tracking-widest">
+        <div className="hidden md:flex items-center border-b border-border text-[7px] font-mono text-muted-foreground/25 tracking-[0.15em]">
           <span className="w-10 px-3 py-1.5 border-r border-border text-center">NO.</span>
           <span className="flex-1 px-3 py-1.5 border-r border-border">DESIGNATION</span>
-          <span className="w-14 px-3 py-1.5 border-r border-border text-center">TYPE</span>
+          <span className="w-16 px-3 py-1.5 border-r border-border text-center">TYPE</span>
           <span className="w-12 px-3 py-1.5 border-r border-border text-center">HT.</span>
-          <span className="w-20 px-3 py-1.5 text-center">PALETTE</span>
+          <span className="w-24 px-3 py-1.5 text-center">PALETTE</span>
         </div>
 
         {projects.map((project) => (
@@ -130,84 +128,83 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
   )
 })
 
-interface ProjectRowProps {
+function ProjectRow({ project, isExpanded, onToggle }: {
   project: (typeof projects)[0]
   isExpanded: boolean
   onToggle: () => void
-}
-
-function ProjectRow({ project, isExpanded, onToggle }: ProjectRowProps) {
+}) {
   return (
     <article className="border-b border-border last:border-b-0">
+      {/* Row -- clickable to expand the plate */}
       <button
         onClick={onToggle}
-        className="w-full flex items-center gap-0 group text-left hover:bg-secondary/30 transition-colors min-h-[48px]"
+        className="w-full flex items-center group text-left hover:bg-secondary/30 transition-colors"
       >
-        {/* Number */}
-        <span className="w-10 shrink-0 text-center text-[10px] font-mono text-muted-foreground/30 border-r border-border self-stretch flex items-center justify-center">
+        <span className="w-10 shrink-0 text-center text-[9px] font-mono text-muted-foreground/25 border-r border-border self-stretch flex items-center justify-center py-3">
           {project.id}
         </span>
 
-        {/* Title + subtitle */}
-        <div className="flex-1 px-3 py-3 border-r border-border self-stretch flex flex-col justify-center min-w-0">
-          <h3 className="text-[11px] md:text-xs font-mono font-bold text-foreground group-hover:text-accent transition-colors truncate">
+        <div className="flex-1 px-3 py-3 md:border-r md:border-border self-stretch flex flex-col justify-center min-w-0">
+          <h3 className="text-[10px] md:text-xs font-mono font-bold text-foreground group-hover:text-accent transition-colors truncate tracking-wide">
             {project.title}
           </h3>
-          <p className="text-[9px] font-mono text-muted-foreground/50 truncate">{project.subtitle}</p>
+          <p className="text-[8px] md:text-[9px] font-mono text-muted-foreground/40 truncate tracking-wider">{project.subtitle}</p>
         </div>
 
-        {/* Movement type */}
-        <span className="hidden sm:flex w-14 shrink-0 text-center text-[8px] font-mono text-muted-foreground/30 tracking-wider border-r border-border self-stretch items-center justify-center">
+        <span className="hidden md:flex w-16 shrink-0 text-center text-[8px] font-mono text-muted-foreground/25 tracking-wider border-r border-border self-stretch items-center justify-center">
           {project.movement}
         </span>
 
-        {/* Floor count */}
-        <span className="hidden sm:flex w-12 shrink-0 text-center text-[9px] font-mono text-muted-foreground/40 border-r border-border self-stretch items-center justify-center">
+        <span className="hidden md:flex w-12 shrink-0 text-center text-[9px] font-mono text-muted-foreground/30 border-r border-border self-stretch items-center justify-center">
           {project.floors}
         </span>
 
-        {/* Palette swatches — actual colors from this specific piece */}
-        <div className="w-20 shrink-0 flex items-center justify-center gap-px self-stretch px-2">
+        {/* Palette swatches -- actual colors extracted from this specific piece */}
+        <div className="w-20 md:w-24 shrink-0 flex items-center justify-center gap-px self-stretch px-2">
           {project.palette.map((c, i) => (
-            <div key={i} className="w-2.5 h-2.5" style={{ backgroundColor: c }} />
+            <div key={i} className="w-2.5 h-2.5 md:w-3 md:h-3" style={{ backgroundColor: c }} />
           ))}
         </div>
       </button>
 
-      {/* Expandable plate — reveals the full artwork */}
+      {/* Expanded plate -- reveals the artwork with technical framing */}
       <div
         className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(.22,1,.36,1)] ${
-          isExpanded ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"
+          isExpanded ? "max-h-[900px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="border-t border-border bg-card/30 p-4 md:p-6">
+        <div className="border-t border-border bg-card/20 p-5 md:p-8">
           <div className="max-w-md mx-auto">
-            {/* Protractor angle indicator above the image — shows the isometric projection angle */}
+            {/* Protractor -- indicates the 30-degree isometric projection angle used in these pieces.
+                 This is a functional annotation: all the artwork uses 30-degree axonometric projection. */}
             <div className="flex items-center justify-center mb-3" aria-hidden="true">
-              <svg width="60" height="16" viewBox="0 0 60 16" className="text-muted-foreground/15">
-                {/* Protractor arc */}
-                <path d="M 5 15 A 25 25 0 0 1 55 15" fill="none" stroke="currentColor" strokeWidth="0.5" />
-                {/* Angle ticks at 30 degree intervals */}
-                <line x1="30" y1="15" x2="30" y2="8" stroke="currentColor" strokeWidth="0.5" />
-                <line x1="17" y1="9" x2="19" y2="12" stroke="currentColor" strokeWidth="0.5" />
-                <line x1="43" y1="9" x2="41" y2="12" stroke="currentColor" strokeWidth="0.5" />
-                <text x="30" y="6" textAnchor="middle" fontSize="4" fill="currentColor" className="font-mono">30{'°'}</text>
+              <svg width="80" height="20" viewBox="0 0 80 20" className="text-muted-foreground/12">
+                <path d="M 5 18 A 35 35 0 0 1 75 18" fill="none" stroke="currentColor" strokeWidth="0.5" />
+                {/* Major ticks at 30-degree intervals */}
+                <line x1="40" y1="18" x2="40" y2="10" stroke="currentColor" strokeWidth="0.5" />
+                <line x1="22" y1="11" x2="25" y2="15" stroke="currentColor" strokeWidth="0.4" />
+                <line x1="58" y1="11" x2="55" y2="15" stroke="currentColor" strokeWidth="0.4" />
+                {/* Minor ticks */}
+                <line x1="13" y1="15" x2="15" y2="17" stroke="currentColor" strokeWidth="0.3" />
+                <line x1="67" y1="15" x2="65" y2="17" stroke="currentColor" strokeWidth="0.3" />
+                <text x="40" y="7" textAnchor="middle" fontSize="4" fill="currentColor" className="font-mono">30{'°'}</text>
               </svg>
             </div>
 
-            <div className="relative aspect-[4/5] overflow-hidden" style={{ backgroundColor: project.bg }}>
+            {/* Artwork */}
+            <div className="relative aspect-[4/5] overflow-hidden border border-border/30" style={{ backgroundColor: project.bg }}>
               <Image
                 src={project.image}
-                alt={`${project.title} - ${project.subtitle}`}
+                alt={`${project.title} -- ${project.subtitle}`}
                 fill
                 className="object-contain"
               />
             </div>
 
-            {/* Plate label */}
-            <div className="mt-3 flex items-center justify-between text-[8px] font-mono text-muted-foreground/30 tracking-widest">
+            {/* Plate annotation */}
+            <div className="mt-3 flex items-center justify-between text-[7px] font-mono text-muted-foreground/25 tracking-[0.15em]">
               <span>PLATE #{project.id}</span>
-              <span>ISOMETRIC 30{'°'} PROJECTION</span>
+              <span>{project.movement} -- {project.floors}</span>
             </div>
           </div>
         </div>
