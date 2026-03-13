@@ -75,7 +75,7 @@ export function TitleBlock({
                   <button
                     key={item.num}
                     onClick={item.onClick}
-                    className="flex items-center gap-2 px-4 py-2 text-left group border-r md:border-r-0 md:border-b border-border last:border-r-0 hover:bg-secondary/40 transition-colors"
+                    className="flex items-center gap-2 px-4 py-3 min-h-[48px] text-left group border-r md:border-r-0 md:border-b border-border last:border-r-0 hover:bg-secondary/40 active:bg-secondary/50 transition-colors touch-manipulation"
                   >
                     <div 
                       className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0" 
@@ -88,15 +88,24 @@ export function TitleBlock({
                   </button>
                 ))}
 
-                {/* CONTACT with hover dropdown */}
+                {/* CONTACT with hover/touch dropdown */}
                 <div 
                   className="relative flex-1"
                   onMouseEnter={() => setContactHovered(true)}
                   onMouseLeave={() => setContactHovered(false)}
+                  onTouchStart={() => setContactHovered(true)}
                 >
                   <button
-                    onClick={onContactClick}
-                    className="w-full h-full flex items-center gap-2 px-4 py-2 text-left group hover:bg-secondary/40 transition-colors"
+                    onClick={(e) => {
+                      // On touch, toggle dropdown. On click (mouse), navigate
+                      if (contactHovered) {
+                        onContactClick()
+                        setContactHovered(false)
+                      } else {
+                        setContactHovered(true)
+                      }
+                    }}
+                    className="w-full h-full flex items-center gap-2 px-4 py-3 min-h-[48px] text-left group hover:bg-secondary/40 active:bg-secondary/50 transition-colors touch-manipulation"
                   >
                     <div 
                       className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0" 
@@ -130,9 +139,9 @@ export function TitleBlock({
                         href="https://cal.com/brandonbartlett"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors"
+                        className="flex items-center gap-2 px-4 py-3 min-h-[44px] text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 active:bg-secondary/50 transition-colors touch-manipulation"
                       >
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <rect x="3" y="4" width="18" height="18" rx="2" />
                           <line x1="16" y1="2" x2="16" y2="6" />
                           <line x1="8" y1="2" x2="8" y2="6" />
@@ -142,9 +151,9 @@ export function TitleBlock({
                       </a>
                       <a
                         href="mailto:hello@bartlettbuilds.pro"
-                        className="flex items-center gap-2 px-4 py-2 text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors border-t border-border"
+                        className="flex items-center gap-2 px-4 py-3 min-h-[44px] text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 active:bg-secondary/50 transition-colors border-t border-border touch-manipulation"
                       >
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <rect x="2" y="4" width="20" height="16" rx="2" />
                           <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                         </svg>
@@ -153,9 +162,9 @@ export function TitleBlock({
                       <a
                         href="/Brandon-Bartlett-CV.pdf"
                         download
-                        className="flex items-center gap-2 px-4 py-2 text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors border-t border-border"
+                        className="flex items-center gap-2 px-4 py-3 min-h-[44px] text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 active:bg-secondary/50 transition-colors border-t border-border touch-manipulation"
                       >
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                           <polyline points="7 10 12 15 17 10" />
                           <line x1="12" y1="15" x2="12" y2="3" />

@@ -239,7 +239,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
 
       {/* Scroll-triggered CTA - materializes from bottom-right */}
       <div 
-        className={`fixed bottom-8 right-12 md:right-16 z-50 transition-all duration-500 ease-out ${
+        className={`fixed bottom-6 right-4 md:bottom-8 md:right-16 z-50 transition-all duration-500 ease-out ${
           showCTA && !showOverlay
             ? "opacity-100 translate-y-0" 
             : "opacity-0 translate-y-4 pointer-events-none"
@@ -247,12 +247,12 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
       >
         <button
           onClick={() => setShowOverlay(true)}
-          className="flex items-center gap-3 px-4 py-3 bg-card/95 backdrop-blur-sm border border-border hover:bg-secondary/50 transition-colors group"
+          className="flex items-center gap-3 px-4 py-4 min-h-[48px] bg-card/95 backdrop-blur-sm border border-border hover:bg-secondary/50 active:bg-secondary/60 transition-colors group touch-manipulation"
         >
-          <span className="text-[9px] font-mono text-foreground/70 tracking-[0.1em] group-hover:text-foreground transition-colors">
-            OPEN EXECUTION FRAME
+          <span className="text-[10px] md:text-[9px] font-mono text-foreground/70 tracking-[0.1em] group-hover:text-foreground transition-colors">
+            OPEN DETAIL FRAME
           </span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-foreground/40 group-hover:text-foreground transition-colors">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-foreground/40 group-hover:text-foreground transition-colors">
             <path d="M7 17L17 7M17 7H7M17 7V17" />
           </svg>
         </button>
@@ -261,36 +261,35 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
       {/* Detail Frame - collage style overlay with tabs */}
       {showOverlay && (
         <div 
-          className="absolute top-12 right-4 md:right-8 z-20 w-72 md:w-80 animate-in fade-in zoom-in-95 slide-in-from-right-4 duration-300"
+          className="fixed md:absolute inset-4 md:inset-auto md:top-12 md:right-8 z-50 md:z-20 md:w-80 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 md:slide-in-from-right-4 duration-300 flex flex-col"
           style={{ 
-            transform: 'rotate(1deg)',
             boxShadow: '6px 6px 0 rgba(0,0,0,0.1), 12px 12px 20px rgba(0,0,0,0.08)'
           }}
         >
-          <div className="bg-card border border-border">
+          <div className="bg-card border border-border flex flex-col h-full md:h-auto overflow-hidden">
             {/* Header with close */}
-            <div className="px-3 py-2 border-b border-border flex items-center justify-between">
+            <div className="px-3 py-3 border-b border-border flex items-center justify-between shrink-0">
               <span className="text-[9px] font-mono text-foreground/50 tracking-[0.15em]">DETAIL FRAME F2.1</span>
               <button 
                 onClick={() => setShowOverlay(false)}
-                className="p-1 hover:bg-secondary/50 transition-colors"
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-secondary/50 active:bg-secondary/60 transition-colors touch-manipulation -mr-1"
               >
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-foreground/40">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-foreground/60">
                   <path d="M18 6L6 18M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
             {/* Top-level category tabs */}
-            <div className="flex border-b border-border bg-secondary/20">
+            <div className="flex border-b border-border bg-secondary/20 shrink-0">
               {(Object.keys(detailFrameData) as CategoryKey[]).map((key) => (
                 <button
                   key={key}
                   onClick={() => setActiveCategory(key)}
-                  className={`flex-1 px-2 py-1.5 text-[8px] font-mono tracking-wider transition-colors ${
+                  className={`flex-1 px-2 py-3 min-h-[44px] text-[9px] md:text-[8px] font-mono tracking-wider transition-colors touch-manipulation ${
                     activeCategory === key 
                       ? "text-foreground bg-card border-b-2 border-foreground/40" 
-                      : "text-foreground/35 hover:text-foreground/55"
+                      : "text-foreground/35 hover:text-foreground/55 active:text-foreground/70"
                   }`}
                 >
                   {detailFrameData[key].label}
@@ -299,15 +298,15 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
             </div>
 
             {/* Sub-tabs */}
-            <div className="flex border-b border-border">
+            <div className="flex border-b border-border shrink-0">
               {subtabKeys.map((key, i) => (
                 <button
                   key={key}
                   onClick={() => setActiveSubtab(key)}
-                  className={`flex-1 px-3 py-2 text-[9px] font-mono tracking-wide transition-colors ${
+                  className={`flex-1 px-3 py-3 min-h-[44px] text-[10px] md:text-[9px] font-mono tracking-wide transition-colors touch-manipulation ${
                     activeSubtab === key 
                       ? "text-foreground bg-secondary/30 border-b-2 border-foreground/50" 
-                      : "text-foreground/40 hover:text-foreground/60"
+                      : "text-foreground/40 hover:text-foreground/60 active:text-foreground/80"
                   } ${i > 0 ? "border-l border-border" : ""}`}
                 >
                   {key.toUpperCase()}
@@ -315,8 +314,8 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
               ))}
             </div>
 
-            {/* Tab content */}
-            <div className="p-3 space-y-3">
+            {/* Tab content - scrollable on mobile */}
+            <div className="p-4 md:p-3 space-y-3 overflow-y-auto flex-1">
               {/* Title & subtitle */}
               <div>
                 <h4 className="text-[10px] font-mono font-bold text-foreground tracking-wide">

@@ -125,15 +125,15 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
               <button
                 key={s.id}
                 onClick={() => scrollToSection(s.id)}
-                className="absolute left-0 right-0 flex justify-center group"
+                className="absolute left-0 right-0 flex justify-center group min-h-[36px] touch-manipulation"
                 style={{ top: `${s.percent}%`, transform: 'translateY(-50%)' }}
                 aria-label={`Go to ${s.id}`}
               >
                 <span
-                  className={`block text-[9px] font-mono tracking-wider px-1 py-0.5 transition-all duration-200 ${
+                  className={`block text-[9px] font-mono tracking-wider px-2 py-1 transition-all duration-200 ${
                     active 
                       ? "text-foreground font-medium" 
-                      : "text-muted-foreground/50 hover:text-foreground/70"
+                      : "text-muted-foreground/50 hover:text-foreground/70 active:text-foreground"
                   }`}
                 >
                   {s.label}
@@ -150,7 +150,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
           <a
             href="/Brandon-Bartlett-CV.pdf"
             download
-            className="group flex flex-col items-center gap-1.5 p-2 hover:bg-secondary/40 transition-colors rounded"
+            className="group flex flex-col items-center gap-1.5 p-3 hover:bg-secondary/40 active:bg-secondary/50 transition-colors rounded min-h-[48px] min-w-[40px] touch-manipulation"
             title="Download Resume"
           >
             <svg 
@@ -186,10 +186,10 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
 
             <button
               onClick={toggleRotation}
-              className={`group p-2 rounded transition-all duration-300 ${
+              className={`group p-3 rounded transition-all duration-300 min-h-[48px] min-w-[48px] flex items-center justify-center touch-manipulation ${
                 isAutoRotating 
-                  ? "hover:bg-secondary/40" 
-                  : "bg-secondary/30 hover:bg-secondary/50"
+                  ? "hover:bg-secondary/40 active:bg-secondary/50" 
+                  : "bg-secondary/30 hover:bg-secondary/50 active:bg-secondary/60"
               }`}
               title={isAutoRotating ? "Pause rotation" : "Enable rotation"}
             >
@@ -249,7 +249,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
           {/* Theme toggle at bottom */}
           <button
             onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-            className="group flex flex-col items-center gap-1.5 p-2 hover:bg-secondary/40 transition-colors rounded"
+            className="group flex flex-col items-center gap-1.5 p-3 hover:bg-secondary/40 active:bg-secondary/50 transition-colors rounded min-h-[48px] min-w-[40px] touch-manipulation"
             title={mounted ? (resolvedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode") : "Toggle theme"}
           >
             {mounted && resolvedTheme === "dark" ? (

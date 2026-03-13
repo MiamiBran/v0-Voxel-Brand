@@ -230,7 +230,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
       onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
     >
       {/* Floor markers - left side */}
-      <nav className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-4">
+      <nav className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2 md:gap-4">
         {[...FLOORS].reverse().map((floor, i) => {
           const actualIndex = FLOORS.length - 1 - i
           const isHovered = hoveredFloor === floor.id
@@ -241,7 +241,9 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
               onClick={() => handleFloorClick(floor, actualIndex)}
               onMouseEnter={() => setHoveredFloor(floor.id)}
               onMouseLeave={() => setHoveredFloor(null)}
-              className="group flex items-center gap-2 text-left cursor-pointer"
+              onTouchStart={() => setHoveredFloor(floor.id)}
+              onTouchEnd={() => { handleFloorClick(floor, actualIndex); setHoveredFloor(null) }}
+              className="group flex items-center gap-2 text-left cursor-pointer min-h-[44px] min-w-[44px] touch-manipulation"
               style={{
                 transform: mounted ? "translateX(0)" : "translateX(-20px)",
                 opacity: mounted ? 1 : 0,
@@ -259,7 +261,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                 {floor.id}
               </span>
               <span
-                className="h-px transition-all duration-300 ease-out"
+                className="h-px transition-all duration-300 ease-out hidden md:block"
                 style={{
                   width: isActive ? 60 : isHovered ? 40 : 16,
                   backgroundColor: isHovered || isActive ? getFloorColor(floor) : "var(--border)",
@@ -473,7 +475,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
 
       {/* Bottom legend */}
       <div
-        className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex flex-wrap justify-center gap-3 md:gap-5"
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex flex-wrap justify-center gap-1 md:gap-3"
         style={{
           opacity: mounted ? 1 : 0,
           transition: "opacity 0.4s ease 0.5s",
@@ -485,10 +487,10 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             onClick={() => handleFloorClick(floor, i)}
             onMouseEnter={() => setHoveredFloor(floor.id)}
             onMouseLeave={() => setHoveredFloor(null)}
-            className="flex items-center gap-1.5 group cursor-pointer"
+            className="flex items-center gap-1.5 group cursor-pointer px-2 py-2 min-h-[44px] touch-manipulation"
           >
             <div
-              className="w-2 h-2 border transition-all duration-200"
+              className="w-2.5 h-2.5 md:w-2 md:h-2 border transition-all duration-200"
               style={{
                 borderColor: getFloorColor(floor),
                 backgroundColor: hoveredFloor === floor.id || activeFloorIndex === i ? getFloorColor(floor) : "transparent",
@@ -496,7 +498,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
               }}
             />
             <span
-              className="text-[7px] font-mono tracking-[0.1em] transition-all duration-200"
+              className="text-[8px] md:text-[7px] font-mono tracking-[0.1em] transition-all duration-200"
               style={{
                 color: hoveredFloor === floor.id || activeFloorIndex === i ? getFloorColor(floor) : "var(--foreground)",
                 opacity: hoveredFloor === floor.id || activeFloorIndex === i ? 1 : 0.4,
