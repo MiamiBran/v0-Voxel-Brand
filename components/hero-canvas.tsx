@@ -1,348 +1,320 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 
-// Color palette matching the movements
-const FLOOR_COLORS = {
-  F1: { stroke: "#E85D4C", glow: "#E85D4C", name: "CONSTRUCTIVISM" },
-  F2: { stroke: "#4A90A4", glow: "#4A90A4", name: "DECONSTRUCTIVISM" },
-  F3: { stroke: "#45B07C", glow: "#45B07C", name: "BRUTALISM" },
-  F4: { stroke: "#F5C842", glow: "#F5C842", name: "METABOLISM" },
+// Palette colors matching the title block swatches and your artwork movements
+const PALETTE = {
+  C: { color: "#E85D4C", name: "CONSTRUCTIVISM", desc: "Geometric abstraction" },
+  M: { color: "#F5C842", name: "METABOLISM", desc: "Organic modularity" },
+  D: { color: "#4A90A4", name: "DECONSTRUCTIVISM", desc: "Fragmented forms" },
+  B: { color: "#45B07C", name: "BRUTALISM", desc: "Raw materiality" },
 }
 
-// Construction line colors
-const LINE_COLORS = ["#00d4ff", "#ff0066", "#ffcc00", "#00ff88", "#ff00ff", "#6666ff"]
+// Floor configuration - each floor maps to a movement
+const FLOORS = [
+  { id: "F1", movement: "C", yBase: 380, height: 80, width: 320 },
+  { id: "F2", movement: "D", yBase: 280, height: 100, width: 260 },
+  { id: "F3", movement: "B", yBase: 160, height: 120, width: 200 },
+  { id: "F4", movement: "M", yBase: 20, height: 140, width: 140 },
+]
 
 export function HeroCanvas() {
   const [mounted, setMounted] = useState(false)
   const [activeFloor, setActiveFloor] = useState<string | null>(null)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
-  const [lineAnimOffset, setLineAnimOffset] = useState(0)
+  const [explosionFactor, setExplosionFactor] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Animate construction lines
+  // Smooth explosion animation when clicking
   useEffect(() => {
-    const interval = setInterval(() => {
-      setLineAnimOffset((prev) => (prev + 0.5) % 20)
-    }, 50)
-    return () => clearInterval(interval)
-  }, [])
+    if (activeFloor) {
+      const animate = () => {
+        setExplosionFactor((prev) => {
+          const target = 1
+          const diff = target - prev
+          if (Math.abs(diff) < 0.01) return target
+          return prev + diff * 0.08
+        })
+      }
+      const interval = setInterval(animate, 16)
+      return () => clearInterval(interval)
+    } else {
+      const animate = () => {
+        setExplosionFactor((prev) => {
+          if (prev < 0.01) return 0
+          return prev * 0.9
+        })
+      }
+      const interval = setInterval(animate, 16)
+      return () => clearInterval(interval)
+    }
+  }, [activeFloor])
 
-  // Parallax effect on mouse move
+  // Track mouse for parallax
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 20
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 20
+    if (!containerRef.current) return
+    const rect = containerRef.current.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2
     setMousePos({ x, y })
   }, [])
 
   if (!mounted) {
     return (
-      <section
-        data-section="F0"
-        className="relative w-full min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: "#0a0e14" }}
-      >
-        <div className="text-white/20 font-mono text-sm">Initializing diagram...</div>
+      <section data-section="HERO" className="relative w-full min-h-[90vh] flex items-center justify-center">
+        <div className="text-muted-foreground/30 font-mono text-xs tracking-widest">LOADING DIAGRAM...</div>
       </section>
     )
   }
 
+  const activeMovement = activeFloor
+    ? PALETTE[FLOORS.find((f) => f.id === activeFloor)?.movement as keyof typeof PALETTE]
+    : null
+
   return (
     <section
-      data-section="F0"
-      className="relative w-full min-h-screen overflow-hidden"
-      style={{ backgroundColor: "#0a0e14" }}
+      ref={containerRef}
+      data-section="HERO"
+      className="relative w-full min-h-[90vh] overflow-hidden"
       onMouseMove={handleMouseMove}
+      onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
     >
-      {/* SVG Filters for glow effects */}
-      <svg className="absolute w-0 h-0">
-        <defs>
-          {Object.entries(FLOOR_COLORS).map(([floor, colors]) => (
-            <filter key={floor} id={`glow-${floor}`} x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-              <feFlood floodColor={colors.glow} floodOpacity="0.6" result="color" />
-              <feComposite in="color" in2="coloredBlur" operator="in" result="coloredGlow" />
-              <feMerge>
-                <feMergeNode in="coloredGlow" />
-                <feMergeNode in="coloredGlow" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          ))}
-          <filter id="glow-line" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="2" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-      </svg>
-
-      {/* Blueprint grid background with parallax */}
-      <div
-        className="absolute inset-0 transition-transform duration-300 ease-out"
-        style={{
-          transform: `translate(${mousePos.x * 0.5}px, ${mousePos.y * 0.5}px)`,
-          backgroundImage: `
-            linear-gradient(rgba(40, 60, 90, 0.12) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(40, 60, 90, 0.12) 1px, transparent 1px),
-            linear-gradient(rgba(40, 60, 90, 0.25) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(40, 60, 90, 0.25) 1px, transparent 1px)
-          `,
-          backgroundSize: "20px 20px, 20px 20px, 100px 100px, 100px 100px",
-        }}
-      />
-
-      {/* Floor markers on left edge - clickable */}
-      <div className="absolute left-4 md:left-8 top-0 bottom-0 flex flex-col justify-center gap-24 md:gap-32 z-20">
-        {(["F4", "F3", "F2", "F1"] as const).map((floor) => (
-          <button
-            key={floor}
-            onClick={() => setActiveFloor(activeFloor === floor ? null : floor)}
-            onMouseEnter={() => setActiveFloor(floor)}
-            onMouseLeave={() => setActiveFloor(null)}
-            className="flex items-center gap-2 group cursor-pointer"
-          >
-            <span
-              className="font-mono text-[10px] md:text-xs tracking-widest transition-all duration-300"
-              style={{
-                color: activeFloor === floor ? FLOOR_COLORS[floor].stroke : "rgba(80, 100, 140, 0.5)",
-                textShadow: activeFloor === floor ? `0 0 10px ${FLOOR_COLORS[floor].glow}` : "none",
-              }}
+      {/* Floor markers on left edge */}
+      <div className="absolute left-4 top-0 bottom-0 flex flex-col justify-center gap-20 z-20">
+        {[...FLOORS].reverse().map((floor) => {
+          const movement = PALETTE[floor.movement as keyof typeof PALETTE]
+          const isActive = activeFloor === floor.id
+          return (
+            <button
+              key={floor.id}
+              onClick={() => setActiveFloor(isActive ? null : floor.id)}
+              className="flex items-center gap-2 group cursor-pointer"
             >
-              {floor}
-            </span>
-            <div
-              className="h-px transition-all duration-300"
-              style={{
-                width: activeFloor === floor ? "60px" : "24px",
-                backgroundColor: activeFloor === floor ? FLOOR_COLORS[floor].stroke : "rgba(80, 100, 140, 0.3)",
-                boxShadow: activeFloor === floor ? `0 0 8px ${FLOOR_COLORS[floor].glow}` : "none",
-              }}
-            />
-            {activeFloor === floor && (
               <span
-                className="font-mono text-[8px] tracking-[0.2em] animate-pulse"
-                style={{ color: FLOOR_COLORS[floor].stroke }}
+                className="text-[9px] font-mono tracking-widest transition-all duration-500"
+                style={{
+                  color: isActive ? movement.color : "var(--muted-foreground)",
+                  opacity: isActive ? 1 : 0.3,
+                }}
               >
-                {FLOOR_COLORS[floor].name}
+                {floor.id}
               </span>
-            )}
-          </button>
-        ))}
+              <span
+                className="h-px transition-all duration-500"
+                style={{
+                  width: isActive ? 40 : 16,
+                  backgroundColor: isActive ? movement.color : "var(--border)",
+                }}
+              />
+            </button>
+          )
+        })}
       </div>
 
-      {/* Main isometric tower - SVG with parallax */}
+      {/* Main SVG diagram */}
       <div
-        className="absolute inset-0 flex items-center justify-center transition-transform duration-200 ease-out"
-        style={{ transform: `translate(${mousePos.x}px, ${mousePos.y}px)` }}
+        className="absolute inset-0 flex items-center justify-center"
+        style={{
+          transform: `translate(${mousePos.x * 8}px, ${mousePos.y * 8}px)`,
+          transition: "transform 0.3s ease-out",
+        }}
       >
         <svg
-          viewBox="-400 -550 800 1100"
-          className="w-full h-full max-w-5xl max-h-[95vh]"
+          viewBox="-50 -100 600 700"
+          className="w-full h-full max-w-4xl max-h-[85vh]"
           style={{ overflow: "visible" }}
         >
-          {/* Animated construction lines radiating from center */}
-          <g>
+          {/* Construction lines - radiate from center, visible on hover */}
+          <g style={{ opacity: activeFloor ? 0.4 : 0.15 }}>
             {[
-              { angle: -75, len: 480 },
-              { angle: -50, len: 450 },
-              { angle: -25, len: 420 },
-              { angle: 5, len: 400 },
-              { angle: 30, len: 440 },
-              { angle: 55, len: 460 },
-              { angle: 80, len: 430 },
-              { angle: 105, len: 450 },
-              { angle: -105, len: 420 },
-              { angle: 130, len: 400 },
-              { angle: -130, len: 380 },
+              { angle: -70, color: "#E85D4C" },
+              { angle: -45, color: "#4A90A4" },
+              { angle: -20, color: "#F5C842" },
+              { angle: 15, color: "#45B07C" },
+              { angle: 40, color: "#E85D4C" },
+              { angle: 70, color: "#4A90A4" },
+              { angle: 95, color: "#F5C842" },
+              { angle: -95, color: "#45B07C" },
             ].map((line, i) => {
               const rad = (line.angle * Math.PI) / 180
-              const color = LINE_COLORS[i % LINE_COLORS.length]
+              const len = 350 + Math.sin(i * 0.5) * 50
+              const cx = 250
+              const cy = 250
               return (
                 <line
                   key={i}
-                  x1="0"
-                  y1="-100"
-                  x2={(Math.cos(rad) * line.len).toFixed(1)}
-                  y2={(Math.sin(rad) * line.len - 100).toFixed(1)}
-                  stroke={color}
-                  strokeWidth="1.5"
-                  strokeDasharray="8 12"
-                  strokeDashoffset={lineAnimOffset}
-                  opacity="0.6"
-                  filter="url(#glow-line)"
+                  x1={cx}
+                  y1={cy}
+                  x2={cx + Math.cos(rad) * len}
+                  y2={cy + Math.sin(rad) * len}
+                  stroke={line.color}
+                  strokeWidth="0.8"
+                  strokeDasharray="4 8"
+                  className="transition-opacity duration-500"
                 />
               )
             })}
           </g>
 
-          {/* F1 - Base platform (Constructivism - Red/Orange) */}
-          <g
-            className="cursor-pointer transition-all duration-300"
-            onMouseEnter={() => setActiveFloor("F1")}
-            onMouseLeave={() => setActiveFloor(null)}
-            style={{ filter: activeFloor === "F1" ? "url(#glow-F1)" : "none" }}
-          >
-            <g transform="translate(0, 300)">
-              <IsoCubeWireframe
-                w={280}
-                d={280}
-                h={55}
-                color={FLOOR_COLORS.F1.stroke}
-                active={activeFloor === "F1"}
-              />
-              {/* Inner detail */}
-              <IsoCubeWireframe
-                w={200}
-                d={200}
-                h={35}
-                color={FLOOR_COLORS.F1.stroke}
-                yOffset={-12}
-                active={activeFloor === "F1"}
-              />
-              {/* Grid cells */}
-              <IsoGridCells w={280} d={280} cells={8} color={FLOOR_COLORS.F1.stroke} yOffset={-55} active={activeFloor === "F1"} />
-            </g>
+          {/* Ground grid */}
+          <g transform="translate(250, 480)">
+            <IsoGrid size={340} cells={10} />
           </g>
 
-          {/* Support pillars */}
-          <g opacity="0.3">
-            {[[-80, 200], [80, 200], [-80, 100], [80, 100]].map(([x, y], i) => (
+          {/* The tower - each floor explodes outward when active */}
+          {FLOORS.map((floor, floorIndex) => {
+            const movement = PALETTE[floor.movement as keyof typeof PALETTE]
+            const isActive = activeFloor === floor.id
+            const isAnyActive = activeFloor !== null
+            
+            // Calculate explosion offset for this floor
+            const explosionOffset = explosionFactor * (floorIndex - 1.5) * 35
+            const yOffset = isAnyActive ? explosionOffset : 0
+
+            return (
+              <g
+                key={floor.id}
+                className="cursor-pointer"
+                style={{
+                  transform: `translateY(${yOffset}px)`,
+                  transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                }}
+                onClick={() => setActiveFloor(isActive ? null : floor.id)}
+                onMouseEnter={() => !activeFloor && setActiveFloor(floor.id)}
+                onMouseLeave={() => !activeFloor && setActiveFloor(null)}
+              >
+                <g transform={`translate(250, ${floor.yBase})`}>
+                  {/* Wireframe cube for this floor */}
+                  <IsoCube
+                    width={floor.width}
+                    depth={floor.width}
+                    height={floor.height}
+                    color={movement.color}
+                    active={isActive}
+                    strokeWidth={isActive ? 2 : 1}
+                  />
+                  
+                  {/* Grid on top face */}
+                  <IsoTopGrid
+                    width={floor.width}
+                    depth={floor.width}
+                    cells={Math.floor(floor.width / 40)}
+                    color={movement.color}
+                    yOffset={-floor.height}
+                    active={isActive}
+                  />
+
+                  {/* Inner detail cubes */}
+                  {floor.id === "F4" && (
+                    <>
+                      <g transform="translate(0, -60)">
+                        <IsoCube width={80} depth={80} height={60} color={movement.color} active={isActive} strokeWidth={isActive ? 1.5 : 0.8} />
+                      </g>
+                      <g transform="translate(30, -30)">
+                        <IsoCube width={40} depth={40} height={30} color={movement.color} active={isActive} strokeWidth={isActive ? 1.5 : 0.8} />
+                      </g>
+                    </>
+                  )}
+
+                  {floor.id === "F3" && (
+                    <>
+                      <g transform="translate(-40, 0)">
+                        <IsoCube width={60} depth={100} height={floor.height} color={movement.color} active={isActive} strokeWidth={isActive ? 1.5 : 0.8} />
+                      </g>
+                      <g transform="translate(50, 0)">
+                        <IsoCube width={50} depth={80} height={floor.height * 0.8} color={movement.color} active={isActive} strokeWidth={isActive ? 1.5 : 0.8} />
+                      </g>
+                    </>
+                  )}
+
+                  {floor.id === "F2" && (
+                    <g transform="translate(0, 0)">
+                      <IsoCube width={160} depth={160} height={50} color={movement.color} active={isActive} strokeWidth={isActive ? 1.5 : 0.8} />
+                    </g>
+                  )}
+                </g>
+              </g>
+            )
+          })}
+
+          {/* Vertical construction lines / pillars */}
+          <g opacity="0.2">
+            {[[-60, 0], [60, 0], [0, -60], [0, 60]].map(([dx, dy], i) => (
               <line
                 key={i}
-                x1={x}
-                y1={y}
-                x2={x}
-                y2={y + 100}
-                stroke="#1a2535"
-                strokeWidth="6"
+                x1={250 + dx * 1.5}
+                y1={100}
+                x2={250 + dx * 1.5}
+                y2={460}
+                stroke="var(--foreground)"
+                strokeWidth="0.5"
+                strokeDasharray="2 6"
               />
             ))}
           </g>
 
-          {/* F2 - Lower structure (Deconstructivism - Blue) */}
-          <g
-            className="cursor-pointer transition-all duration-300"
-            onMouseEnter={() => setActiveFloor("F2")}
-            onMouseLeave={() => setActiveFloor(null)}
-            style={{ filter: activeFloor === "F2" ? "url(#glow-F2)" : "none" }}
-          >
-            <g transform="translate(0, 130)">
-              <IsoCubeWireframe
-                w={220}
-                d={220}
-                h={130}
-                color={FLOOR_COLORS.F2.stroke}
-                active={activeFloor === "F2"}
-              />
-              <IsoGridCells w={220} d={220} cells={7} color={FLOOR_COLORS.F2.stroke} yOffset={-130} active={activeFloor === "F2"} />
-            </g>
+          {/* Dimension lines */}
+          <g opacity="0.15" className="pointer-events-none">
+            {/* Horizontal dimension */}
+            <line x1="80" y1="500" x2="420" y2="500" stroke="var(--foreground)" strokeWidth="0.5" />
+            <line x1="80" y1="495" x2="80" y2="505" stroke="var(--foreground)" strokeWidth="0.5" />
+            <line x1="420" y1="495" x2="420" y2="505" stroke="var(--foreground)" strokeWidth="0.5" />
+            <text x="250" y="515" textAnchor="middle" fontSize="8" fill="var(--muted-foreground)" fontFamily="monospace">320</text>
+            
+            {/* Vertical dimension */}
+            <line x1="30" y1="20" x2="30" y2="460" stroke="var(--foreground)" strokeWidth="0.5" />
+            <line x1="25" y1="20" x2="35" y2="20" stroke="var(--foreground)" strokeWidth="0.5" />
+            <line x1="25" y1="460" x2="35" y2="460" stroke="var(--foreground)" strokeWidth="0.5" />
+            <text x="20" y="240" textAnchor="middle" fontSize="8" fill="var(--muted-foreground)" fontFamily="monospace" transform="rotate(-90, 20, 240)">440</text>
           </g>
-
-          {/* F3 - Mid section (Brutalism - Green) */}
-          <g
-            className="cursor-pointer transition-all duration-300"
-            onMouseEnter={() => setActiveFloor("F3")}
-            onMouseLeave={() => setActiveFloor(null)}
-            style={{ filter: activeFloor === "F3" ? "url(#glow-F3)" : "none" }}
-          >
-            <g transform="translate(0, -60)">
-              <IsoCubeWireframe
-                w={170}
-                d={170}
-                h={150}
-                color={FLOOR_COLORS.F3.stroke}
-                active={activeFloor === "F3"}
-              />
-              <IsoGridCells w={170} d={170} cells={5} color={FLOOR_COLORS.F3.stroke} yOffset={-150} active={activeFloor === "F3"} />
-              {/* Central vertical element */}
-              <rect
-                x="-15"
-                y="-110"
-                width="30"
-                height="110"
-                fill="none"
-                stroke={FLOOR_COLORS.F3.stroke}
-                strokeWidth={activeFloor === "F3" ? "2" : "1.5"}
-                opacity={activeFloor === "F3" ? 1 : 0.5}
-              />
-            </g>
-          </g>
-
-          {/* F4 - Top dome (Metabolism - Yellow) */}
-          <g
-            className="cursor-pointer transition-all duration-300"
-            onMouseEnter={() => setActiveFloor("F4")}
-            onMouseLeave={() => setActiveFloor(null)}
-            style={{ filter: activeFloor === "F4" ? "url(#glow-F4)" : "none" }}
-          >
-            <g transform="translate(0, -230)">
-              <IsoDome color={FLOOR_COLORS.F4.stroke} active={activeFloor === "F4"} />
-            </g>
-          </g>
-
-          {/* Ground shadow */}
-          <ellipse
-            cx="0"
-            cy="400"
-            rx="180"
-            ry="70"
-            fill="rgba(0, 0, 0, 0.5)"
-          />
         </svg>
       </div>
 
-      {/* Active floor info panel */}
-      {activeFloor && (
+      {/* Info panel - appears when a floor is active */}
+      {activeMovement && activeFloor && (
         <div
-          className="absolute top-8 right-8 z-30 border backdrop-blur-md px-5 py-4 transition-all duration-300"
-          style={{
-            borderColor: FLOOR_COLORS[activeFloor as keyof typeof FLOOR_COLORS].stroke,
-            backgroundColor: "rgba(10, 14, 20, 0.9)",
-            boxShadow: `0 0 30px ${FLOOR_COLORS[activeFloor as keyof typeof FLOOR_COLORS].glow}40`,
-          }}
+          className="absolute top-8 right-4 md:right-8 z-30 border bg-background/95 backdrop-blur-sm px-5 py-4 max-w-xs transition-all duration-300"
+          style={{ borderColor: activeMovement.color }}
         >
-          <div
-            className="text-xs font-mono tracking-[0.3em] mb-1"
-            style={{ color: FLOOR_COLORS[activeFloor as keyof typeof FLOOR_COLORS].stroke }}
-          >
-            {activeFloor}
+          <div className="flex items-center gap-3 mb-2">
+            <div
+              className="w-3 h-3 border"
+              style={{ backgroundColor: activeMovement.color, borderColor: activeMovement.color }}
+            />
+            <span className="text-xs font-mono tracking-[0.2em]" style={{ color: activeMovement.color }}>
+              {activeFloor}
+            </span>
           </div>
-          <div className="text-sm font-mono text-white/80">
-            {FLOOR_COLORS[activeFloor as keyof typeof FLOOR_COLORS].name}
+          <div className="text-sm font-mono font-bold text-foreground tracking-wide">
+            {activeMovement.name}
           </div>
-          <div className="text-[9px] font-mono text-white/30 mt-2 tracking-wider">
-            ARCHITECTURAL MOVEMENT
+          <div className="text-[10px] font-mono text-muted-foreground/60 mt-1">
+            {activeMovement.desc}
+          </div>
+          <div className="text-[8px] font-mono text-muted-foreground/30 mt-3 tracking-wider">
+            CLICK TO LOCK / UNLOCK VIEW
           </div>
         </div>
       )}
 
-      {/* Caption overlay */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 md:left-12 md:translate-x-0 z-20">
-        <div className="border border-white/10 bg-black/80 backdrop-blur-sm px-6 py-4">
-          <div className="text-sm md:text-base font-mono font-bold text-white tracking-wide">
-            MONUMENT / TATLIN
+      {/* Bottom caption */}
+      <div className="absolute bottom-12 left-4 md:left-8 z-20">
+        <div className="border border-border bg-background/80 backdrop-blur-sm px-5 py-4">
+          <div className="text-base md:text-lg font-mono font-bold text-foreground tracking-wide">
+            ISOMETRIC STRATA
           </div>
-          <div className="text-[8px] md:text-[9px] font-mono text-white/40 mt-1 tracking-[0.25em]">
-            CONSTRUCTIVIST DIAGRAM — ISOMETRIC 30°
+          <div className="text-[8px] md:text-[9px] font-mono text-muted-foreground/50 mt-1 tracking-[0.2em]">
+            MONUMENT / TATLIN — AXONOMETRIC VIEW
           </div>
           <div className="flex gap-3 mt-3">
-            {Object.entries(FLOOR_COLORS).map(([floor, colors]) => (
-              <div key={floor} className="flex items-center gap-1.5">
-                <div
-                  className="w-2 h-2"
-                  style={{
-                    backgroundColor: colors.stroke,
-                    boxShadow: `0 0 6px ${colors.glow}`,
-                  }}
-                />
-                <span className="text-[7px] font-mono text-white/30">{floor}</span>
+            {Object.entries(PALETTE).map(([key, { color }]) => (
+              <div key={key} className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 border border-border/50" style={{ backgroundColor: color }} />
+                <span className="text-[7px] font-mono text-muted-foreground/40">{key}</span>
               </div>
             ))}
           </div>
@@ -350,16 +322,14 @@ export function HeroCanvas() {
       </div>
 
       {/* Plate number */}
-      <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 z-20 hidden md:block">
-        <div className="text-right">
-          <div className="text-[8px] font-mono text-white/20 tracking-[0.3em]">PLATE</div>
-          <div className="text-xl font-mono text-white/50 font-bold">#01</div>
-        </div>
+      <div className="absolute bottom-12 right-4 md:right-8 z-20 text-right hidden md:block">
+        <div className="text-[7px] font-mono text-muted-foreground/20 tracking-[0.3em]">PLATE</div>
+        <div className="text-xl font-mono text-muted-foreground/30 font-bold">#01</div>
       </div>
 
-      {/* Interactive hint */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 md:hidden">
-        <div className="text-[8px] font-mono text-white/20 tracking-[0.2em] animate-pulse">
+      {/* Mobile hint */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 md:hidden">
+        <div className="text-[8px] font-mono text-muted-foreground/30 tracking-[0.15em]">
           TAP FLOORS TO EXPLORE
         </div>
       </div>
@@ -367,84 +337,84 @@ export function HeroCanvas() {
   )
 }
 
-// Isometric cube wireframe with hover support
-function IsoCubeWireframe({
-  w,
-  d,
-  h,
+// Isometric cube wireframe
+function IsoCube({
+  width,
+  depth,
+  height,
   color,
-  yOffset = 0,
   active = false,
+  strokeWidth = 1,
 }: {
-  w: number
-  d: number
-  h: number
+  width: number
+  depth: number
+  height: number
   color: string
-  yOffset?: number
   active?: boolean
+  strokeWidth?: number
 }) {
   const cos30 = 0.866
   const sin30 = 0.5
-  const hw = w / 2
-  const hd = d / 2
+  const hw = width / 2
+  const hd = depth / 2
 
-  const proj = (x: number, y: number, z: number): [number, number] => [
+  const project = (x: number, y: number, z: number): [number, number] => [
     (x - y) * cos30,
-    (x + y) * sin30 - z + yOffset,
+    (x + y) * sin30 - z,
   ]
 
-  const v = {
-    b1: proj(-hw, -hd, 0),
-    b2: proj(hw, -hd, 0),
-    b3: proj(hw, hd, 0),
-    b4: proj(-hw, hd, 0),
-    t1: proj(-hw, -hd, h),
-    t2: proj(hw, -hd, h),
-    t3: proj(hw, hd, h),
-    t4: proj(-hw, hd, h),
+  const vertices = {
+    b1: project(-hw, -hd, 0),
+    b2: project(hw, -hd, 0),
+    b3: project(hw, hd, 0),
+    b4: project(-hw, hd, 0),
+    t1: project(-hw, -hd, height),
+    t2: project(hw, -hd, height),
+    t3: project(hw, hd, height),
+    t4: project(-hw, hd, height),
   }
 
-  const pt = (p: [number, number]) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`
-  const strokeW = active ? "2.5" : "1.5"
-  const opacity = active ? 1 : 0.7
+  const pt = (v: [number, number]) => `${v[0].toFixed(1)},${v[1].toFixed(1)}`
 
   return (
-    <g opacity={opacity}>
+    <g style={{ opacity: active ? 1 : 0.6, transition: "opacity 0.3s ease" }}>
       {/* Top face */}
       <polygon
-        points={`${pt(v.t1)} ${pt(v.t2)} ${pt(v.t3)} ${pt(v.t4)}`}
+        points={`${pt(vertices.t1)} ${pt(vertices.t2)} ${pt(vertices.t3)} ${pt(vertices.t4)}`}
         fill="none"
         stroke={color}
-        strokeWidth={strokeW}
+        strokeWidth={strokeWidth}
+        strokeLinejoin="round"
       />
-      {/* Bottom face */}
+      {/* Bottom face - fainter */}
       <polygon
-        points={`${pt(v.b1)} ${pt(v.b2)} ${pt(v.b3)} ${pt(v.b4)}`}
+        points={`${pt(vertices.b1)} ${pt(vertices.b2)} ${pt(vertices.b3)} ${pt(vertices.b4)}`}
         fill="none"
         stroke={color}
-        strokeWidth="1"
-        opacity="0.25"
+        strokeWidth={strokeWidth * 0.5}
+        opacity={0.3}
+        strokeLinejoin="round"
       />
       {/* Vertical edges */}
-      <line x1={v.t1[0]} y1={v.t1[1]} x2={v.b1[0]} y2={v.b1[1]} stroke={color} strokeWidth={strokeW} />
-      <line x1={v.t2[0]} y1={v.t2[1]} x2={v.b2[0]} y2={v.b2[1]} stroke={color} strokeWidth={strokeW} />
-      <line x1={v.t3[0]} y1={v.t3[1]} x2={v.b3[0]} y2={v.b3[1]} stroke={color} strokeWidth={strokeW} />
-      <line x1={v.t4[0]} y1={v.t4[1]} x2={v.b4[0]} y2={v.b4[1]} stroke={color} strokeWidth={strokeW} />
+      <line x1={vertices.t1[0]} y1={vertices.t1[1]} x2={vertices.b1[0]} y2={vertices.b1[1]} stroke={color} strokeWidth={strokeWidth} />
+      <line x1={vertices.t2[0]} y1={vertices.t2[1]} x2={vertices.b2[0]} y2={vertices.b2[1]} stroke={color} strokeWidth={strokeWidth} />
+      <line x1={vertices.t3[0]} y1={vertices.t3[1]} x2={vertices.b3[0]} y2={vertices.b3[1]} stroke={color} strokeWidth={strokeWidth} />
+      <line x1={vertices.t4[0]} y1={vertices.t4[1]} x2={vertices.b4[0]} y2={vertices.b4[1]} stroke={color} strokeWidth={strokeWidth} />
     </g>
   )
 }
 
-// Isometric grid cells on top of a cube
-function IsoGridCells({
-  w,
-  d,
+// Isometric grid on top face of cube
+function IsoTopGrid({
+  width,
+  depth,
   cells,
   color,
   yOffset = 0,
   active = false,
 }: {
-  w: number
-  d: number
+  width: number
+  depth: number
   cells: number
   color: string
   yOffset?: number
@@ -452,23 +422,22 @@ function IsoGridCells({
 }) {
   const cos30 = 0.866
   const sin30 = 0.5
-  const hw = w / 2
-  const hd = d / 2
+  const hw = width / 2
+  const hd = depth / 2
 
-  const proj = (x: number, y: number): [number, number] => [
+  const project = (x: number, y: number): [number, number] => [
     (x - y) * cos30,
     (x + y) * sin30 + yOffset,
   ]
 
   const lines: JSX.Element[] = []
-  const step = w / cells
-  const strokeW = active ? "0.8" : "0.4"
-  const opacity = active ? 0.6 : 0.3
+  const stepX = width / cells
+  const stepY = depth / cells
 
-  for (let i = 0; i <= cells; i++) {
-    const x = -hw + i * step
-    const p1 = proj(x, -hd)
-    const p2 = proj(x, hd)
+  for (let i = 1; i < cells; i++) {
+    const x = -hw + i * stepX
+    const p1 = project(x, -hd)
+    const p2 = project(x, hd)
     lines.push(
       <line
         key={`x${i}`}
@@ -477,16 +446,16 @@ function IsoGridCells({
         x2={p2[0].toFixed(1)}
         y2={p2[1].toFixed(1)}
         stroke={color}
-        strokeWidth={strokeW}
-        opacity={opacity}
+        strokeWidth={active ? 0.6 : 0.3}
+        opacity={active ? 0.4 : 0.2}
       />
     )
   }
 
-  for (let i = 0; i <= cells; i++) {
-    const y = -hd + i * step
-    const p1 = proj(-hw, y)
-    const p2 = proj(hw, y)
+  for (let i = 1; i < cells; i++) {
+    const y = -hd + i * stepY
+    const p1 = project(-hw, y)
+    const p2 = project(hw, y)
     lines.push(
       <line
         key={`y${i}`}
@@ -495,8 +464,8 @@ function IsoGridCells({
         x2={p2[0].toFixed(1)}
         y2={p2[1].toFixed(1)}
         stroke={color}
-        strokeWidth={strokeW}
-        opacity={opacity}
+        strokeWidth={active ? 0.6 : 0.3}
+        opacity={active ? 0.4 : 0.2}
       />
     )
   }
@@ -504,99 +473,78 @@ function IsoGridCells({
   return <g>{lines}</g>
 }
 
-// Isometric dome made of stacked octagonal rings
-function IsoDome({ color, active = false }: { color: string; active?: boolean }) {
-  const layers = [
-    { y: 0, r: 75, h: 35 },
-    { y: -35, r: 70, h: 35 },
-    { y: -70, r: 60, h: 35 },
-    { y: -105, r: 48, h: 40 },
-    { y: -145, r: 32, h: 35 },
-    { y: -180, r: 18, h: 25 },
-  ]
-
-  return (
-    <g>
-      {layers.map((layer, i) => (
-        <IsoOctagonRing
-          key={i}
-          radius={layer.r}
-          height={layer.h}
-          yOffset={layer.y}
-          color={color}
-          active={active}
-        />
-      ))}
-      {/* Top spire */}
-      <line x1="0" y1="-205" x2="0" y2="-240" stroke={color} strokeWidth={active ? "3" : "2"} />
-      <ellipse
-        cx="0"
-        cy={-205}
-        rx={active ? 14 : 12}
-        ry={active ? 7 : 6}
-        fill="none"
-        stroke={color}
-        strokeWidth={active ? "2" : "1.5"}
-      />
-    </g>
-  )
-}
-
-// Octagonal ring in isometric
-function IsoOctagonRing({
-  radius,
-  height,
-  yOffset,
-  color,
-  active = false,
-}: {
-  radius: number
-  height: number
-  yOffset: number
-  color: string
-  active?: boolean
-}) {
+// Ground plane isometric grid
+function IsoGrid({ size, cells }: { size: number; cells: number }) {
   const cos30 = 0.866
   const sin30 = 0.5
+  const half = size / 2
 
-  const topPts: [number, number][] = []
-  const botPts: [number, number][] = []
+  const project = (x: number, y: number): [number, number] => [
+    (x - y) * cos30,
+    (x + y) * sin30,
+  ]
 
-  for (let i = 0; i < 8; i++) {
-    const angle = (i * Math.PI) / 4 + Math.PI / 8
-    const x = Math.cos(angle) * radius
-    const y = Math.sin(angle) * radius
-    const px = (x - y) * cos30
-    const pyTop = (x + y) * sin30 + yOffset - height
-    const pyBot = (x + y) * sin30 + yOffset
-    topPts.push([px, pyTop])
-    botPts.push([px, pyBot])
+  const lines: JSX.Element[] = []
+  const step = size / cells
+
+  // Grid lines
+  for (let i = 0; i <= cells; i++) {
+    const pos = -half + i * step
+    const isMajor = i % 5 === 0
+    
+    // X direction
+    const x1 = project(pos, -half)
+    const x2 = project(pos, half)
+    lines.push(
+      <line
+        key={`gx${i}`}
+        x1={x1[0].toFixed(1)}
+        y1={x1[1].toFixed(1)}
+        x2={x2[0].toFixed(1)}
+        y2={x2[1].toFixed(1)}
+        stroke="var(--foreground)"
+        strokeWidth={isMajor ? 0.4 : 0.15}
+        opacity={isMajor ? 0.15 : 0.08}
+      />
+    )
+    
+    // Y direction
+    const y1 = project(-half, pos)
+    const y2 = project(half, pos)
+    lines.push(
+      <line
+        key={`gy${i}`}
+        x1={y1[0].toFixed(1)}
+        y1={y1[1].toFixed(1)}
+        x2={y2[0].toFixed(1)}
+        y2={y2[1].toFixed(1)}
+        stroke="var(--foreground)"
+        strokeWidth={isMajor ? 0.4 : 0.15}
+        opacity={isMajor ? 0.15 : 0.08}
+      />
+    )
   }
 
-  const toPath = (pts: [number, number][]) =>
-    pts.map((p, i) => `${i === 0 ? "M" : "L"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ") + " Z"
-
-  const strokeW = active ? "2" : "1.2"
-  const opacity = active ? 1 : 0.7
-
-  return (
-    <g opacity={opacity}>
-      <path d={toPath(topPts)} fill="none" stroke={color} strokeWidth={strokeW} />
-      <path d={toPath(botPts)} fill="none" stroke={color} strokeWidth="0.8" opacity="0.3" />
-      {topPts.map((tp, i) => (
-        <line
-          key={i}
-          x1={tp[0].toFixed(1)}
-          y1={tp[1].toFixed(1)}
-          x2={botPts[i][0].toFixed(1)}
-          y2={botPts[i][1].toFixed(1)}
-          stroke={color}
-          strokeWidth={active ? "1.2" : "0.6"}
-          opacity={active ? 0.7 : 0.4}
-        />
-      ))}
-    </g>
+  // Outline
+  const corners = [
+    project(-half, -half),
+    project(half, -half),
+    project(half, half),
+    project(-half, half),
+  ]
+  
+  lines.push(
+    <polygon
+      key="outline"
+      points={corners.map((c) => `${c[0].toFixed(1)},${c[1].toFixed(1)}`).join(" ")}
+      fill="none"
+      stroke="var(--foreground)"
+      strokeWidth="0.5"
+      opacity="0.2"
+    />
   )
+
+  return <g>{lines}</g>
 }
 
 export default HeroCanvas
