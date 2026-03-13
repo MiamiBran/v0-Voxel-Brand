@@ -84,17 +84,17 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
                 setBuildsExpanded(true)
               }
             }}
-            className={`flex-1 flex items-center justify-between px-5 md:px-6 py-4 transition-colors text-left ${
+            className={`flex-1 flex items-center justify-between px-4 md:px-5 py-3 transition-colors text-left ${
               activeTab === "builds" ? "bg-secondary/30" : "hover:bg-secondary/10"
             }`}
           >
-            <div className="flex items-baseline gap-4">
-              <h2 className={`text-base md:text-lg font-mono font-bold tracking-tight transition-colors ${
+            <div className="flex items-baseline gap-3">
+              <h2 className={`text-xs font-mono font-bold tracking-wide transition-colors ${
                 activeTab === "builds" ? "text-foreground" : "text-foreground/40"
               }`}>
                 BUILDS
               </h2>
-              <span className="text-[10px] font-mono text-muted-foreground/30 tracking-[0.3em]">F3</span>
+              <span className="text-[9px] font-mono text-muted-foreground/35 tracking-[0.2em]">F3</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[8px] font-mono text-muted-foreground/40 tabular-nums">
@@ -116,17 +116,17 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
           
           <button
             onClick={() => setActiveTab("feedback")}
-            className={`flex-1 flex items-center justify-between px-5 md:px-6 py-4 border-l border-border transition-colors text-left ${
+            className={`flex-1 flex items-center justify-between px-4 md:px-5 py-3 border-l border-border transition-colors text-left ${
               activeTab === "feedback" ? "bg-secondary/30" : "hover:bg-secondary/10"
             }`}
           >
-            <div className="flex items-baseline gap-4">
-              <h2 className={`text-base md:text-lg font-mono font-bold tracking-tight transition-colors ${
+            <div className="flex items-baseline gap-3">
+              <h2 className={`text-xs font-mono font-bold tracking-wide transition-colors ${
                 activeTab === "feedback" ? "text-foreground" : "text-foreground/40"
               }`}>
                 CLIENT FEEDBACK
               </h2>
-              <span className="text-[10px] font-mono text-muted-foreground/30 tracking-[0.3em]">F3.5</span>
+              <span className="text-[9px] font-mono text-muted-foreground/35 tracking-[0.2em]">F3.5</span>
             </div>
             <span className="text-[8px] font-mono text-muted-foreground/40 tabular-nums">
               {String(testimonials.length).padStart(2, "0")}
@@ -145,8 +145,8 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
             }`}
           >
             {/* Subtext - always visible when builds tab active */}
-            <div className="px-6 md:px-8 py-4 border-b border-border">
-              <p className="text-xs text-foreground/45 leading-relaxed tracking-wide">
+            <div className="px-4 md:px-5 py-3 border-b border-border">
+              <p className="text-[10px] font-mono text-foreground/50 leading-relaxed">
                 Side projects, prototypes, and ongoing investigations.
               </p>
             </div>
@@ -160,16 +160,16 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
               {experiments.map((exp) => (
                 <div 
                   key={exp.id}
-                  className="px-6 md:px-8 py-4 border-b border-border last:border-b-0 hover:bg-secondary/20 transition-colors"
+                  className="px-4 md:px-5 py-3 border-b border-border last:border-b-0 hover:bg-secondary/20 transition-colors"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-4 flex-1">
-                      <span className="text-[10px] font-mono text-muted-foreground/30 tabular-nums mt-0.5">{exp.id}</span>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3 flex-1">
+                      <span className="text-[9px] font-mono text-muted-foreground/35 tabular-nums mt-0.5">{exp.id}</span>
                       <div className="flex-1">
-                        <h3 className="text-sm font-mono font-medium text-foreground tracking-tight">
+                        <h3 className="text-[11px] font-mono font-medium text-foreground tracking-wide">
                           {exp.title}
                         </h3>
-                        <p className="text-xs text-foreground/45 mt-1.5 leading-relaxed">{exp.desc}</p>
+                        <p className="text-[10px] font-mono text-foreground/50 mt-1 leading-relaxed">{exp.desc}</p>
                       </div>
                     </div>
                     <span 
@@ -203,21 +203,21 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
               {testimonials.map((t, i) => (
                 <article 
                   key={t.id}
-                  className={`px-6 md:px-8 py-8 ${i < testimonials.length - 1 ? 'border-b md:border-b-0 md:border-r border-border' : ''} group hover:bg-secondary/20 transition-colors`}
+                  className={`px-4 md:px-5 py-5 ${i < testimonials.length - 1 ? 'border-b md:border-b-0 md:border-r border-border' : ''} group hover:bg-secondary/20 transition-colors`}
                 >
-                  {/* Quote first - the star */}
-                  <blockquote className="text-sm md:text-base text-foreground/70 leading-[1.7] mb-6">
+                  {/* Quote first */}
+                  <blockquote className="text-[11px] font-mono text-foreground/65 leading-relaxed mb-4">
                     "{t.quote}"
                   </blockquote>
                   
                   {/* Avatar and name at bottom */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center border border-border/50">
-                      <span className="text-xs font-mono font-medium text-foreground/60">{t.initials}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center border border-border/50">
+                      <span className="text-[9px] font-mono font-medium text-foreground/55">{t.initials}</span>
                     </div>
                     <div>
-                      <div className="text-sm font-mono font-medium text-foreground">{t.name}</div>
-                      <div className="text-[10px] text-muted-foreground/45">{t.role} · {t.company}</div>
+                      <div className="text-[10px] font-mono font-medium text-foreground">{t.name}</div>
+                      <div className="text-[9px] font-mono text-muted-foreground/45">{t.role} · {t.company}</div>
                     </div>
                   </div>
                 </article>
