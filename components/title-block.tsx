@@ -4,27 +4,49 @@ import { useState } from "react"
 
 interface TitleBlockProps {
   onProjectsClick: () => void
-  onInfoClick: () => void
+  onExperimentsClick: () => void
+  onProcessClick: () => void
+  onTestimonialsClick: () => void
   onContactClick: () => void
 }
 
-export function TitleBlock({ onProjectsClick, onInfoClick, onContactClick }: TitleBlockProps) {
+// Colors aligned with hero floors
+const SECTION_COLORS = {
+  projects: "#E85D4C",
+  experiments: "#F5C842",
+  process: "#4A90A4",
+  testimonials: "#9B6BC3",
+  contact: "#45B07C",
+}
+
+export function TitleBlock({ 
+  onProjectsClick, 
+  onExperimentsClick, 
+  onProcessClick, 
+  onTestimonialsClick, 
+  onContactClick 
+}: TitleBlockProps) {
   const [contactHovered, setContactHovered] = useState(false)
+
+  const navItems = [
+    { num: "01", label: "PROJECTS", color: SECTION_COLORS.projects, onClick: onProjectsClick },
+    { num: "02", label: "EXPERIMENTS", color: SECTION_COLORS.experiments, onClick: onExperimentsClick },
+    { num: "03", label: "PROCESS", color: SECTION_COLORS.process, onClick: onProcessClick },
+    { num: "04", label: "TESTIMONIALS", color: SECTION_COLORS.testimonials, onClick: onTestimonialsClick },
+  ]
 
   return (
     <header data-section="TITLE">
-      {/* Floating cartouche -- standard title block on architectural drawing sheets.
-           Contains project metadata, navigation index, and palette legend. */}
       <div className="px-5 md:px-10 py-4 md:py-6">
         <div className="border border-border bg-card/60 backdrop-blur-sm max-w-4xl">
-          {/* Metadata row -- drawing-sheet header fields */}
+          {/* Metadata row */}
           <div className="border-b border-border flex flex-wrap text-[7px] md:text-[8px] font-mono text-foreground/40 tracking-[0.15em]">
             <span className="px-3 py-1.5 border-r border-border">PROJECTION: ISOMETRIC 30{'°'}</span>
             <span className="px-3 py-1.5 border-r border-border hidden sm:block">SUBSTRATE: 5mm GRID</span>
             <span className="px-3 py-1.5 ml-auto">DWG NO. IS-2026-001</span>
           </div>
 
-          {/* Main area -- title + navigation panel */}
+          {/* Main area */}
           <div className="flex flex-col md:flex-row md:items-stretch">
             {/* Title */}
             <div className="flex-1 px-5 py-5 md:py-6 md:border-r md:border-border">
@@ -36,61 +58,46 @@ export function TitleBlock({ onProjectsClick, onInfoClick, onContactClick }: Tit
               </p>
             </div>
 
-            {/* Right panel */}
-            <div className="border-t md:border-t-0 border-border flex flex-col min-w-[180px]">
-              {/* Index header */}
+            {/* Nav panel */}
+            <div className="border-t md:border-t-0 border-border flex flex-col min-w-[200px]">
               <div className="border-b border-border px-4 py-1 text-[7px] font-mono text-foreground/40 tracking-[0.2em]">
                 INDEX
               </div>
 
-              {/* Navigation -- with color swatches inside each button */}
-              <nav className="flex md:flex-col flex-1">
-                {/* PROJECTS */}
-                <button
-                  onClick={onProjectsClick}
-                  className="flex items-center gap-2 px-4 py-2.5 text-left group border-r md:border-r-0 md:border-b border-border hover:bg-secondary/40 transition-colors"
-                >
-                  <div 
-                    className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0" 
-                    style={{ backgroundColor: "#E85D4C" }} 
-                  />
-                  <span className="text-[7px] font-mono text-foreground/35">01</span>
-                  <span className="text-[9px] md:text-[10px] font-mono tracking-[0.15em] text-foreground/70 group-hover:text-foreground transition-colors">
-                    PROJECTS
-                  </span>
-                </button>
-
-                {/* PROCESS */}
-                <button
-                  onClick={onInfoClick}
-                  className="flex items-center gap-2 px-4 py-2.5 text-left group border-r md:border-r-0 md:border-b border-border hover:bg-secondary/40 transition-colors"
-                >
-                  <div 
-                    className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0" 
-                    style={{ backgroundColor: "#4A90A4" }} 
-                  />
-                  <span className="text-[7px] font-mono text-foreground/35">02</span>
-                  <span className="text-[9px] md:text-[10px] font-mono tracking-[0.15em] text-foreground/70 group-hover:text-foreground transition-colors">
-                    PROCESS
-                  </span>
-                </button>
+              <nav className="flex flex-wrap md:flex-col flex-1">
+                {navItems.map((item) => (
+                  <button
+                    key={item.num}
+                    onClick={item.onClick}
+                    className="flex items-center gap-2 px-4 py-2 text-left group border-r md:border-r-0 md:border-b border-border last:border-r-0 hover:bg-secondary/40 transition-colors"
+                  >
+                    <div 
+                      className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0" 
+                      style={{ backgroundColor: item.color }} 
+                    />
+                    <span className="text-[7px] font-mono text-foreground/35">{item.num}</span>
+                    <span className="text-[9px] md:text-[10px] font-mono tracking-[0.1em] text-foreground/70 group-hover:text-foreground transition-colors">
+                      {item.label}
+                    </span>
+                  </button>
+                ))}
 
                 {/* CONTACT with hover dropdown */}
                 <div 
-                  className="relative"
+                  className="relative flex-1"
                   onMouseEnter={() => setContactHovered(true)}
                   onMouseLeave={() => setContactHovered(false)}
                 >
                   <button
                     onClick={onContactClick}
-                    className="w-full flex items-center gap-2 px-4 py-2.5 text-left group hover:bg-secondary/40 transition-colors"
+                    className="w-full h-full flex items-center gap-2 px-4 py-2 text-left group hover:bg-secondary/40 transition-colors"
                   >
                     <div 
                       className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0" 
-                      style={{ backgroundColor: "#45B07C" }} 
+                      style={{ backgroundColor: SECTION_COLORS.contact }} 
                     />
-                    <span className="text-[7px] font-mono text-foreground/35">03</span>
-                    <span className="text-[9px] md:text-[10px] font-mono tracking-[0.15em] text-foreground/70 group-hover:text-foreground transition-colors">
+                    <span className="text-[7px] font-mono text-foreground/35">05</span>
+                    <span className="text-[9px] md:text-[10px] font-mono tracking-[0.1em] text-foreground/70 group-hover:text-foreground transition-colors">
                       CONTACT
                     </span>
                     <svg 
@@ -106,7 +113,7 @@ export function TitleBlock({ onProjectsClick, onInfoClick, onContactClick }: Tit
                     </svg>
                   </button>
                   
-                  {/* Quick actions dropdown on hover */}
+                  {/* Quick actions dropdown */}
                   <div 
                     className={`absolute left-0 right-0 top-full z-50 overflow-hidden transition-all duration-200 ease-out ${
                       contactHovered ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
