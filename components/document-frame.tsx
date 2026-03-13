@@ -1,6 +1,19 @@
 "use client"
 
-import { type ReactNode, useEffect, useState, useCallback } from "react"
+import { type ReactNode, useEffect, useState, useCallback, createContext, useContext } from "react"
+
+// Context to share rotation state with hero
+export const RotationContext = createContext<{
+  isAutoRotating: boolean
+  toggleRotation: () => void
+}>({
+  isAutoRotating: true,
+  toggleRotation: () => {},
+})
+
+export function useRotation() {
+  return useContext(RotationContext)
+}
 
 interface DocumentFrameProps {
   children: ReactNode
