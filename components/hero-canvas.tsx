@@ -81,7 +81,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
     <section
       ref={containerRef}
       data-section="HERO"
-      className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden py-12"
+      className="relative w-full min-h-[70vh] flex items-center justify-center overflow-hidden py-8"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
     >
@@ -136,9 +136,9 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
         })}
       </nav>
 
-      {/* Main tower visualization - BIG and centered */}
+      {/* Main tower visualization - scaled down */}
       <div
-        className="relative w-full max-w-4xl mx-auto px-4"
+        className="relative w-full max-w-xl mx-auto px-4"
         style={{
           transform: `translate(${mousePos.x * 15}px, ${mousePos.y * 10}px)`,
           transition: "transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
