@@ -1,14 +1,16 @@
 "use client"
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react"
+import { useTheme } from "next-themes"
 import { useRotation } from "./document-frame"
 
 // Floors aligned with document sections - 4 floors
+// Colors work in both light (muted) and dark (vibrant neon) modes
 const FLOORS = [
-  { id: "F1", label: "OPERATIONS", color: "#E85D4C", section: "projects", desc: "Project index and case studies" },
-  { id: "F2", label: "SYSTEMS", color: "#4A90A4", section: "process", desc: "Process and systems design" },
-  { id: "F3", label: "BUILDS", color: "#F5C842", section: "experiments", desc: "Experiments and client feedback" },
-  { id: "F4", label: "CONTACT", color: "#45B07C", section: "contact", desc: "Get in touch" },
+  { id: "F1", label: "OPERATIONS", color: "#E85D75", darkColor: "#FF4D8D", section: "projects", desc: "Project index and case studies" },
+  { id: "F2", label: "SYSTEMS", color: "#E85D75", darkColor: "#FF4D8D", section: "process", desc: "Process and systems design" },
+  { id: "F3", label: "BUILDS", color: "#E85D75", darkColor: "#FF4D8D", section: "experiments", desc: "Experiments and client feedback" },
+  { id: "F4", label: "CONTACT", color: "#D4A84B", darkColor: "#FFD93D", section: "contact", desc: "Get in touch" },
 ]
 
 interface HeroCanvasProps {
@@ -69,6 +71,7 @@ function IsoCube({ x, y, z, size = 1, color, strokeWidth = 0.8, opacity = 1, sca
 
 export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
   const { isAutoRotating, setRotationAngle } = useRotation()
+  const { theme, resolvedTheme } = useTheme()
   const [hoveredFloor, setHoveredFloor] = useState<string | null>(null)
   const [activeFloorIndex, setActiveFloorIndex] = useState<number | null>(null)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
@@ -76,6 +79,13 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
   const animationRef = useRef<number>()
+  
+  const isDark = resolvedTheme === "dark"
+  
+  // Get floor color based on theme
+  const getFloorColor = useCallback((floor: typeof FLOORS[0]) => {
+    return isDark ? floor.darkColor : floor.color
+  }, [isDark])
 
   // Is any floor hovered - triggers expansion
   const isHovering = hoveredFloor !== null
@@ -241,9 +251,9 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
               <span
                 className="text-[11px] font-mono tracking-[0.15em] transition-all duration-300 w-6"
                 style={{
-                  color: isHovered || isActive ? floor.color : "var(--foreground)",
+                  color: isHovered || isActive ? getFloorColor(floor) : "var(--foreground)",
                   opacity: isHovered || isActive ? 1 : 0.4,
-                  textShadow: isHovered || isActive ? `0 0 12px ${floor.color}` : "none",
+                  textShadow: isHovered || isActive ? `0 0 12px ${getFloorColor(floor)}` : "none",
                 }}
               >
                 {floor.id}
@@ -252,8 +262,8 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                 className="h-px transition-all duration-300 ease-out"
                 style={{
                   width: isActive ? 60 : isHovered ? 40 : 16,
-                  backgroundColor: isHovered || isActive ? floor.color : "var(--border)",
-                  boxShadow: isHovered || isActive ? `0 0 8px ${floor.color}` : "none",
+                  backgroundColor: isHovered || isActive ? getFloorColor(floor) : "var(--border)",
+                  boxShadow: isHovered || isActive ? `0 0 8px ${getFloorColor(floor)}` : "none",
                 }}
               />
             </button>
@@ -283,7 +293,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             {FLOORS.map((floor) => (
               <filter key={`glow-${floor.id}`} id={`glow-${floor.id}`} x="-100%" y="-100%" width="300%" height="300%">
                 <feGaussianBlur stdDeviation="3" result="blur" />
-                <feFlood floodColor={floor.color} floodOpacity="0.6" />
+                <feFlood floodColor={getFloorColor(floor)} floodOpacity="0.6" />
                 <feComposite in2="blur" operator="in" />
                 <feMerge>
                   <feMergeNode />
@@ -321,7 +331,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                 <IsoCube
                   key={i}
                   x={c.x} y={c.y} z={c.z}
-                  color={FLOORS[0].color}
+                  color={getFloorColor(FLOORS[0])}
                   strokeWidth={hoveredFloor === "F1" || activeFloorIndex === 0 ? 1.6 : 0.9}
                   opacity={hoveredFloor === "F1" || activeFloorIndex === 0 ? 1 : 0.75}
                   scale={towerStructure.scale}
@@ -349,7 +359,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                 <IsoCube
                   key={i}
                   x={c.x} y={c.y} z={c.z}
-                  color={FLOORS[1].color}
+                  color={getFloorColor(FLOORS[1])}
                   strokeWidth={hoveredFloor === "F2" || activeFloorIndex === 1 ? 1.6 : 0.9}
                   opacity={hoveredFloor === "F2" || activeFloorIndex === 1 ? 1 : 0.75}
                   scale={towerStructure.scale}
@@ -377,7 +387,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                 <IsoCube
                   key={i}
                   x={c.x} y={c.y} z={c.z}
-                  color={FLOORS[2].color}
+                  color={getFloorColor(FLOORS[2])}
                   strokeWidth={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1.6 : 0.9}
                   opacity={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1 : 0.75}
                   scale={towerStructure.scale}
@@ -405,7 +415,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                 <IsoCube
                   key={i}
                   x={c.x} y={c.y} z={c.z}
-                  color={FLOORS[3].color}
+                  color={getFloorColor(FLOORS[3])}
                   strokeWidth={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1.6 : 0.9}
                   opacity={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1 : 0.75}
                   scale={towerStructure.scale}
@@ -480,15 +490,15 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             <div
               className="w-2 h-2 border transition-all duration-200"
               style={{
-                borderColor: floor.color,
-                backgroundColor: hoveredFloor === floor.id || activeFloorIndex === i ? floor.color : "transparent",
-                boxShadow: hoveredFloor === floor.id || activeFloorIndex === i ? `0 0 8px ${floor.color}` : "none",
+                borderColor: getFloorColor(floor),
+                backgroundColor: hoveredFloor === floor.id || activeFloorIndex === i ? getFloorColor(floor) : "transparent",
+                boxShadow: hoveredFloor === floor.id || activeFloorIndex === i ? `0 0 8px ${getFloorColor(floor)}` : "none",
               }}
             />
             <span
               className="text-[7px] font-mono tracking-[0.1em] transition-all duration-200"
               style={{
-                color: hoveredFloor === floor.id || activeFloorIndex === i ? floor.color : "var(--foreground)",
+                color: hoveredFloor === floor.id || activeFloorIndex === i ? getFloorColor(floor) : "var(--foreground)",
                 opacity: hoveredFloor === floor.id || activeFloorIndex === i ? 1 : 0.4,
               }}
             >
