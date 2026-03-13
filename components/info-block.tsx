@@ -39,39 +39,112 @@ const phases = [
   },
 ]
 
-// Workflow data for tabs
-const workflows = {
-  digital: {
-    title: "DIGITAL SYSTEMS",
-    subtitle: "Software & data infrastructure",
-    thinking: "Digital systems require clear data flow, version control, and automated feedback loops. The goal is reducing manual intervention while maintaining visibility.",
-    steps: [
-      { num: "01", name: "MAP", desc: "Data sources, dependencies, user flows" },
-      { num: "02", name: "ARCHITECT", desc: "System design, API contracts, state management" },
-      { num: "03", name: "BUILD", desc: "Iterative development, testing, deployment" },
-      { num: "04", name: "MONITOR", desc: "Analytics, error tracking, optimization" },
-    ]
+// Top-level categories with their sub-tabs
+const detailFrameData = {
+  systems: {
+    label: "SYSTEMS",
+    subtabs: {
+      digital: {
+        title: "DIGITAL SYSTEMS",
+        subtitle: "Software & data infrastructure",
+        thinking: "Digital systems require clear data flow, version control, and automated feedback loops. The goal is reducing manual intervention while maintaining visibility.",
+        steps: [
+          { num: "01", name: "MAP", desc: "Data sources, dependencies, user flows" },
+          { num: "02", name: "ARCHITECT", desc: "System design, API contracts, state management" },
+          { num: "03", name: "BUILD", desc: "Iterative development, testing, deployment" },
+          { num: "04", name: "MONITOR", desc: "Analytics, error tracking, optimization" },
+        ]
+      },
+      analog: {
+        title: "ANALOG OPERATIONS", 
+        subtitle: "Field work & physical coordination",
+        thinking: "Physical operations demand clear handoffs, visual progress tracking, and contingency planning. People and materials don't have undo buttons.",
+        steps: [
+          { num: "01", name: "SCOUT", desc: "Site conditions, constraints, stakeholders" },
+          { num: "02", name: "SEQUENCE", desc: "Trade flow, material staging, milestones" },
+          { num: "03", name: "EXECUTE", desc: "Daily coordination, issue resolution, QC" },
+          { num: "04", name: "CLOSE", desc: "Punchlist, documentation, lessons learned" },
+        ]
+      }
+    }
   },
-  analog: {
-    title: "ANALOG OPERATIONS", 
-    subtitle: "Field work & physical coordination",
-    thinking: "Physical operations demand clear handoffs, visual progress tracking, and contingency planning. People and materials don't have undo buttons.",
-    steps: [
-      { num: "01", name: "SCOUT", desc: "Site conditions, constraints, stakeholders" },
-      { num: "02", name: "SEQUENCE", desc: "Trade flow, material staging, milestones" },
-      { num: "03", name: "EXECUTE", desc: "Daily coordination, issue resolution, QC" },
-      { num: "04", name: "CLOSE", desc: "Punchlist, documentation, lessons learned" },
-    ]
+  workflows: {
+    label: "WORKFLOWS",
+    subtabs: {
+      project: {
+        title: "PROJECT WORKFLOW",
+        subtitle: "End-to-end project delivery",
+        thinking: "Projects need clear phases with defined handoffs. Each gate ensures quality before moving forward, preventing costly rework downstream.",
+        steps: [
+          { num: "01", name: "SCOPE", desc: "Define deliverables, timeline, budget" },
+          { num: "02", name: "PLAN", desc: "Resource allocation, dependencies, milestones" },
+          { num: "03", name: "DELIVER", desc: "Execute phases, track progress, manage changes" },
+          { num: "04", name: "TRANSFER", desc: "Handoff, documentation, support transition" },
+        ]
+      },
+      review: {
+        title: "REVIEW CYCLE",
+        subtitle: "Feedback and iteration loops",
+        thinking: "Good feedback is specific, timely, and actionable. Structure the review process to maximize signal while minimizing churn.",
+        steps: [
+          { num: "01", name: "PRESENT", desc: "Share work in appropriate context" },
+          { num: "02", name: "COLLECT", desc: "Gather structured feedback from stakeholders" },
+          { num: "03", name: "SYNTHESIZE", desc: "Identify patterns, prioritize changes" },
+          { num: "04", name: "ITERATE", desc: "Implement revisions, document decisions" },
+        ]
+      }
+    }
+  },
+  routines: {
+    label: "ROUTINES",
+    subtabs: {
+      daily: {
+        title: "DAILY RHYTHM",
+        subtitle: "Day-to-day operational cadence",
+        thinking: "Consistency compounds. Small daily habits create the foundation for larger achievements. Design the day to protect deep work.",
+        steps: [
+          { num: "01", name: "PLAN", desc: "Review priorities, block time, set intentions" },
+          { num: "02", name: "FOCUS", desc: "Deep work sessions, minimize interruptions" },
+          { num: "03", name: "SYNC", desc: "Check-ins, updates, unblock others" },
+          { num: "04", name: "REFLECT", desc: "Review progress, prepare tomorrow" },
+        ]
+      },
+      weekly: {
+        title: "WEEKLY REVIEW",
+        subtitle: "Recurring strategic checkpoints",
+        thinking: "Weekly reviews zoom out from daily tasks to ensure alignment with bigger goals. Course-correct before small drifts become large detours.",
+        steps: [
+          { num: "01", name: "ASSESS", desc: "Review completed work against goals" },
+          { num: "02", name: "CLEAR", desc: "Process inbox, update task lists" },
+          { num: "03", name: "PLAN", desc: "Set priorities for upcoming week" },
+          { num: "04", name: "PREPARE", desc: "Prep materials, schedule key meetings" },
+        ]
+      }
+    }
   }
 }
+
+type CategoryKey = keyof typeof detailFrameData
 
 export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
   const [showCTA, setShowCTA] = useState(false)
   const [showOverlay, setShowOverlay] = useState(false)
-  const [activeTab, setActiveTab] = useState<"digital" | "analog">("digital")
+  const [activeCategory, setActiveCategory] = useState<CategoryKey>("systems")
+  const [activeSubtab, setActiveSubtab] = useState<string>("digital")
   const sectionRef = useRef<HTMLElement>(null)
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  
+  // Get current data
+  const currentCategory = detailFrameData[activeCategory]
+  const subtabKeys = Object.keys(currentCategory.subtabs)
+  const currentSubtab = currentCategory.subtabs[activeSubtab as keyof typeof currentCategory.subtabs] || currentCategory.subtabs[subtabKeys[0] as keyof typeof currentCategory.subtabs]
+  
+  // Reset subtab when category changes
+  useEffect(() => {
+    const firstSubtab = Object.keys(detailFrameData[activeCategory].subtabs)[0]
+    setActiveSubtab(firstSubtab)
+  }, [activeCategory])
   
   useEffect(() => {
     setMounted(true)
@@ -208,28 +281,38 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
               </button>
             </div>
 
-            {/* Tabs */}
+            {/* Top-level category tabs */}
+            <div className="flex border-b border-border bg-secondary/20">
+              {(Object.keys(detailFrameData) as CategoryKey[]).map((key) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveCategory(key)}
+                  className={`flex-1 px-2 py-1.5 text-[8px] font-mono tracking-wider transition-colors ${
+                    activeCategory === key 
+                      ? "text-foreground bg-card border-b-2 border-foreground/40" 
+                      : "text-foreground/35 hover:text-foreground/55"
+                  }`}
+                >
+                  {detailFrameData[key].label}
+                </button>
+              ))}
+            </div>
+
+            {/* Sub-tabs */}
             <div className="flex border-b border-border">
-              <button
-                onClick={() => setActiveTab("digital")}
-                className={`flex-1 px-3 py-2 text-[9px] font-mono tracking-wide transition-colors ${
-                  activeTab === "digital" 
-                    ? "text-foreground bg-secondary/30 border-b-2 border-foreground/50" 
-                    : "text-foreground/40 hover:text-foreground/60"
-                }`}
-              >
-                DIGITAL
-              </button>
-              <button
-                onClick={() => setActiveTab("analog")}
-                className={`flex-1 px-3 py-2 text-[9px] font-mono tracking-wide transition-colors border-l border-border ${
-                  activeTab === "analog" 
-                    ? "text-foreground bg-secondary/30 border-b-2 border-foreground/50" 
-                    : "text-foreground/40 hover:text-foreground/60"
-                }`}
-              >
-                ANALOG
-              </button>
+              {subtabKeys.map((key, i) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveSubtab(key)}
+                  className={`flex-1 px-3 py-2 text-[9px] font-mono tracking-wide transition-colors ${
+                    activeSubtab === key 
+                      ? "text-foreground bg-secondary/30 border-b-2 border-foreground/50" 
+                      : "text-foreground/40 hover:text-foreground/60"
+                  } ${i > 0 ? "border-l border-border" : ""}`}
+                >
+                  {key.toUpperCase()}
+                </button>
+              ))}
             </div>
 
             {/* Tab content */}
@@ -237,23 +320,23 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
               {/* Title & subtitle */}
               <div>
                 <h4 className="text-[10px] font-mono font-bold text-foreground tracking-wide">
-                  {workflows[activeTab].title}
+                  {currentSubtab.title}
                 </h4>
                 <p className="text-[8px] font-mono text-foreground/40 mt-0.5">
-                  {workflows[activeTab].subtitle}
+                  {currentSubtab.subtitle}
                 </p>
               </div>
 
               {/* Thinking section */}
               <div className="border-l-2 border-foreground/20 pl-2">
                 <p className="text-[8px] font-mono text-foreground/60 leading-relaxed italic">
-                  {workflows[activeTab].thinking}
+                  {currentSubtab.thinking}
                 </p>
               </div>
 
               {/* Steps */}
               <div className="space-y-1.5">
-                {workflows[activeTab].steps.map((step, i) => (
+                {currentSubtab.steps.map((step, i) => (
                   <div 
                     key={step.num} 
                     className="flex items-start gap-2 p-1.5 bg-secondary/20 border border-border/50"
@@ -276,7 +359,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
               {/* Footer */}
               <div className="pt-2 border-t border-border/50 text-center">
                 <span className="text-[7px] font-mono text-foreground/35 tracking-[0.15em]">
-                  {activeTab === "digital" ? "SOFTWARE SYSTEMS" : "FIELD OPERATIONS"} REV.01
+                  {currentSubtab.title} REV.01
                 </span>
               </div>
             </div>
