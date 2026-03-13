@@ -155,7 +155,7 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
         {/* Section header with toggle */}
         <div className="flex items-center justify-between px-5 md:px-6 py-3 border-b border-border">
           <div className="flex items-baseline gap-3">
-            <span className="text-[7px] font-mono text-muted-foreground/35 tracking-[0.2em]">F1</span>
+            <span className="text-[9px] font-mono text-muted-foreground/40 tracking-[0.2em]">F1</span>
           </div>
           
           {/* Toggle */}
@@ -187,7 +187,7 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
         {mode === "case-studies" && (
           <>
             {/* Table header */}
-            <div className="hidden md:flex items-center border-b border-border text-[7px] font-mono text-muted-foreground/30 tracking-[0.15em]">
+            <div className="hidden md:flex items-center border-b border-border text-[8px] font-mono text-muted-foreground/35 tracking-[0.15em]">
               <span className="w-36 px-4 py-2 border-r border-border">PROJECT</span>
               <span className="flex-1 px-4 py-2 border-r border-border">DOMAIN</span>
               <span className="w-20 px-3 py-2 border-r border-border text-center">TYPE</span>
@@ -209,7 +209,7 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
         {mode === "operations" && (
           <>
             {/* Table header */}
-            <div className="hidden md:flex items-center border-b border-border text-[7px] font-mono text-muted-foreground/30 tracking-[0.15em]">
+            <div className="hidden md:flex items-center border-b border-border text-[8px] font-mono text-muted-foreground/35 tracking-[0.15em]">
               <span className="w-40 px-4 py-2 border-r border-border">OPERATION</span>
               <span className="flex-1 px-4 py-2 border-r border-border">SCOPE</span>
               <span className="w-64 px-4 py-2">OUTPUT</span>
@@ -292,12 +292,12 @@ function CaseStudyRow({ study, isExpanded, onToggle }: {
 
             {/* Palette detail */}
             <div className="mt-5 pt-4 border-t border-border/50">
-              <span className="text-[7px] font-mono text-foreground/30 tracking-[0.2em]">PROJECT PALETTE</span>
+              <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">PROJECT PALETTE</span>
               <div className="flex gap-2 mt-2">
                 {study.palette.map((c, i) => (
                   <div key={i} className="flex flex-col items-center gap-1">
                     <div className="w-8 h-8 border border-border/30" style={{ backgroundColor: c }} />
-                    <span className="text-[7px] font-mono text-foreground/30">{c}</span>
+                    <span className="text-[8px] font-mono text-foreground/35">{c}</span>
                   </div>
                 ))}
               </div>

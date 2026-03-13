@@ -94,7 +94,7 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
               }`}>
                 BUILDS
               </h2>
-              <span className="text-[7px] font-mono text-muted-foreground/35 tracking-[0.2em]">F3</span>
+              <span className="text-[9px] font-mono text-muted-foreground/40 tracking-[0.2em]">F3</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[8px] font-mono text-muted-foreground/40 tabular-nums">
@@ -126,7 +126,7 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
               }`}>
                 CLIENT FEEDBACK
               </h2>
-              <span className="text-[7px] font-mono text-muted-foreground/35 tracking-[0.2em]">F3.5</span>
+              <span className="text-[9px] font-mono text-muted-foreground/40 tracking-[0.2em]">F3.5</span>
             </div>
             <span className="text-[8px] font-mono text-muted-foreground/40 tabular-nums">
               {String(testimonials.length).padStart(2, "0")}
@@ -164,16 +164,16 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-3 flex-1">
-                      <span className="text-[7px] font-mono text-muted-foreground/30 tabular-nums">{exp.id}</span>
+                      <span className="text-[8px] font-mono text-muted-foreground/35 tabular-nums">{exp.id}</span>
                       <div className="flex-1">
-                        <h3 className="text-[11px] font-mono font-medium text-foreground">
+                        <h3 className="text-xs font-mono font-medium text-foreground">
                           {exp.title}
                         </h3>
-                        <p className="text-[9px] text-foreground/40 mt-0.5">{exp.desc}</p>
+                        <p className="text-[10px] text-foreground/45 mt-0.5">{exp.desc}</p>
                       </div>
                     </div>
                     <span 
-                      className={`text-[6px] font-mono tracking-wider px-1.5 py-0.5 border flex-shrink-0 ${
+                      className={`text-[8px] font-mono tracking-wider px-1.5 py-0.5 border flex-shrink-0 ${
                         exp.status === "ACTIVE" 
                           ? "border-green-500/30 text-green-600/80" 
                           : exp.status === "TESTING"
@@ -208,16 +208,16 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
                   {/* Avatar and name at top */}
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center border border-border">
-                      <span className="text-[11px] font-mono font-medium text-foreground/70">{t.initials}</span>
+                      <span className="text-xs font-mono font-medium text-foreground/70">{t.initials}</span>
                     </div>
                     <div>
-                      <div className="text-[11px] font-mono font-medium text-foreground">{t.name}</div>
-                      <div className="text-[9px] font-mono text-muted-foreground/50">{t.role}</div>
+                      <div className="text-xs font-mono font-medium text-foreground">{t.name}</div>
+                      <div className="text-[10px] font-mono text-muted-foreground/50">{t.role}</div>
                     </div>
                   </div>
                   
                   {/* Quote */}
-                  <blockquote className="text-[11px] text-foreground/70 leading-relaxed mb-3">
+                  <blockquote className="text-xs text-foreground/70 leading-relaxed mb-3">
                     "{t.quote}"
                   </blockquote>
                   

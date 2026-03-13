@@ -78,7 +78,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
         <div className="flex items-baseline justify-between px-5 md:px-6 py-4 border-b border-border">
           <div className="flex items-baseline gap-3">
             <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">SYSTEMS DESIGN</h2>
-            <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">F2</span>
+            <span className="text-[9px] font-mono text-foreground/40 tracking-[0.2em]">F2</span>
           </div>
         </div>
 
@@ -237,7 +237,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
             </div>
 
             {/* Footer */}
-            <div className="border-t border-border px-5 py-3 flex items-center justify-between text-[7px] font-mono text-foreground/25 tracking-[0.15em]">
+            <div className="border-t border-border px-5 py-3 flex items-center justify-between text-[8px] font-mono text-foreground/30 tracking-[0.15em]">
               <span>REV 01</span>
               <span>BARTLETT BUILDS</span>
             </div>

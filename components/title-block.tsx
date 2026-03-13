@@ -36,7 +36,7 @@ export function TitleBlock({
       <div className="px-5 md:px-10 py-4 md:py-6">
         <div className="border border-border bg-card/60 backdrop-blur-sm max-w-4xl">
           {/* Metadata row */}
-          <div className="border-b border-border flex flex-wrap text-[7px] md:text-[8px] font-mono text-foreground/40 tracking-[0.15em]">
+          <div className="border-b border-border flex flex-wrap text-[8px] font-mono text-foreground/40 tracking-[0.15em]">
             <span className="px-3 py-1.5 border-r border-border">PROJECTION: ISOMETRIC 30{'°'}</span>
             <span className="px-3 py-1.5 border-r border-border hidden sm:block">SUBSTRATE: 5mm GRID</span>
             <span className="px-3 py-1.5 ml-auto">DWG NO. IS-2026-001</span>
@@ -49,14 +49,14 @@ export function TitleBlock({
               <h1 className="text-2xl md:text-4xl font-mono font-bold tracking-tight text-foreground leading-none text-balance">
                 BRANDON BARTLETT
               </h1>
-              <p className="text-[9px] md:text-[11px] text-foreground/60 mt-2 tracking-wide">
+              <p className="text-[10px] md:text-xs text-foreground/60 mt-2 tracking-wide">
                 Execution Architect • Field Operations Leader • Systems Builder
               </p>
             </div>
 
             {/* Nav panel */}
             <div className="border-t md:border-t-0 border-border flex flex-col min-w-[180px]">
-              <div className="border-b border-border px-4 py-1 text-[7px] font-mono text-foreground/40 tracking-[0.2em]">
+              <div className="border-b border-border px-4 py-1 text-[8px] font-mono text-foreground/40 tracking-[0.2em]">
                 INDEX
               </div>
 
@@ -71,8 +71,8 @@ export function TitleBlock({
                       className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0" 
                       style={{ backgroundColor: item.color }} 
                     />
-                    <span className="text-[7px] font-mono text-foreground/35">{item.num}</span>
-                    <span className="text-[9px] md:text-[10px] font-mono tracking-[0.1em] text-foreground/70 group-hover:text-foreground transition-colors">
+                    <span className="text-[9px] font-mono text-foreground/40">{item.num}</span>
+                    <span className="text-[10px] font-mono tracking-[0.1em] text-foreground/70 group-hover:text-foreground transition-colors">
                       {item.label}
                     </span>
                   </button>
@@ -92,8 +92,8 @@ export function TitleBlock({
                       className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0" 
                       style={{ backgroundColor: SECTION_COLORS.contact }} 
                     />
-                    <span className="text-[7px] font-mono text-foreground/35">F4</span>
-                    <span className="text-[9px] md:text-[10px] font-mono tracking-[0.1em] text-foreground/70 group-hover:text-foreground transition-colors">
+                    <span className="text-[9px] font-mono text-foreground/40">F4</span>
+                    <span className="text-[10px] font-mono tracking-[0.1em] text-foreground/70 group-hover:text-foreground transition-colors">
                       CONTACT
                     </span>
                     <svg 
@@ -120,7 +120,7 @@ export function TitleBlock({
                         href="https://cal.com/brandonbartlett"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 text-[8px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors"
                       >
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <rect x="3" y="4" width="18" height="18" rx="2" />
@@ -132,7 +132,7 @@ export function TitleBlock({
                       </a>
                       <a
                         href="mailto:hello@bartlettbuilds.pro"
-                        className="flex items-center gap-2 px-4 py-2 text-[8px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors border-t border-border"
+                        className="flex items-center gap-2 px-4 py-2 text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors border-t border-border"
                       >
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -143,7 +143,7 @@ export function TitleBlock({
                       <a
                         href="/Brandon-Bartlett-CV.pdf"
                         download
-                        className="flex items-center gap-2 px-4 py-2 text-[8px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors border-t border-border"
+                        className="flex items-center gap-2 px-4 py-2 text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors border-t border-border"
                       >
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
