@@ -4,10 +4,10 @@ import { useState, useCallback, useRef, useEffect, useMemo } from "react"
 
 // Floors map to portfolio sections - magenta base, yellow top (like reference)
 const FLOORS = [
-  { id: "F1", label: "WORK", color: "#E85D4C", section: "projects", desc: "Selected projects and case studies" },
-  { id: "F2", label: "ABOUT", color: "#D64B8C", section: "info", desc: "Background, skills, and methodology" },
-  { id: "F3", label: "PROCESS", color: "#C93A7A", section: "info", desc: "How I approach challenges" },
-  { id: "F4", label: "CONTACT", color: "#F5C842", section: "contact", desc: "Let's build together" },
+  { id: "F1", label: "WORK", color: "#E85D4C", section: "projects", desc: "Selected projects and case studies", yOffset: 80 },
+  { id: "F2", label: "ABOUT", color: "#D64B8C", section: "info", desc: "Background, skills, and methodology", yOffset: 0 },
+  { id: "F3", label: "PROCESS", color: "#C93A7A", section: "info", desc: "How I approach challenges", yOffset: -80 },
+  { id: "F4", label: "CONTACT", color: "#F5C842", section: "contact", desc: "Let's build together", yOffset: -200 },
 ]
 
 interface HeroCanvasProps {
@@ -16,85 +16,51 @@ interface HeroCanvasProps {
 
 // Isometric projection helpers
 const ISO = {
-  // Convert grid x,y,z to screen x,y
-  toScreen: (x: number, y: number, z: number, scale = 8) => ({
+  toScreen: (x: number, y: number, z: number, scale = 10) => ({
     sx: (x - y) * scale * 0.866,
     sy: (x + y) * scale * 0.5 - z * scale,
   }),
 }
 
 // Generate a single isometric wireframe cube
-function IsoCube({ x, y, z, size = 1, color, strokeWidth = 0.8, opacity = 1, scale = 8 }: {
+function IsoCube({ x, y, z, size = 1, color, strokeWidth = 0.8, opacity = 1, scale = 10 }: {
   x: number; y: number; z: number; size?: number; color: string; strokeWidth?: number; opacity?: number; scale?: number
 }) {
   const s = size
-  // 8 vertices of a cube
   const vertices = [
-    ISO.toScreen(x, y, z, scale),           // 0: front-bottom-left
-    ISO.toScreen(x + s, y, z, scale),       // 1: front-bottom-right
-    ISO.toScreen(x + s, y + s, z, scale),   // 2: back-bottom-right
-    ISO.toScreen(x, y + s, z, scale),       // 3: back-bottom-left
-    ISO.toScreen(x, y, z + s, scale),       // 4: front-top-left
-    ISO.toScreen(x + s, y, z + s, scale),   // 5: front-top-right
-    ISO.toScreen(x + s, y + s, z + s, scale), // 6: back-top-right
-    ISO.toScreen(x, y + s, z + s, scale),   // 7: back-top-left
+    ISO.toScreen(x, y, z, scale),
+    ISO.toScreen(x + s, y, z, scale),
+    ISO.toScreen(x + s, y + s, z, scale),
+    ISO.toScreen(x, y + s, z, scale),
+    ISO.toScreen(x, y, z + s, scale),
+    ISO.toScreen(x + s, y, z + s, scale),
+    ISO.toScreen(x + s, y + s, z + s, scale),
+    ISO.toScreen(x, y + s, z + s, scale),
   ]
 
-  // Only draw visible edges (3 faces visible in isometric)
   return (
     <g opacity={opacity}>
-      {/* Top face */}
       <polygon
         points={`${vertices[4].sx},${vertices[4].sy} ${vertices[5].sx},${vertices[5].sy} ${vertices[6].sx},${vertices[6].sy} ${vertices[7].sx},${vertices[7].sy}`}
         fill="none"
         stroke={color}
         strokeWidth={strokeWidth}
       />
-      {/* Left face */}
       <polygon
         points={`${vertices[0].sx},${vertices[0].sy} ${vertices[3].sx},${vertices[3].sy} ${vertices[7].sx},${vertices[7].sy} ${vertices[4].sx},${vertices[4].sy}`}
         fill="none"
         stroke={color}
         strokeWidth={strokeWidth * 0.7}
       />
-      {/* Right face */}
       <polygon
         points={`${vertices[1].sx},${vertices[1].sy} ${vertices[5].sx},${vertices[5].sy} ${vertices[6].sx},${vertices[6].sy} ${vertices[2].sx},${vertices[2].sy}`}
         fill="none"
         stroke={color}
         strokeWidth={strokeWidth * 0.5}
       />
-      {/* Front vertical edge */}
       <line x1={vertices[0].sx} y1={vertices[0].sy} x2={vertices[4].sx} y2={vertices[4].sy} stroke={color} strokeWidth={strokeWidth} />
     </g>
   )
-}
-
-// Generate a grid of cubes for a floor platform
-function CubeGrid({ centerX, centerY, baseZ, width, depth, color, strokeWidth, opacity, scale = 8 }: {
-  centerX: number; centerY: number; baseZ: number; width: number; depth: number; color: string; strokeWidth: number; opacity: number; scale?: number
-}) {
-  const cubes = []
-  const halfW = Math.floor(width / 2)
-  const halfD = Math.floor(depth / 2)
-  
-  for (let x = -halfW; x < halfW; x++) {
-    for (let y = -halfD; y < halfD; y++) {
-      cubes.push(
-        <IsoCube
-          key={`${x}-${y}`}
-          x={centerX + x}
-          y={centerY + y}
-          z={baseZ}
-          color={color}
-          strokeWidth={strokeWidth}
-          opacity={opacity}
-          scale={scale}
-        />
-      )
-    }
-  }
-  return <>{cubes}</>
 }
 
 export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
@@ -132,21 +98,19 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
   }
 
   const activeFloor = hoveredFloor ? FLOORS.find(f => f.id === hoveredFloor) : null
+  const activeFloorData = activeFloor || (activeFloorIndex !== null ? FLOORS[activeFloorIndex] : null)
 
-  // Memoize the tower structure to prevent recalculation
+  // Memoize the tower structure
   const towerStructure = useMemo(() => {
-    // F1: Wide base platform (like the reference hexagonal base)
+    // F1: Wide base platform
     const f1Cubes: Array<{ x: number; y: number; z: number }> = []
-    // Outer ring
     for (let x = -8; x <= 8; x++) {
       for (let y = -8; y <= 8; y++) {
-        // Create hexagonal-ish shape
         if (Math.abs(x) + Math.abs(y) <= 10 && Math.abs(x) + Math.abs(y) >= 8) {
           f1Cubes.push({ x, y, z: 0 })
         }
       }
     }
-    // Inner platform
     for (let x = -6; x <= 6; x++) {
       for (let y = -6; y <= 6; y++) {
         if (Math.abs(x) + Math.abs(y) <= 7) {
@@ -161,14 +125,12 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
       for (let y = -5; y <= 5; y++) {
         if (Math.abs(x) + Math.abs(y) <= 6) {
           f2Cubes.push({ x, y, z: 0 })
-          // Add height variation
           if (Math.abs(x) <= 3 && Math.abs(y) <= 3) {
             f2Cubes.push({ x, y, z: 1 })
           }
         }
       }
     }
-    // Vertical pillars
     for (let z = 0; z < 4; z++) {
       f2Cubes.push({ x: -4, y: -4, z })
       f2Cubes.push({ x: 4, y: -4, z })
@@ -185,7 +147,6 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
         }
       }
     }
-    // Central pillar going up
     for (let z = 0; z < 6; z++) {
       f3Cubes.push({ x: 0, y: 0, z })
       f3Cubes.push({ x: 1, y: 0, z })
@@ -194,9 +155,8 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
       f3Cubes.push({ x: 0, y: -1, z })
     }
 
-    // F4: Yellow dome (mushroom cap shape)
+    // F4: Yellow dome
     const f4Cubes: Array<{ x: number; y: number; z: number }> = []
-    // Bottom layer - widest
     for (let x = -6; x <= 6; x++) {
       for (let y = -6; y <= 6; y++) {
         const dist = Math.sqrt(x * x + y * y)
@@ -205,7 +165,6 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
         }
       }
     }
-    // Middle layers
     for (let x = -5; x <= 5; x++) {
       for (let y = -5; y <= 5; y++) {
         const dist = Math.sqrt(x * x + y * y)
@@ -214,35 +173,40 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
         }
       }
     }
-    // Upper layers (smaller)
     for (let x = -4; x <= 4; x++) {
       for (let y = -4; y <= 4; y++) {
         const dist = Math.sqrt(x * x + y * y)
-        if (dist <= 4) {
-          f4Cubes.push({ x, y, z: 2 })
-        }
-        if (dist <= 3) {
-          f4Cubes.push({ x, y, z: 3 })
-        }
-        if (dist <= 2) {
-          f4Cubes.push({ x, y, z: 4 })
-        }
+        if (dist <= 4) f4Cubes.push({ x, y, z: 2 })
+        if (dist <= 3) f4Cubes.push({ x, y, z: 3 })
+        if (dist <= 2) f4Cubes.push({ x, y, z: 4 })
       }
     }
 
     return { f1Cubes, f2Cubes, f3Cubes, f4Cubes }
   }, [])
 
+  // Construction lines - static pre-computed coordinates
+  const constructionLines = [
+    { x2: 60, y2: -450, color: "#00d4ff" },
+    { x2: 220, y2: -430, color: "#ff0066" },
+    { x2: 280, y2: -280, color: "#F5C842" },
+    { x2: 340, y2: -20, color: "#00ff88" },
+    { x2: 250, y2: 150, color: "#ff0066" },
+    { x2: 80, y2: 150, color: "#00d4ff" },
+    { x2: -140, y2: 90, color: "#8855ff" },
+    { x2: -290, y2: 20, color: "#F5C842" },
+  ]
+
   return (
     <section
       ref={containerRef}
       data-section="HERO"
-      className="relative w-full min-h-[75vh] flex items-center justify-center overflow-hidden py-8"
+      className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden py-12"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
     >
       {/* Floor markers - left side */}
-      <nav className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-10">
+      <nav className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-12">
         {[...FLOORS].reverse().map((floor, i) => {
           const actualIndex = FLOORS.length - 1 - i
           const isHovered = hoveredFloor === floor.id
@@ -264,8 +228,9 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                 className="text-xs font-mono tracking-[0.3em] transition-all duration-300 w-6"
                 style={{
                   color: isHovered || isActive ? floor.color : "var(--foreground)",
-                  opacity: isHovered || isActive ? 1 : 0.35,
+                  opacity: isHovered || isActive ? 1 : 0.4,
                   fontWeight: isActive ? 700 : 400,
+                  textShadow: isHovered || isActive ? `0 0 20px ${floor.color}` : "none",
                 }}
               >
                 {floor.id}
@@ -273,8 +238,9 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
               <span
                 className="h-px transition-all duration-500 ease-out"
                 style={{
-                  width: isActive ? 80 : isHovered ? 50 : 24,
+                  width: isActive ? 100 : isHovered ? 60 : 28,
                   backgroundColor: isHovered || isActive ? floor.color : "var(--border)",
+                  boxShadow: isHovered || isActive ? `0 0 15px ${floor.color}` : "none",
                 }}
               />
             </button>
@@ -282,29 +248,29 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
         })}
       </nav>
 
-      {/* Main tower */}
+      {/* Main tower - SCALED UP */}
       <div
-        className="relative w-full max-w-2xl mx-auto px-4"
+        className="relative w-full max-w-4xl mx-auto px-4"
         style={{
-          transform: `translate(${mousePos.x * 8}px, ${mousePos.y * 5}px)`,
+          transform: `translate(${mousePos.x * 10}px, ${mousePos.y * 6}px)`,
           transition: "transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         }}
       >
         <svg
-          viewBox="-300 -400 600 550"
+          viewBox="-400 -500 800 700"
           className="w-full h-auto"
           style={{
             overflow: "visible",
             opacity: mounted ? 1 : 0,
-            transform: mounted ? "translateY(0)" : "translateY(30px)",
+            transform: mounted ? "translateY(0) scale(1)" : "translateY(40px) scale(0.95)",
             transition: "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s",
           }}
         >
           <defs>
             {FLOORS.map((floor) => (
-              <filter key={`glow-${floor.id}`} id={`glow-${floor.id}`} x="-100%" y="-100%" width="300%" height="300%">
-                <feGaussianBlur stdDeviation="4" result="blur" />
-                <feFlood floodColor={floor.color} floodOpacity="0.5" />
+              <filter key={`glow-${floor.id}`} id={`glow-${floor.id}`} x="-150%" y="-150%" width="400%" height="400%">
+                <feGaussianBlur stdDeviation="6" result="blur" />
+                <feFlood floodColor={floor.color} floodOpacity="0.6" />
                 <feComposite in2="blur" operator="in" />
                 <feMerge>
                   <feMergeNode />
@@ -312,22 +278,30 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                 </feMerge>
               </filter>
             ))}
+            {/* Line glow filter */}
+            <filter id="lineGlow" x="-100%" y="-100%" width="300%" height="300%">
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
 
-          {/* Ground grid - subtle */}
-          <g opacity="0.08">
-            {Array.from({ length: 21 }).map((_, i) => {
-              const pos = -100 + i * 10
+          {/* Ground grid */}
+          <g opacity="0.06">
+            {Array.from({ length: 25 }).map((_, i) => {
+              const pos = -120 + i * 10
               return (
                 <g key={i}>
                   <line
-                    x1={pos * 0.866} y1={pos * 0.5 + 100}
-                    x2={pos * 0.866 + 200 * 0.866} y2={pos * 0.5 + 100 + 200 * 0.5}
+                    x1={pos * 0.866} y1={pos * 0.5 + 120}
+                    x2={pos * 0.866 + 240 * 0.866} y2={pos * 0.5 + 120 + 240 * 0.5}
                     stroke="var(--foreground)" strokeWidth="0.3"
                   />
                   <line
-                    x1={-pos * 0.866} y1={pos * 0.5 + 100}
-                    x2={-pos * 0.866 + 200 * 0.866} y2={pos * 0.5 + 100 + 200 * 0.5}
+                    x1={-pos * 0.866} y1={pos * 0.5 + 120}
+                    x2={-pos * 0.866 + 240 * 0.866} y2={pos * 0.5 + 120 + 240 * 0.5}
                     stroke="var(--foreground)" strokeWidth="0.3"
                   />
                 </g>
@@ -335,22 +309,30 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             })}
           </g>
 
-          {/* Construction lines radiating from center - pre-computed to avoid hydration mismatch */}
-          <g style={{ opacity: hoveredFloor ? 0.4 : 0.15, transition: "opacity 0.4s ease" }}>
-            <line x1="0" y1="-120" x2="48.6" y2="-395.8" stroke="#00d4ff" strokeWidth="0.8" />
-            <line x1="0" y1="-120" x2="183.5" y2="-382.1" stroke="#ff0066" strokeWidth="0.8" />
-            <line x1="0" y1="-120" x2="225.2" y2="-250" stroke="#F5C842" strokeWidth="0.8" />
-            <line x1="0" y1="-120" x2="272.6" y2="-20.8" stroke="#00ff88" strokeWidth="0.8" />
-            <line x1="0" y1="-120" x2="199.3" y2="117.5" stroke="#ff0066" strokeWidth="0.8" />
-            <line x1="0" y1="-120" x2="64.7" y2="121.5" stroke="#00d4ff" strokeWidth="0.8" />
-            <line x1="0" y1="-120" x2="-110" y2="70.5" stroke="#8855ff" strokeWidth="0.8" />
-            <line x1="0" y1="-120" x2="-233.8" y2="15" stroke="#F5C842" strokeWidth="0.8" />
+          {/* Construction lines - GLOW on hover */}
+          <g 
+            style={{ 
+              opacity: hoveredFloor ? 0.7 : 0.2, 
+              transition: "opacity 0.4s ease",
+            }}
+            filter={hoveredFloor ? "url(#lineGlow)" : undefined}
+          >
+            {constructionLines.map((line, i) => (
+              <line
+                key={i}
+                x1="0" y1="-140"
+                x2={line.x2} y2={line.y2}
+                stroke={line.color}
+                strokeWidth={hoveredFloor ? "1.5" : "0.8"}
+                style={{ transition: "stroke-width 0.3s ease" }}
+              />
+            ))}
           </g>
 
-          {/* F1: Base platform - magenta */}
+          {/* F1: Base platform */}
           <g
             style={{
-              transform: `translateY(${isExploded && activeFloorIndex !== 0 ? (0 - (activeFloorIndex ?? 0)) * 40 : 0}px)`,
+              transform: `translateY(${isExploded && activeFloorIndex !== 0 ? (0 - (activeFloorIndex ?? 0)) * 50 : 0}px)`,
               transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}
             onMouseEnter={() => setHoveredFloor("F1")}
@@ -359,25 +341,25 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             className="cursor-pointer"
             filter={hoveredFloor === "F1" || activeFloorIndex === 0 ? "url(#glow-F1)" : undefined}
           >
-            {/* Invisible hit area */}
-            <rect x="-150" y="20" width="300" height="120" fill="transparent" />
-            <g transform="translate(0, 80)">
+            <rect x="-180" y="20" width="360" height="150" fill="transparent" />
+            <g transform="translate(0, 100)">
               {towerStructure.f1Cubes.map((cube, i) => (
                 <IsoCube
                   key={i}
                   x={cube.x} y={cube.y} z={cube.z}
                   color={FLOORS[0].color}
-                  strokeWidth={hoveredFloor === "F1" || activeFloorIndex === 0 ? 1.2 : 0.6}
-                  opacity={hoveredFloor === "F1" || activeFloorIndex === 0 ? 0.9 : 0.5}
+                  strokeWidth={hoveredFloor === "F1" || activeFloorIndex === 0 ? 1.5 : 0.7}
+                  opacity={hoveredFloor === "F1" || activeFloorIndex === 0 ? 1 : 0.55}
+                  scale={10}
                 />
               ))}
             </g>
           </g>
 
-          {/* F2: Middle section - magenta */}
+          {/* F2: Middle section */}
           <g
             style={{
-              transform: `translateY(${isExploded && activeFloorIndex !== 1 ? (1 - (activeFloorIndex ?? 0)) * 40 : 0}px)`,
+              transform: `translateY(${isExploded && activeFloorIndex !== 1 ? (1 - (activeFloorIndex ?? 0)) * 50 : 0}px)`,
               transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}
             onMouseEnter={() => setHoveredFloor("F2")}
@@ -386,24 +368,25 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             className="cursor-pointer"
             filter={hoveredFloor === "F2" || activeFloorIndex === 1 ? "url(#glow-F2)" : undefined}
           >
-            <rect x="-120" y="-50" width="240" height="100" fill="transparent" />
+            <rect x="-150" y="-60" width="300" height="120" fill="transparent" />
             <g transform="translate(0, 0)">
               {towerStructure.f2Cubes.map((cube, i) => (
                 <IsoCube
                   key={i}
                   x={cube.x} y={cube.y} z={cube.z}
                   color={FLOORS[1].color}
-                  strokeWidth={hoveredFloor === "F2" || activeFloorIndex === 1 ? 1.2 : 0.6}
-                  opacity={hoveredFloor === "F2" || activeFloorIndex === 1 ? 0.9 : 0.5}
+                  strokeWidth={hoveredFloor === "F2" || activeFloorIndex === 1 ? 1.5 : 0.7}
+                  opacity={hoveredFloor === "F2" || activeFloorIndex === 1 ? 1 : 0.55}
+                  scale={10}
                 />
               ))}
             </g>
           </g>
 
-          {/* F3: Core section - magenta/pink */}
+          {/* F3: Core section */}
           <g
             style={{
-              transform: `translateY(${isExploded && activeFloorIndex !== 2 ? (2 - (activeFloorIndex ?? 0)) * 40 : 0}px)`,
+              transform: `translateY(${isExploded && activeFloorIndex !== 2 ? (2 - (activeFloorIndex ?? 0)) * 50 : 0}px)`,
               transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}
             onMouseEnter={() => setHoveredFloor("F3")}
@@ -412,24 +395,25 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             className="cursor-pointer"
             filter={hoveredFloor === "F3" || activeFloorIndex === 2 ? "url(#glow-F3)" : undefined}
           >
-            <rect x="-100" y="-130" width="200" height="100" fill="transparent" />
-            <g transform="translate(0, -80)">
+            <rect x="-130" y="-160" width="260" height="120" fill="transparent" />
+            <g transform="translate(0, -100)">
               {towerStructure.f3Cubes.map((cube, i) => (
                 <IsoCube
                   key={i}
                   x={cube.x} y={cube.y} z={cube.z}
                   color={FLOORS[2].color}
-                  strokeWidth={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1.2 : 0.6}
-                  opacity={hoveredFloor === "F3" || activeFloorIndex === 2 ? 0.9 : 0.5}
+                  strokeWidth={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1.5 : 0.7}
+                  opacity={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1 : 0.55}
+                  scale={10}
                 />
               ))}
             </g>
           </g>
 
-          {/* F4: Yellow dome - top */}
+          {/* F4: Yellow dome */}
           <g
             style={{
-              transform: `translateY(${isExploded && activeFloorIndex !== 3 ? (3 - (activeFloorIndex ?? 0)) * 40 : 0}px)`,
+              transform: `translateY(${isExploded && activeFloorIndex !== 3 ? (3 - (activeFloorIndex ?? 0)) * 50 : 0}px)`,
               transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}
             onMouseEnter={() => setHoveredFloor("F4")}
@@ -438,52 +422,77 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             className="cursor-pointer"
             filter={hoveredFloor === "F4" || activeFloorIndex === 3 ? "url(#glow-F4)" : undefined}
           >
-            <rect x="-120" y="-280" width="240" height="120" fill="transparent" />
-            <g transform="translate(0, -180)">
+            <rect x="-150" y="-350" width="300" height="150" fill="transparent" />
+            <g transform="translate(0, -220)">
               {towerStructure.f4Cubes.map((cube, i) => (
                 <IsoCube
                   key={i}
                   x={cube.x} y={cube.y} z={cube.z}
                   color={FLOORS[3].color}
-                  strokeWidth={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1.2 : 0.6}
-                  opacity={hoveredFloor === "F4" || activeFloorIndex === 3 ? 0.9 : 0.5}
+                  strokeWidth={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1.5 : 0.7}
+                  opacity={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1 : 0.55}
+                  scale={10}
                 />
               ))}
             </g>
           </g>
 
-          {/* Central vertical pillars connecting floors */}
-          <g opacity="0.3">
-            <line x1="0" y1="80" x2="0" y2="-180" stroke="var(--foreground)" strokeWidth="1" />
-            <line x1="-35" y1="60" x2="-35" y2="-60" stroke="var(--foreground)" strokeWidth="0.5" />
-            <line x1="35" y1="60" x2="35" y2="-60" stroke="var(--foreground)" strokeWidth="0.5" />
+          {/* Central pillars */}
+          <g opacity="0.25">
+            <line x1="0" y1="100" x2="0" y2="-220" stroke="var(--foreground)" strokeWidth="1.2" />
+            <line x1="-45" y1="75" x2="-45" y2="-75" stroke="var(--foreground)" strokeWidth="0.6" />
+            <line x1="45" y1="75" x2="45" y2="-75" stroke="var(--foreground)" strokeWidth="0.6" />
           </g>
-        </svg>
-      </div>
 
-      {/* Info panel - right side */}
-      <div
-        className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 z-30 pointer-events-none transition-all duration-500"
-        style={{
-          opacity: activeFloor ? 1 : 0,
-          transform: activeFloor ? "translateX(0)" : "translateX(20px)",
-        }}
-      >
-        {activeFloor && (
-          <div className="border-l-4 bg-background/90 backdrop-blur-sm pl-5 pr-6 py-4 min-w-[160px]" style={{ borderColor: activeFloor.color }}>
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-2.5 h-2.5" style={{ backgroundColor: activeFloor.color }} />
-              <span className="text-[10px] font-mono tracking-[0.3em]" style={{ color: activeFloor.color }}>{activeFloor.id}</span>
-            </div>
-            <div className="text-lg font-mono font-bold text-foreground tracking-wide">{activeFloor.label}</div>
-            <div className="text-[10px] font-mono text-foreground/50 mt-2 leading-relaxed">{activeFloor.desc}</div>
-          </div>
-        )}
+          {/* Info panel positioned NEAR the hovered floor */}
+          {activeFloorData && (
+            <foreignObject
+              x="160"
+              y={activeFloorData.yOffset - 50}
+              width="200"
+              height="120"
+              style={{
+                opacity: hoveredFloor || activeFloorIndex !== null ? 1 : 0,
+                transition: "opacity 0.3s ease, y 0.3s ease",
+              }}
+            >
+              <div 
+                className="bg-background/95 backdrop-blur-sm border-l-4 pl-4 pr-5 py-3"
+                style={{ borderColor: activeFloorData.color }}
+              >
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div 
+                    className="w-2.5 h-2.5 transition-shadow duration-300" 
+                    style={{ 
+                      backgroundColor: activeFloorData.color,
+                      boxShadow: `0 0 12px ${activeFloorData.color}`,
+                    }} 
+                  />
+                  <span 
+                    className="text-[10px] font-mono tracking-[0.3em]" 
+                    style={{ color: activeFloorData.color }}
+                  >
+                    {activeFloorData.id}
+                  </span>
+                </div>
+                <div 
+                  className="text-base font-mono font-bold tracking-wide"
+                  style={{ color: activeFloorData.color }}
+                >
+                  {activeFloorData.label}
+                </div>
+                <div className="text-[9px] font-mono text-foreground/60 mt-1.5 leading-relaxed">
+                  {activeFloorData.desc}
+                </div>
+              </div>
+            </foreignObject>
+          )}
+        </svg>
       </div>
 
       {/* Bottom legend */}
       <div
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-6"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-8"
         style={{
           opacity: mounted ? 1 : 0,
           transform: mounted ? "translateY(0)" : "translateY(20px)",
@@ -499,18 +508,19 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             className="flex items-center gap-2 group cursor-pointer"
           >
             <div
-              className="w-3 h-3 border-2 transition-all duration-300"
+              className="w-3.5 h-3.5 border-2 transition-all duration-300"
               style={{
-                backgroundColor: hoveredFloor === floor.id || activeFloorIndex === i ? floor.color : "transparent",
                 borderColor: floor.color,
-                transform: hoveredFloor === floor.id ? "scale(1.2)" : "scale(1)",
+                backgroundColor: hoveredFloor === floor.id || activeFloorIndex === i ? floor.color : "transparent",
+                boxShadow: hoveredFloor === floor.id || activeFloorIndex === i ? `0 0 15px ${floor.color}` : "none",
               }}
             />
             <span
-              className="text-[9px] font-mono tracking-[0.15em] transition-all duration-300"
+              className="text-[10px] font-mono tracking-[0.15em] transition-all duration-300"
               style={{
                 color: hoveredFloor === floor.id || activeFloorIndex === i ? floor.color : "var(--foreground)",
-                opacity: hoveredFloor === floor.id || activeFloorIndex === i ? 1 : 0.4,
+                opacity: hoveredFloor === floor.id || activeFloorIndex === i ? 1 : 0.5,
+                textShadow: hoveredFloor === floor.id ? `0 0 15px ${floor.color}` : "none",
               }}
             >
               {floor.label}
