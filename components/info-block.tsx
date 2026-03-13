@@ -158,64 +158,73 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
         </button>
       </div>
 
-      {/* Detail Panel - inline expandable detail */}
+      {/* Detail Frame - collage/comic book style overlay sitting ON TOP of the content */}
       {showOverlay && (
-        <div className="mt-6 max-w-3xl border border-border bg-card/80 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
-          {/* Title block header */}
-          <div className="bg-card border-b border-border px-4 py-2 flex items-center justify-between">
-            <div>
-              <h3 className="text-[10px] font-mono font-bold text-foreground tracking-wide">DETAIL FRAME</h3>
-              <p className="text-[8px] font-mono text-foreground/35 tracking-[0.15em] mt-0.5">
-                F2.1 — EXECUTION SYSTEM DETAIL
-              </p>
-            </div>
-            <button 
-              onClick={() => setShowOverlay(false)}
-              className="p-1.5 hover:bg-secondary/50 transition-colors"
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Content */}
-          <div className="p-4 space-y-4">
-            {/* Context */}
-            <div>
-              <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">CONTEXT</span>
-              <p className="text-[10px] font-mono text-foreground/65 leading-relaxed mt-1.5">
-                This system converts ambiguous situations into structured, executable action.
-              </p>
+        <div 
+          className="absolute top-16 right-4 md:right-8 z-20 w-72 md:w-80 animate-in fade-in zoom-in-95 slide-in-from-right-4 duration-300"
+          style={{ 
+            transform: 'rotate(1.5deg)',
+            boxShadow: '8px 8px 0 rgba(0,0,0,0.15), 16px 16px 24px rgba(0,0,0,0.1)'
+          }}
+        >
+          {/* Paper texture effect */}
+          <div className="bg-card border-2 border-foreground/20">
+            {/* Title block header - like a comic panel caption */}
+            <div className="bg-foreground text-background px-3 py-1.5 flex items-center justify-between">
+              <div>
+                <h3 className="text-[9px] font-mono font-bold tracking-wide">DETAIL FRAME F2.1</h3>
+              </div>
+              <button 
+                onClick={() => setShowOverlay(false)}
+                className="p-1 hover:bg-background/20 transition-colors"
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
             </div>
 
-            {/* Sequence - compact */}
-            <div>
-              <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">SEQUENCE</span>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {phases.map((phase) => (
-                  <div key={phase.name} className="flex items-center gap-1.5 px-2 py-1 bg-secondary/30 border border-border/50">
-                    <div className="w-3 h-3 flex items-center justify-center" style={{ backgroundColor: getColor(phase.color) }}>
-                      <span className="text-[6px] font-mono text-white font-bold">{phase.num}</span>
+            {/* Content - dense like a reference card */}
+            <div className="p-3 space-y-3">
+              {/* Hand-drawn style divider */}
+              <div className="h-px bg-foreground/20" style={{ transform: 'rotate(-0.5deg)' }} />
+              
+              {/* Context blurb */}
+              <p className="text-[9px] font-mono text-foreground/70 leading-relaxed italic">
+                "Converting ambiguity into executable structure."
+              </p>
+
+              {/* Sequence - stacked cards effect */}
+              <div className="space-y-1.5">
+                {phases.map((phase, i) => (
+                  <div 
+                    key={phase.name} 
+                    className="flex items-center gap-2 p-1.5 border border-border/60 bg-secondary/20"
+                    style={{ transform: `rotate(${(i % 2 === 0 ? -0.3 : 0.3)}deg)` }}
+                  >
+                    <div 
+                      className="w-5 h-5 flex items-center justify-center shrink-0" 
+                      style={{ backgroundColor: getColor(phase.color) }}
+                    >
+                      <span className="text-[7px] font-mono text-white font-bold">{phase.num}</span>
                     </div>
-                    <span className="text-[9px] font-mono text-foreground/70">{phase.name}</span>
+                    <div className="min-w-0">
+                      <span className="text-[8px] font-mono font-bold text-foreground block">{phase.name}</span>
+                      <span className="text-[7px] font-mono text-foreground/50 block truncate">{phase.outputs[0]}</span>
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
 
-            {/* Outputs - compact */}
-            <div className="flex flex-wrap gap-x-4 gap-y-1 pt-2 border-t border-border">
-              {[
-                "Cleaner visibility",
-                "Faster recovery", 
-                "Less dropped comms",
-                "Stronger continuity"
-              ].map((output) => (
-                <span key={output} className="text-[8px] font-mono text-foreground/45">
-                  {output}
+              {/* Stamp-like footer */}
+              <div 
+                className="border-2 border-dashed border-foreground/30 p-2 text-center"
+                style={{ transform: 'rotate(-1deg)' }}
+              >
+                <span className="text-[7px] font-mono text-foreground/50 tracking-[0.2em]">
+                  EXECUTION SYSTEM REV.01
                 </span>
-              ))}
+              </div>
             </div>
           </div>
         </div>
