@@ -76,7 +76,14 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
         {/* Tab headers */}
         <div className="flex border-b border-border">
           <button
-            onClick={() => setActiveTab("builds")}
+            onClick={() => {
+              setActiveTab("builds")
+              if (activeTab === "builds") {
+                setBuildsExpanded(!buildsExpanded)
+              } else {
+                setBuildsExpanded(true)
+              }
+            }}
             className={`flex-1 flex items-center justify-between px-5 md:px-6 py-4 transition-colors text-left ${
               activeTab === "builds" ? "bg-secondary/30" : "hover:bg-secondary/10"
             }`}
@@ -89,9 +96,22 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
               </h2>
               <span className="text-[7px] font-mono text-muted-foreground/35 tracking-[0.2em]">F3</span>
             </div>
-            <span className="text-[8px] font-mono text-muted-foreground/40 tabular-nums">
-              {String(experiments.length).padStart(2, "0")}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[8px] font-mono text-muted-foreground/40 tabular-nums">
+                {String(experiments.length).padStart(2, "0")}
+              </span>
+              <svg 
+                width="10" 
+                height="10" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2"
+                className={`text-foreground/30 transition-transform duration-300 ${activeTab === "builds" && buildsExpanded ? 'rotate-180' : ''}`}
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
           </button>
           
           <button
@@ -116,37 +136,16 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
 
         {/* Content area with animations */}
         <div className="relative overflow-hidden">
-          {/* BUILDS content - dropdown animation */}
+          {/* BUILDS content - dropdown animation triggered by tab click */}
           <div 
-            className={`transition-all duration-400 ease-out ${
-              activeTab === "builds" 
-                ? "opacity-100 max-h-[1000px]" 
+            className={`transition-all duration-400 ease-out overflow-hidden ${
+              activeTab === "builds" && buildsExpanded
+                ? "opacity-100 max-h-[600px]" 
+                : activeTab === "builds"
+                ? "opacity-100 max-h-0"
                 : "opacity-0 max-h-0 absolute inset-x-0"
             }`}
           >
-            {/* Expand/collapse header */}
-            <button
-              onClick={() => setBuildsExpanded(!buildsExpanded)}
-              className="w-full flex items-center justify-between px-5 md:px-6 py-3 border-b border-border hover:bg-secondary/20 transition-colors text-left"
-            >
-              <p className="text-[10px] font-mono text-foreground/50 leading-relaxed">
-                Side projects, prototypes, and ongoing investigations.
-              </p>
-              <svg 
-                width="12" 
-                height="12" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2"
-                className={`text-foreground/30 transition-transform duration-300 flex-shrink-0 ml-4 ${buildsExpanded ? 'rotate-180' : ''}`}
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-
-            {/* Expandable experiments list */}
-            <div className={`overflow-hidden transition-all duration-400 ease-out ${buildsExpanded ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
               {experiments.map((exp) => (
                 <div 
                   key={exp.id}
@@ -178,7 +177,6 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
                   </div>
                 </div>
               ))}
-            </div>
           </div>
 
           {/* CLIENT FEEDBACK content - slide in from right */}
