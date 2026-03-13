@@ -4,7 +4,14 @@ import { forwardRef } from "react"
 
 export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref) {
   return (
-    <section ref={ref} className="py-12 md:py-20 border-t border-border px-5 md:px-10" data-section="CONTACT">
+    <section 
+      ref={ref} 
+      className="py-12 md:py-20 border-t-2 px-5 md:px-10 relative" 
+      data-section="CONTACT"
+      style={{ borderTopColor: "#45B07C" }}
+    >
+      {/* Floor indicator accent */}
+      <div className="absolute top-0 left-0 w-1 h-full opacity-10" style={{ backgroundColor: "#45B07C" }} />
       <div className="flex items-baseline justify-between mb-8">
         <div className="flex items-baseline gap-3">
           <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">CONTACT</h2>

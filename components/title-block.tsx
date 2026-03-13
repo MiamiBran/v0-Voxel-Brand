@@ -1,5 +1,7 @@
 "use client"
 
+import { useState } from "react"
+
 interface TitleBlockProps {
   onProjectsClick: () => void
   onInfoClick: () => void
@@ -7,6 +9,8 @@ interface TitleBlockProps {
 }
 
 export function TitleBlock({ onProjectsClick, onInfoClick, onContactClick }: TitleBlockProps) {
+  const [quickActionsOpen, setQuickActionsOpen] = useState(false)
+
   return (
     <header data-section="TITLE">
       {/* Floating cartouche -- standard title block on architectural drawing sheets.
@@ -62,6 +66,69 @@ export function TitleBlock({ onProjectsClick, onInfoClick, onContactClick }: Tit
                   </button>
                 ))}
               </nav>
+
+              {/* Quick Actions dropdown */}
+              <div className="relative border-t md:border-t-0 border-border">
+                <button 
+                  onClick={() => setQuickActionsOpen(!quickActionsOpen)}
+                  className="w-full flex items-center justify-between gap-2 px-4 py-2 text-left hover:bg-secondary/40 transition-colors"
+                >
+                  <span className="text-[8px] font-mono tracking-[0.15em] text-foreground/60">QUICK ACTIONS</span>
+                  <svg 
+                    width="10" 
+                    height="10" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2"
+                    className={`text-foreground/40 transition-transform duration-200 ${quickActionsOpen ? 'rotate-180' : ''}`}
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+                
+                {/* Dropdown menu */}
+                <div className={`overflow-hidden transition-all duration-200 ease-out ${quickActionsOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                  <div className="border-t border-border bg-card/80">
+                    <a
+                      href="https://cal.com/brandonbartlett"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2 text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                      </svg>
+                      BOOK A CALL
+                    </a>
+                    <a
+                      href="mailto:hello@bartlettbuilds.pro"
+                      className="flex items-center gap-2 px-4 py-2 text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <rect x="2" y="4" width="20" height="16" rx="2" />
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                      </svg>
+                      EMAIL
+                    </a>
+                    <a
+                      href="/Brandon-Bartlett-CV.pdf"
+                      download
+                      className="flex items-center gap-2 px-4 py-2 text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                      </svg>
+                      DOWNLOAD RESUME
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

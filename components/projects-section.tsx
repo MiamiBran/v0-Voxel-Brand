@@ -90,7 +90,14 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   return (
-    <section ref={ref} className="py-12 md:py-20 border-t border-border px-5 md:px-10" data-section="PROJECTS">
+    <section 
+      ref={ref} 
+      className="py-12 md:py-20 border-t-2 px-5 md:px-10 relative" 
+      data-section="PROJECTS"
+      style={{ borderTopColor: "#E85D4C" }}
+    >
+      {/* Floor indicator accent */}
+      <div className="absolute top-0 left-0 w-1 h-full opacity-10" style={{ backgroundColor: "#E85D4C" }} />
       {/* Section header */}
       <div className="flex items-baseline justify-between mb-8">
         <div className="flex items-baseline gap-3">
