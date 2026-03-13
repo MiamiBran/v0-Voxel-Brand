@@ -206,36 +206,37 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
                 <circle 
                   cx="24" cy="24" r="20" 
                   fill="none" 
-                  stroke={isAutoRotating ? "var(--foreground)" : "var(--border)"} 
+                  stroke={isAutoRotating ? "var(--foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} 
                   strokeWidth="0.5" 
-                  opacity={isAutoRotating ? 0.5 : 0.3}
+                  opacity={isAutoRotating ? 0.5 : 0.6}
                 />
                 <circle 
                   cx="24" cy="24" r="14" 
                   fill="none" 
-                  stroke="var(--border)" 
-                  strokeWidth="0.3" 
+                  stroke={isAutoRotating ? "var(--border)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")}
+                  strokeWidth="0.3"
+                  opacity={isAutoRotating ? 1 : 0.4}
                 />
                 {/* Cardinal ticks */}
-                <line x1="24" y1="4" x2="24" y2="8" stroke="var(--muted-foreground)" strokeWidth="0.5" opacity="0.4" />
-                <line x1="44" y1="24" x2="40" y2="24" stroke="var(--muted-foreground)" strokeWidth="0.5" opacity="0.4" />
-                <line x1="24" y1="44" x2="24" y2="40" stroke="var(--muted-foreground)" strokeWidth="0.5" opacity="0.4" />
-                <line x1="4" y1="24" x2="8" y2="24" stroke="var(--muted-foreground)" strokeWidth="0.5" opacity="0.4" />
+                <line x1="24" y1="4" x2="24" y2="8" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
+                <line x1="44" y1="24" x2="40" y2="24" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
+                <line x1="24" y1="44" x2="24" y2="40" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
+                <line x1="4" y1="24" x2="8" y2="24" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
                 {/* North arrow */}
                 <polygon 
                   points="24,6 21,18 24,16 27,18" 
-                  fill={isAutoRotating ? "var(--foreground)" : "var(--muted-foreground)"} 
-                  opacity={isAutoRotating ? 0.7 : 0.3} 
+                  fill={isAutoRotating ? "var(--foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} 
+                  opacity={isAutoRotating ? 0.7 : 0.7} 
                 />
                 <polygon 
                   points="24,42 21,30 24,32 27,30" 
                   fill="none" 
-                  stroke="var(--muted-foreground)" 
+                  stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")}
                   strokeWidth="0.3" 
-                  opacity="0.25" 
+                  opacity={isAutoRotating ? 0.25 : 0.4} 
                 />
                 {/* N label */}
-                <text x="24" y="3" textAnchor="middle" fontSize="4" fill="var(--foreground)" opacity="0.4" fontFamily="monospace">N</text>
+                <text x="24" y="3" textAnchor="middle" fontSize="4" fill={isAutoRotating ? "var(--foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} opacity={isAutoRotating ? 0.4 : 0.7} fontFamily="monospace">N</text>
                 <circle 
                   cx="24" cy="24" r="1.5" 
                   fill={isAutoRotating ? "var(--foreground)" : "var(--muted-foreground)"} 
