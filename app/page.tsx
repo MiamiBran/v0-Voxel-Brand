@@ -40,8 +40,8 @@ export default function Portfolio() {
         }}
       />
       <ProjectsSection ref={projectsRef} />
-      <ExperimentsSection ref={experimentsRef} />
       <InfoBlock ref={processRef} />
+      <ExperimentsSection ref={experimentsRef} />
       <TestimonialsSection ref={testimonialsRef} />
       <ContactBlock ref={contactRef} />
     </DocumentFrame>

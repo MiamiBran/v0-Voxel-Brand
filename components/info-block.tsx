@@ -49,8 +49,8 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
         {/* Section header inside the card */}
         <div className="flex items-baseline justify-between px-5 md:px-6 py-4 border-b border-border">
           <div className="flex items-baseline gap-3">
-            <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">PROCESS</h2>
-            <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">SEC. 02</span>
+            <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">SYSTEMS DESIGN</h2>
+            <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">F2</span>
           </div>
         </div>
 

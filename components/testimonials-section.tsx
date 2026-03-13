@@ -37,9 +37,9 @@ export const TestimonialsSection = forwardRef<HTMLElement>((_, ref) => {
         <div className="flex items-baseline justify-between px-5 md:px-6 py-4 border-b border-border">
           <div className="flex items-baseline gap-3">
             <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">
-              TESTIMONIALS
+              SOCIAL PROOF
             </h2>
-            <span className="text-[7px] font-mono text-muted-foreground/35 tracking-[0.2em]">SEC. 04</span>
+            <span className="text-[7px] font-mono text-muted-foreground/35 tracking-[0.2em]">F3.5</span>
           </div>
           <span className="text-[8px] font-mono text-muted-foreground/40 tabular-nums">
             {String(testimonials.length).padStart(2, "0")} REFS

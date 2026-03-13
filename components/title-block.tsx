@@ -12,11 +12,11 @@ interface TitleBlockProps {
 
 // Colors aligned with hero floors
 const SECTION_COLORS = {
-  projects: "#E85D4C",
-  experiments: "#F5C842",
-  process: "#4A90A4",
-  testimonials: "#9B6BC3",
-  contact: "#45B07C",
+  projects: "#E85D4C",    // F1 OPERATIONS
+  process: "#4A90A4",     // F2 SYSTEMS
+  experiments: "#F5C842", // F3 BUILDS
+  testimonials: "#9B6BC3", // F3.5 PROOF
+  contact: "#45B07C",     // F4 SIGNAL
 }
 
 export function TitleBlock({ 
@@ -29,10 +29,10 @@ export function TitleBlock({
   const [contactHovered, setContactHovered] = useState(false)
 
   const navItems = [
-    { num: "01", label: "PROJECTS", color: SECTION_COLORS.projects, onClick: onProjectsClick },
-    { num: "02", label: "EXPERIMENTS", color: SECTION_COLORS.experiments, onClick: onExperimentsClick },
-    { num: "03", label: "PROCESS", color: SECTION_COLORS.process, onClick: onProcessClick },
-    { num: "04", label: "TESTIMONIALS", color: SECTION_COLORS.testimonials, onClick: onTestimonialsClick },
+    { num: "F1", label: "OPERATIONS", color: SECTION_COLORS.projects, onClick: onProjectsClick },
+    { num: "F2", label: "SYSTEMS", color: SECTION_COLORS.process, onClick: onProcessClick },
+    { num: "F3", label: "BUILDS", color: SECTION_COLORS.experiments, onClick: onExperimentsClick },
+    { num: "F3.5", label: "PROOF", color: SECTION_COLORS.testimonials, onClick: onTestimonialsClick },
   ]
 
   return (
@@ -96,9 +96,9 @@ export function TitleBlock({
                       className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0" 
                       style={{ backgroundColor: SECTION_COLORS.contact }} 
                     />
-                    <span className="text-[7px] font-mono text-foreground/35">05</span>
+                    <span className="text-[7px] font-mono text-foreground/35">F4</span>
                     <span className="text-[9px] md:text-[10px] font-mono tracking-[0.1em] text-foreground/70 group-hover:text-foreground transition-colors">
-                      CONTACT
+                      SIGNAL
                     </span>
                     <svg 
                       width="8" 

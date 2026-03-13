@@ -2,13 +2,13 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react"
 
-// 5 floors aligned with sections
+// Floors aligned with document sections
 const FLOORS = [
-  { id: "F1", label: "PROJECTS", color: "#E85D4C", section: "projects", desc: "Selected projects and case studies" },
-  { id: "F2", label: "EXPERIMENTS", color: "#F5C842", section: "experiments", desc: "Prototypes and ongoing investigations" },
-  { id: "F3", label: "PROCESS", color: "#4A90A4", section: "process", desc: "How I approach complex challenges" },
-  { id: "F4", label: "TESTIMONIALS", color: "#9B6BC3", section: "testimonials", desc: "What collaborators say" },
-  { id: "F5", label: "CONTACT", color: "#45B07C", section: "contact", desc: "Let's build together" },
+  { id: "F1", label: "OPERATIONS", color: "#E85D4C", section: "projects", desc: "Project index and case studies" },
+  { id: "F2", label: "SYSTEMS", color: "#4A90A4", section: "process", desc: "Process and systems design" },
+  { id: "F3", label: "BUILDS", color: "#F5C842", section: "experiments", desc: "Architecture experiments" },
+  { id: "F3.5", label: "PROOF", color: "#9B6BC3", section: "testimonials", desc: "Social proof and references" },
+  { id: "F4", label: "SIGNAL", color: "#45B07C", section: "contact", desc: "Writing and creative signal" },
 ]
 
 interface HeroCanvasProps {

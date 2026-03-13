@@ -6,15 +6,15 @@ interface DocumentFrameProps {
   children: ReactNode
 }
 
-// Sections map to the document structure - 6 total
+// Sections map to the document structure
 const SECTIONS = [
-  { id: "TITLE", label: "F0", percent: 3 },
-  { id: "HERO", label: "F1", percent: 12 },
-  { id: "PROJECTS", label: "F2", percent: 28 },
-  { id: "EXPERIMENTS", label: "F3", percent: 44 },
-  { id: "PROCESS", label: "F4", percent: 60 },
-  { id: "TESTIMONIALS", label: "F5", percent: 76 },
-  { id: "CONTACT", label: "F6", percent: 92 },
+  { id: "TITLE", label: "F0", percent: 2 },
+  { id: "HERO", label: "—", percent: 10 },
+  { id: "PROJECTS", label: "F1", percent: 25 },
+  { id: "PROCESS", label: "F2", percent: 40 },
+  { id: "EXPERIMENTS", label: "F3", percent: 55 },
+  { id: "TESTIMONIALS", label: "F3.5", percent: 72 },
+  { id: "CONTACT", label: "F4", percent: 90 },
 ]
 
 export function DocumentFrame({ children }: DocumentFrameProps) {
