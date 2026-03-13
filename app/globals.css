@@ -153,6 +153,12 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Compass spin animation */
+@keyframes compass-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* Scrollbar — thin and unobtrusive */
 ::-webkit-scrollbar {
   width: 3px;

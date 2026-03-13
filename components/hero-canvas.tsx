@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react"
+import { useRotation } from "./document-frame"
 
 // Floors aligned with document sections - 4 floors
 const FLOORS = [
@@ -62,16 +63,54 @@ function IsoCube({ x, y, z, size = 1, color, strokeWidth = 0.8, opacity = 1, sca
 }
 
 export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
+  const { isAutoRotating } = useRotation()
   const [hoveredFloor, setHoveredFloor] = useState<string | null>(null)
   const [activeFloorIndex, setActiveFloorIndex] = useState<number | null>(null)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [baseRotation, setBaseRotation] = useState(0)
+  const [floorRotations, setFloorRotations] = useState([0, 0, 0, 0])
   const containerRef = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
+  const animationRef = useRef<number>()
 
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 100)
     return () => clearTimeout(timer)
   }, [])
+
+  // Rotation animation
+  useEffect(() => {
+    if (!isAutoRotating) {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
+      return
+    }
+
+    let lastTime = performance.now()
+    
+    const animate = (time: number) => {
+      const delta = (time - lastTime) / 1000 // seconds
+      lastTime = time
+
+      // Base rotates counter-clockwise (negative) slowly
+      setBaseRotation(prev => (prev - delta * 3) % 360)
+      
+      // Each floor rotates clockwise at different speeds
+      setFloorRotations(prev => [
+        (prev[0] + delta * 4) % 360,   // F1 slowest
+        (prev[1] + delta * 5) % 360,   // F2 
+        (prev[2] + delta * 6) % 360,   // F3
+        (prev[3] + delta * 8) % 360,   // F4 fastest
+      ])
+
+      animationRef.current = requestAnimationFrame(animate)
+    }
+
+    animationRef.current = requestAnimationFrame(animate)
+
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
+    }
+  }, [isAutoRotating])
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current) return
@@ -92,7 +131,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
   const activeFloor = hoveredFloor ? FLOORS.find(f => f.id === hoveredFloor) : null
   const activeFloorData = activeFloor || (activeFloorIndex !== null ? FLOORS[activeFloorIndex] : null)
 
-  // Tower structure - 5 distinct floors stacked vertically
+  // Tower structure - 4 distinct floors stacked vertically
   const towerStructure = useMemo(() => {
     const scale = 12
     const floorHeight = 90
@@ -105,7 +144,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
       }
     }
 
-    // F2: Smaller offset platform (EXPERIMENTS)  
+    // F2: Smaller offset platform (SYSTEMS)  
     const f2: Array<{ x: number; y: number; z: number }> = []
     for (let x = -5; x <= 5; x++) {
       for (let y = -5; y <= 5; y++) {
@@ -120,7 +159,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
       f2.push({ x: 4, y: 4, z })
     }
 
-    // F3: Central core (PROCESS)
+    // F3: Central core (BUILDS)
     const f3: Array<{ x: number; y: number; z: number }> = []
     for (let x = -4; x <= 4; x++) {
       for (let y = -4; y <= 4; y++) {
@@ -233,8 +272,15 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             ))}
           </defs>
 
-          {/* Ground reference grid */}
-          <g opacity="0.05">
+          {/* Ground reference grid - rotates counter-clockwise with base */}
+          <g 
+            opacity="0.05"
+            style={{ 
+              transform: `rotate(${baseRotation}deg)`,
+              transformOrigin: "0 200px",
+              transition: isAutoRotating ? "none" : "transform 0.5s ease-out",
+            }}
+          >
             {Array.from({ length: 15 }).map((_, i) => {
               const pos = -70 + i * 10
               return (
@@ -263,13 +309,18 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             <line x1="0" y1="180" x2="-120" y2="240" stroke="#9B6BC3" strokeWidth="0.6" />
           </g>
 
-          {/* F1: Base - PROJECTS */}
+          {/* F1: Base - OPERATIONS - rotates clockwise */}
           <g
             onMouseEnter={() => setHoveredFloor("F1")}
             onMouseLeave={() => setHoveredFloor(null)}
             onClick={() => handleFloorClick(FLOORS[0], 0)}
             className="cursor-pointer"
             filter={hoveredFloor === "F1" || activeFloorIndex === 0 ? "url(#glow-F1)" : undefined}
+            style={{
+              transform: `rotate(${floorRotations[0]}deg)`,
+              transformOrigin: `0 ${floorPositions[0]}px`,
+              transition: isAutoRotating ? "none" : "transform 0.5s ease-out",
+            }}
           >
             <rect x="-140" y={floorPositions[0] - 20} width="280" height="80" fill="transparent" />
             <g transform={`translate(0, ${floorPositions[0]})`}>
@@ -286,13 +337,18 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             </g>
           </g>
 
-          {/* F2: EXPERIMENTS */}
+          {/* F2: SYSTEMS - rotates clockwise faster */}
           <g
             onMouseEnter={() => setHoveredFloor("F2")}
             onMouseLeave={() => setHoveredFloor(null)}
             onClick={() => handleFloorClick(FLOORS[1], 1)}
             className="cursor-pointer"
             filter={hoveredFloor === "F2" || activeFloorIndex === 1 ? "url(#glow-F2)" : undefined}
+            style={{
+              transform: `rotate(${floorRotations[1]}deg)`,
+              transformOrigin: `0 ${floorPositions[1]}px`,
+              transition: isAutoRotating ? "none" : "transform 0.5s ease-out",
+            }}
           >
             <rect x="-120" y={floorPositions[1] - 20} width="240" height="80" fill="transparent" />
             <g transform={`translate(0, ${floorPositions[1]})`}>
@@ -309,13 +365,18 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             </g>
           </g>
 
-          {/* F3: PROCESS */}
+          {/* F3: BUILDS - rotates clockwise even faster */}
           <g
             onMouseEnter={() => setHoveredFloor("F3")}
             onMouseLeave={() => setHoveredFloor(null)}
             onClick={() => handleFloorClick(FLOORS[2], 2)}
             className="cursor-pointer"
             filter={hoveredFloor === "F3" || activeFloorIndex === 2 ? "url(#glow-F3)" : undefined}
+            style={{
+              transform: `rotate(${floorRotations[2]}deg)`,
+              transformOrigin: `0 ${floorPositions[2]}px`,
+              transition: isAutoRotating ? "none" : "transform 0.5s ease-out",
+            }}
           >
             <rect x="-100" y={floorPositions[2] - 20} width="200" height="80" fill="transparent" />
             <g transform={`translate(0, ${floorPositions[2]})`}>
@@ -332,13 +393,18 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             </g>
           </g>
 
-          {/* F4: CONTACT */}
+          {/* F4: CONTACT - rotates clockwise fastest */}
           <g
             onMouseEnter={() => setHoveredFloor("F4")}
             onMouseLeave={() => setHoveredFloor(null)}
             onClick={() => handleFloorClick(FLOORS[3], 3)}
             className="cursor-pointer"
             filter={hoveredFloor === "F4" || activeFloorIndex === 3 ? "url(#glow-F4)" : undefined}
+            style={{
+              transform: `rotate(${floorRotations[3]}deg)`,
+              transformOrigin: `0 ${floorPositions[3]}px`,
+              transition: isAutoRotating ? "none" : "transform 0.5s ease-out",
+            }}
           >
             <rect x="-90" y={floorPositions[3] - 20} width="180" height="80" fill="transparent" />
             <g transform={`translate(0, ${floorPositions[3]})`}>
@@ -354,8 +420,6 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
               ))}
             </g>
           </g>
-
-
 
           {/* Central axis line */}
           <line x1="0" y1="180" x2="0" y2="-200" stroke="var(--foreground)" strokeWidth="0.5" opacity="0.15" />
