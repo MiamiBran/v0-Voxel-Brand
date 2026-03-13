@@ -84,7 +84,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
 
         {/* Methodology description */}
         <div className="px-5 md:px-6 py-5 border-b border-border">
-          <p className="text-xs md:text-sm font-mono leading-relaxed text-foreground/70">
+          <p className="text-xs md:text-sm leading-relaxed text-foreground/70">
             Operational environments fail when information, sequencing, and responsibility drift apart.
             I approach complex challenges like an architect approaches a building: 
             understanding the load-bearing requirements before designing the structure.
@@ -111,7 +111,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
                 <h3 className="text-xs md:text-sm font-mono font-bold text-foreground tracking-wide">
                   {phase.name}
                 </h3>
-                <p className="text-[10px] md:text-xs font-mono text-foreground/55 leading-relaxed mt-2">
+                <p className="text-[10px] md:text-xs text-foreground/55 leading-relaxed mt-2">
                   {phase.description}
                 </p>
               </div>
@@ -181,7 +181,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
               {/* Context */}
               <div>
                 <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">CONTEXT</span>
-                <p className="text-xs font-mono text-foreground/70 leading-relaxed mt-2">
+                <p className="text-xs text-foreground/70 leading-relaxed mt-2">
                   Operational environments fail when information, sequencing, and responsibility drift apart.
                   This system converts ambiguous situations into structured, executable action.
                 </p>
@@ -198,7 +198,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
                       </div>
                       <div>
                         <h4 className="text-[10px] font-mono font-bold text-foreground">{phase.name}</h4>
-                        <p className="text-[9px] font-mono text-foreground/50 mt-0.5">{phase.description}</p>
+                        <p className="text-[9px] text-foreground/50 mt-0.5">{phase.description}</p>
                       </div>
                     </div>
                   ))}
@@ -210,7 +210,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
                 <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">APPLIED EXAMPLE</span>
                 <div className="mt-3 bg-secondary/20 border border-border/50 p-4">
                   <h4 className="text-[10px] font-mono font-bold text-foreground">Publix Remodel Execution</h4>
-                  <p className="text-[9px] font-mono text-foreground/55 mt-2 leading-relaxed">
+                  <p className="text-[9px] text-foreground/55 mt-2 leading-relaxed">
                     Sequenced turnover, trade flow, reporting cadence, and issue recovery across an active remodel environment.
                     Coordinated multiple trades simultaneously while maintaining store operations.
                   </p>

@@ -21,7 +21,7 @@ export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref
 
         {/* Contact content */}
         <div className="px-5 md:px-6 py-5">
-          <p className="text-[10px] md:text-xs font-mono text-foreground/60 leading-relaxed mb-5">
+          <p className="text-[10px] md:text-xs text-foreground/60 leading-relaxed mb-5">
             Writing, creative signal, and direct contact. Let's build something.
           </p>
 

@@ -146,7 +146,7 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
           >
             {/* Subtext - always visible when builds tab active */}
             <div className="px-5 md:px-6 py-3 border-b border-border">
-              <p className="text-[10px] font-mono text-foreground/50 leading-relaxed">
+              <p className="text-[10px] text-foreground/50 leading-relaxed">
                 Side projects, prototypes, and ongoing investigations.
               </p>
             </div>
@@ -169,7 +169,7 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
                         <h3 className="text-[11px] font-mono font-medium text-foreground">
                           {exp.title}
                         </h3>
-                        <p className="text-[9px] font-mono text-foreground/40 mt-0.5">{exp.desc}</p>
+                        <p className="text-[9px] text-foreground/40 mt-0.5">{exp.desc}</p>
                       </div>
                     </div>
                     <span 
@@ -217,7 +217,7 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
                   </div>
                   
                   {/* Quote */}
-                  <blockquote className="text-[11px] font-mono text-foreground/70 leading-relaxed mb-3">
+                  <blockquote className="text-[11px] text-foreground/70 leading-relaxed mb-3">
                     "{t.quote}"
                   </blockquote>
                   

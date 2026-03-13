@@ -51,7 +51,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${spaceMono.variable} ${inter.variable} bg-background`}>
-      <body className="font-mono antialiased">
+      <body className="font-sans antialiased">
         {children}
         <Analytics />
       </body>

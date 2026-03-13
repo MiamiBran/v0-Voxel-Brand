@@ -49,7 +49,7 @@ export function TitleBlock({
               <h1 className="text-2xl md:text-4xl font-mono font-bold tracking-tight text-foreground leading-none text-balance">
                 BRANDON BARTLETT
               </h1>
-              <p className="text-[9px] md:text-[11px] font-mono text-foreground/70 mt-2 tracking-[0.1em]">
+              <p className="text-[9px] md:text-[11px] text-foreground/60 mt-2 tracking-wide">
                 Execution Architect • Field Operations Leader • Systems Builder
               </p>
             </div>

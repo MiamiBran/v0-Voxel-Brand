@@ -246,8 +246,8 @@ function CaseStudyRow({ study, isExpanded, onToggle }: {
 
         {/* Domain + Signal */}
         <div className="flex-1 px-4 py-3 md:border-r md:border-border min-w-0">
-          <p className="text-[9px] font-mono text-foreground/60 truncate">{study.domain}</p>
-          <p className="text-[8px] font-mono text-foreground/35 mt-1 truncate hidden md:block">{study.signal}</p>
+          <p className="text-[9px] text-foreground/60 truncate">{study.domain}</p>
+          <p className="text-[8px] text-foreground/35 mt-1 truncate hidden md:block">{study.signal}</p>
         </div>
 
         {/* Type badge */}
@@ -277,7 +277,7 @@ function CaseStudyRow({ study, isExpanded, onToggle }: {
         <div className="border-t border-border bg-card/30 px-5 md:px-8 py-6">
           <div className="max-w-2xl">
             {/* Signal / thesis */}
-            <p className="text-xs md:text-sm font-mono text-foreground/70 leading-relaxed">
+            <p className="text-xs md:text-sm text-foreground/70 leading-relaxed">
               {study.signal}
             </p>
             
@@ -323,12 +323,12 @@ function OperationRow({ operation }: { operation: (typeof operations)[0] }) {
 
         {/* Scope */}
         <div className="flex-1 px-4 py-4 md:border-r md:border-border">
-          <p className="text-[9px] font-mono text-foreground/55">{operation.scope}</p>
+          <p className="text-[9px] text-foreground/55">{operation.scope}</p>
         </div>
 
         {/* Output */}
         <div className="hidden md:block w-64 shrink-0 px-4 py-4">
-          <p className="text-[9px] font-mono text-foreground/45">{operation.output}</p>
+          <p className="text-[9px] text-foreground/45">{operation.output}</p>
         </div>
       </div>
     </article>
