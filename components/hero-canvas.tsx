@@ -1,17 +1,100 @@
 "use client"
 
-import { useState, useCallback, useRef, useEffect } from "react"
+import { useState, useCallback, useRef, useEffect, useMemo } from "react"
 
-// Floors map to portfolio sections
+// Floors map to portfolio sections - magenta base, yellow top (like reference)
 const FLOORS = [
   { id: "F1", label: "WORK", color: "#E85D4C", section: "projects", desc: "Selected projects and case studies" },
-  { id: "F2", label: "ABOUT", color: "#4A90A4", section: "info", desc: "Background, skills, and methodology" },
-  { id: "F3", label: "PROCESS", color: "#45B07C", section: "info", desc: "How I approach challenges" },
+  { id: "F2", label: "ABOUT", color: "#D64B8C", section: "info", desc: "Background, skills, and methodology" },
+  { id: "F3", label: "PROCESS", color: "#C93A7A", section: "info", desc: "How I approach challenges" },
   { id: "F4", label: "CONTACT", color: "#F5C842", section: "contact", desc: "Let's build together" },
 ]
 
 interface HeroCanvasProps {
   onNavigate?: (section: string) => void
+}
+
+// Isometric projection helpers
+const ISO = {
+  // Convert grid x,y,z to screen x,y
+  toScreen: (x: number, y: number, z: number, scale = 8) => ({
+    sx: (x - y) * scale * 0.866,
+    sy: (x + y) * scale * 0.5 - z * scale,
+  }),
+}
+
+// Generate a single isometric wireframe cube
+function IsoCube({ x, y, z, size = 1, color, strokeWidth = 0.8, opacity = 1, scale = 8 }: {
+  x: number; y: number; z: number; size?: number; color: string; strokeWidth?: number; opacity?: number; scale?: number
+}) {
+  const s = size
+  // 8 vertices of a cube
+  const vertices = [
+    ISO.toScreen(x, y, z, scale),           // 0: front-bottom-left
+    ISO.toScreen(x + s, y, z, scale),       // 1: front-bottom-right
+    ISO.toScreen(x + s, y + s, z, scale),   // 2: back-bottom-right
+    ISO.toScreen(x, y + s, z, scale),       // 3: back-bottom-left
+    ISO.toScreen(x, y, z + s, scale),       // 4: front-top-left
+    ISO.toScreen(x + s, y, z + s, scale),   // 5: front-top-right
+    ISO.toScreen(x + s, y + s, z + s, scale), // 6: back-top-right
+    ISO.toScreen(x, y + s, z + s, scale),   // 7: back-top-left
+  ]
+
+  // Only draw visible edges (3 faces visible in isometric)
+  return (
+    <g opacity={opacity}>
+      {/* Top face */}
+      <polygon
+        points={`${vertices[4].sx},${vertices[4].sy} ${vertices[5].sx},${vertices[5].sy} ${vertices[6].sx},${vertices[6].sy} ${vertices[7].sx},${vertices[7].sy}`}
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeWidth}
+      />
+      {/* Left face */}
+      <polygon
+        points={`${vertices[0].sx},${vertices[0].sy} ${vertices[3].sx},${vertices[3].sy} ${vertices[7].sx},${vertices[7].sy} ${vertices[4].sx},${vertices[4].sy}`}
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeWidth * 0.7}
+      />
+      {/* Right face */}
+      <polygon
+        points={`${vertices[1].sx},${vertices[1].sy} ${vertices[5].sx},${vertices[5].sy} ${vertices[6].sx},${vertices[6].sy} ${vertices[2].sx},${vertices[2].sy}`}
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeWidth * 0.5}
+      />
+      {/* Front vertical edge */}
+      <line x1={vertices[0].sx} y1={vertices[0].sy} x2={vertices[4].sx} y2={vertices[4].sy} stroke={color} strokeWidth={strokeWidth} />
+    </g>
+  )
+}
+
+// Generate a grid of cubes for a floor platform
+function CubeGrid({ centerX, centerY, baseZ, width, depth, color, strokeWidth, opacity, scale = 8 }: {
+  centerX: number; centerY: number; baseZ: number; width: number; depth: number; color: string; strokeWidth: number; opacity: number; scale?: number
+}) {
+  const cubes = []
+  const halfW = Math.floor(width / 2)
+  const halfD = Math.floor(depth / 2)
+  
+  for (let x = -halfW; x < halfW; x++) {
+    for (let y = -halfD; y < halfD; y++) {
+      cubes.push(
+        <IsoCube
+          key={`${x}-${y}`}
+          x={centerX + x}
+          y={centerY + y}
+          z={baseZ}
+          color={color}
+          strokeWidth={strokeWidth}
+          opacity={opacity}
+          scale={scale}
+        />
+      )
+    }
+  }
+  return <>{cubes}</>
 }
 
 export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
@@ -50,16 +133,116 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
 
   const activeFloor = hoveredFloor ? FLOORS.find(f => f.id === hoveredFloor) : null
 
+  // Memoize the tower structure to prevent recalculation
+  const towerStructure = useMemo(() => {
+    // F1: Wide base platform (like the reference hexagonal base)
+    const f1Cubes: Array<{ x: number; y: number; z: number }> = []
+    // Outer ring
+    for (let x = -8; x <= 8; x++) {
+      for (let y = -8; y <= 8; y++) {
+        // Create hexagonal-ish shape
+        if (Math.abs(x) + Math.abs(y) <= 10 && Math.abs(x) + Math.abs(y) >= 8) {
+          f1Cubes.push({ x, y, z: 0 })
+        }
+      }
+    }
+    // Inner platform
+    for (let x = -6; x <= 6; x++) {
+      for (let y = -6; y <= 6; y++) {
+        if (Math.abs(x) + Math.abs(y) <= 7) {
+          f1Cubes.push({ x, y, z: 0 })
+        }
+      }
+    }
+
+    // F2: Stepped middle section
+    const f2Cubes: Array<{ x: number; y: number; z: number }> = []
+    for (let x = -5; x <= 5; x++) {
+      for (let y = -5; y <= 5; y++) {
+        if (Math.abs(x) + Math.abs(y) <= 6) {
+          f2Cubes.push({ x, y, z: 0 })
+          // Add height variation
+          if (Math.abs(x) <= 3 && Math.abs(y) <= 3) {
+            f2Cubes.push({ x, y, z: 1 })
+          }
+        }
+      }
+    }
+    // Vertical pillars
+    for (let z = 0; z < 4; z++) {
+      f2Cubes.push({ x: -4, y: -4, z })
+      f2Cubes.push({ x: 4, y: -4, z })
+      f2Cubes.push({ x: -4, y: 4, z })
+      f2Cubes.push({ x: 4, y: 4, z })
+    }
+
+    // F3: Central core section
+    const f3Cubes: Array<{ x: number; y: number; z: number }> = []
+    for (let x = -4; x <= 4; x++) {
+      for (let y = -4; y <= 4; y++) {
+        if (Math.abs(x) + Math.abs(y) <= 5) {
+          f3Cubes.push({ x, y, z: 0 })
+        }
+      }
+    }
+    // Central pillar going up
+    for (let z = 0; z < 6; z++) {
+      f3Cubes.push({ x: 0, y: 0, z })
+      f3Cubes.push({ x: 1, y: 0, z })
+      f3Cubes.push({ x: 0, y: 1, z })
+      f3Cubes.push({ x: -1, y: 0, z })
+      f3Cubes.push({ x: 0, y: -1, z })
+    }
+
+    // F4: Yellow dome (mushroom cap shape)
+    const f4Cubes: Array<{ x: number; y: number; z: number }> = []
+    // Bottom layer - widest
+    for (let x = -6; x <= 6; x++) {
+      for (let y = -6; y <= 6; y++) {
+        const dist = Math.sqrt(x * x + y * y)
+        if (dist <= 6 && dist >= 4) {
+          f4Cubes.push({ x, y, z: 0 })
+        }
+      }
+    }
+    // Middle layers
+    for (let x = -5; x <= 5; x++) {
+      for (let y = -5; y <= 5; y++) {
+        const dist = Math.sqrt(x * x + y * y)
+        if (dist <= 5) {
+          f4Cubes.push({ x, y, z: 1 })
+        }
+      }
+    }
+    // Upper layers (smaller)
+    for (let x = -4; x <= 4; x++) {
+      for (let y = -4; y <= 4; y++) {
+        const dist = Math.sqrt(x * x + y * y)
+        if (dist <= 4) {
+          f4Cubes.push({ x, y, z: 2 })
+        }
+        if (dist <= 3) {
+          f4Cubes.push({ x, y, z: 3 })
+        }
+        if (dist <= 2) {
+          f4Cubes.push({ x, y, z: 4 })
+        }
+      }
+    }
+
+    return { f1Cubes, f2Cubes, f3Cubes, f4Cubes }
+  }, [])
+
   return (
     <section
       ref={containerRef}
       data-section="HERO"
-      className="relative w-full min-h-[70vh] flex items-center justify-center overflow-hidden py-8"
+      className="relative w-full min-h-[75vh] flex items-center justify-center overflow-hidden py-8"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
     >
       {/* Floor markers - left side */}
-      <nav className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-8">
+      <nav className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-10">
         {[...FLOORS].reverse().map((floor, i) => {
           const actualIndex = FLOORS.length - 1 - i
           const isHovered = hoveredFloor === floor.id
@@ -94,16 +277,6 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                   backgroundColor: isHovered || isActive ? floor.color : "var(--border)",
                 }}
               />
-              <span
-                className="text-[10px] font-mono tracking-[0.2em] transition-all duration-300"
-                style={{ 
-                  color: floor.color,
-                  opacity: isHovered || isActive ? 1 : 0,
-                  transform: isHovered || isActive ? "translateX(0)" : "translateX(-10px)",
-                }}
-              >
-                {floor.label}
-              </span>
             </button>
           )
         })}
@@ -113,14 +286,14 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
       <div
         className="relative w-full max-w-2xl mx-auto px-4"
         style={{
-          transform: `translate(${mousePos.x * 12}px, ${mousePos.y * 8}px)`,
+          transform: `translate(${mousePos.x * 8}px, ${mousePos.y * 5}px)`,
           transition: "transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         }}
       >
         <svg
-          viewBox="0 0 800 750"
+          viewBox="-300 -400 600 550"
           className="w-full h-auto"
-          style={{ 
+          style={{
             overflow: "visible",
             opacity: mounted ? 1 : 0,
             transform: mounted ? "translateY(0)" : "translateY(30px)",
@@ -129,9 +302,9 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
         >
           <defs>
             {FLOORS.map((floor) => (
-              <filter key={`glow-${floor.id}`} id={`glow-${floor.id}`} x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="6" result="blur" />
-                <feFlood floodColor={floor.color} floodOpacity="0.6" />
+              <filter key={`glow-${floor.id}`} id={`glow-${floor.id}`} x="-100%" y="-100%" width="300%" height="300%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feFlood floodColor={floor.color} floodOpacity="0.5" />
                 <feComposite in2="blur" operator="in" />
                 <feMerge>
                   <feMergeNode />
@@ -141,128 +314,169 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             ))}
           </defs>
 
-          {/* Ground grid */}
-          <g transform="translate(400, 650)" opacity="0.06">
-            {Array.from({ length: 17 }).map((_, i) => {
-              const pos = -200 + i * 25
+          {/* Ground grid - subtle */}
+          <g opacity="0.08">
+            {Array.from({ length: 21 }).map((_, i) => {
+              const pos = -100 + i * 10
               return (
                 <g key={i}>
-                  <line x1={pos * 0.866} y1={pos * 0.5} x2={(pos + 400) * 0.866 - 400 * 0.866} y2={(pos + 400) * 0.5} stroke="var(--foreground)" strokeWidth="0.5" />
-                  <line x1={-pos * 0.866} y1={pos * 0.5} x2={(-pos + 400) * 0.866 - 400 * 0.866} y2={(pos + 400) * 0.5} stroke="var(--foreground)" strokeWidth="0.5" />
+                  <line
+                    x1={pos * 0.866} y1={pos * 0.5 + 100}
+                    x2={pos * 0.866 + 200 * 0.866} y2={pos * 0.5 + 100 + 200 * 0.5}
+                    stroke="var(--foreground)" strokeWidth="0.3"
+                  />
+                  <line
+                    x1={-pos * 0.866} y1={pos * 0.5 + 100}
+                    x2={-pos * 0.866 + 200 * 0.866} y2={pos * 0.5 + 100 + 200 * 0.5}
+                    stroke="var(--foreground)" strokeWidth="0.3"
+                  />
                 </g>
               )
             })}
           </g>
 
-          {/* Construction lines */}
-          <g style={{ opacity: hoveredFloor ? 0.3 : 0.1, transition: "opacity 0.4s ease" }}>
+          {/* Construction lines radiating from center */}
+          <g style={{ opacity: hoveredFloor ? 0.4 : 0.15, transition: "opacity 0.4s ease" }}>
             {[
-              { angle: -75, len: 380, c: 0 },
-              { angle: -50, len: 420, c: 1 },
-              { angle: -25, len: 350, c: 2 },
-              { angle: 15, len: 380, c: 3 },
-              { angle: 40, len: 400, c: 0 },
-              { angle: 65, len: 340, c: 1 },
-              { angle: 115, len: 300, c: 2 },
-              { angle: 140, len: 360, c: 3 },
+              { angle: -80, len: 280, c: "#00d4ff" },
+              { angle: -55, len: 320, c: "#ff0066" },
+              { angle: -30, len: 260, c: "#F5C842" },
+              { angle: 20, len: 290, c: "#00ff88" },
+              { angle: 50, len: 310, c: "#ff0066" },
+              { angle: 75, len: 250, c: "#00d4ff" },
+              { angle: 120, len: 220, c: "#8855ff" },
+              { angle: 150, len: 270, c: "#F5C842" },
             ].map((line, i) => {
               const rad = (line.angle * Math.PI) / 180
-              const floor = FLOORS[line.c]
               return (
                 <line
                   key={i}
-                  x1={400}
-                  y1={380}
-                  x2={400 + Math.cos(rad) * line.len}
-                  y2={380 + Math.sin(rad) * line.len}
-                  stroke={floor.color}
-                  strokeWidth="1"
-                  strokeDasharray="6 12"
-                  style={{ opacity: hoveredFloor === floor.id ? 1 : 0.5, transition: "opacity 0.3s" }}
+                  x1={0} y1={-120}
+                  x2={Math.cos(rad) * line.len}
+                  y2={-120 + Math.sin(rad) * line.len}
+                  stroke={line.c}
+                  strokeWidth="0.8"
                 />
               )
             })}
           </g>
 
-          {/* Tower floors */}
-          {FLOORS.map((floor, index) => {
-            const isHovered = hoveredFloor === floor.id
-            const isActive = activeFloorIndex === index
-            const baseY = 580 - index * 120
-            const explodeOffset = isExploded ? (index - (activeFloorIndex ?? 0)) * 70 : 0
-
-            return (
-              <g
-                key={floor.id}
-                style={{
-                  transform: `translateY(${explodeOffset}px)`,
-                  transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                }}
-                onMouseEnter={() => setHoveredFloor(floor.id)}
-                onMouseLeave={() => setHoveredFloor(null)}
-                onClick={() => handleFloorClick(floor, index)}
-                className="cursor-pointer"
-                filter={isHovered || isActive ? `url(#glow-${floor.id})` : undefined}
-              >
-                {/* Large invisible hit area for easy hovering */}
-                <rect
-                  x={200}
-                  y={baseY - 130}
-                  width={400}
-                  height={140}
-                  fill="transparent"
-                  className="cursor-pointer"
+          {/* F1: Base platform - magenta */}
+          <g
+            style={{
+              transform: `translateY(${isExploded && activeFloorIndex !== 0 ? (0 - (activeFloorIndex ?? 0)) * 40 : 0}px)`,
+              transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            }}
+            onMouseEnter={() => setHoveredFloor("F1")}
+            onMouseLeave={() => setHoveredFloor(null)}
+            onClick={() => handleFloorClick(FLOORS[0], 0)}
+            className="cursor-pointer"
+            filter={hoveredFloor === "F1" || activeFloorIndex === 0 ? "url(#glow-F1)" : undefined}
+          >
+            {/* Invisible hit area */}
+            <rect x="-150" y="20" width="300" height="120" fill="transparent" />
+            <g transform="translate(0, 80)">
+              {towerStructure.f1Cubes.map((cube, i) => (
+                <IsoCube
+                  key={i}
+                  x={cube.x} y={cube.y} z={cube.z}
+                  color={FLOORS[0].color}
+                  strokeWidth={hoveredFloor === "F1" || activeFloorIndex === 0 ? 1.2 : 0.6}
+                  opacity={hoveredFloor === "F1" || activeFloorIndex === 0 ? 0.9 : 0.5}
                 />
+              ))}
+            </g>
+          </g>
 
-                {/* Floor content based on type */}
-                {index === 0 && (
-                  <FloorWork 
-                    baseY={baseY} 
-                    color={floor.color} 
-                    isHovered={isHovered} 
-                    isActive={isActive} 
-                  />
-                )}
-                {index === 1 && (
-                  <FloorAbout 
-                    baseY={baseY} 
-                    color={floor.color} 
-                    isHovered={isHovered} 
-                    isActive={isActive} 
-                  />
-                )}
-                {index === 2 && (
-                  <FloorProcess 
-                    baseY={baseY} 
-                    color={floor.color} 
-                    isHovered={isHovered} 
-                    isActive={isActive} 
-                  />
-                )}
-                {index === 3 && (
-                  <FloorContact 
-                    baseY={baseY} 
-                    color={floor.color} 
-                    isHovered={isHovered} 
-                    isActive={isActive} 
-                  />
-                )}
-              </g>
-            )
-          })}
+          {/* F2: Middle section - magenta */}
+          <g
+            style={{
+              transform: `translateY(${isExploded && activeFloorIndex !== 1 ? (1 - (activeFloorIndex ?? 0)) * 40 : 0}px)`,
+              transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            }}
+            onMouseEnter={() => setHoveredFloor("F2")}
+            onMouseLeave={() => setHoveredFloor(null)}
+            onClick={() => handleFloorClick(FLOORS[1], 1)}
+            className="cursor-pointer"
+            filter={hoveredFloor === "F2" || activeFloorIndex === 1 ? "url(#glow-F2)" : undefined}
+          >
+            <rect x="-120" y="-50" width="240" height="100" fill="transparent" />
+            <g transform="translate(0, 0)">
+              {towerStructure.f2Cubes.map((cube, i) => (
+                <IsoCube
+                  key={i}
+                  x={cube.x} y={cube.y} z={cube.z}
+                  color={FLOORS[1].color}
+                  strokeWidth={hoveredFloor === "F2" || activeFloorIndex === 1 ? 1.2 : 0.6}
+                  opacity={hoveredFloor === "F2" || activeFloorIndex === 1 ? 0.9 : 0.5}
+                />
+              ))}
+            </g>
+          </g>
 
-          {/* Dimension annotations */}
-          <g opacity="0.15" className="pointer-events-none">
-            <line x1="700" y1="120" x2="700" y2="590" stroke="var(--foreground)" strokeWidth="0.5" />
-            <line x1="695" y1="120" x2="705" y2="120" stroke="var(--foreground)" strokeWidth="0.5" />
-            <line x1="695" y1="590" x2="705" y2="590" stroke="var(--foreground)" strokeWidth="0.5" />
-            <text x="715" y="360" fontSize="9" fill="var(--foreground)" fontFamily="monospace">4F</text>
+          {/* F3: Core section - magenta/pink */}
+          <g
+            style={{
+              transform: `translateY(${isExploded && activeFloorIndex !== 2 ? (2 - (activeFloorIndex ?? 0)) * 40 : 0}px)`,
+              transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            }}
+            onMouseEnter={() => setHoveredFloor("F3")}
+            onMouseLeave={() => setHoveredFloor(null)}
+            onClick={() => handleFloorClick(FLOORS[2], 2)}
+            className="cursor-pointer"
+            filter={hoveredFloor === "F3" || activeFloorIndex === 2 ? "url(#glow-F3)" : undefined}
+          >
+            <rect x="-100" y="-130" width="200" height="100" fill="transparent" />
+            <g transform="translate(0, -80)">
+              {towerStructure.f3Cubes.map((cube, i) => (
+                <IsoCube
+                  key={i}
+                  x={cube.x} y={cube.y} z={cube.z}
+                  color={FLOORS[2].color}
+                  strokeWidth={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1.2 : 0.6}
+                  opacity={hoveredFloor === "F3" || activeFloorIndex === 2 ? 0.9 : 0.5}
+                />
+              ))}
+            </g>
+          </g>
+
+          {/* F4: Yellow dome - top */}
+          <g
+            style={{
+              transform: `translateY(${isExploded && activeFloorIndex !== 3 ? (3 - (activeFloorIndex ?? 0)) * 40 : 0}px)`,
+              transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            }}
+            onMouseEnter={() => setHoveredFloor("F4")}
+            onMouseLeave={() => setHoveredFloor(null)}
+            onClick={() => handleFloorClick(FLOORS[3], 3)}
+            className="cursor-pointer"
+            filter={hoveredFloor === "F4" || activeFloorIndex === 3 ? "url(#glow-F4)" : undefined}
+          >
+            <rect x="-120" y="-280" width="240" height="120" fill="transparent" />
+            <g transform="translate(0, -180)">
+              {towerStructure.f4Cubes.map((cube, i) => (
+                <IsoCube
+                  key={i}
+                  x={cube.x} y={cube.y} z={cube.z}
+                  color={FLOORS[3].color}
+                  strokeWidth={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1.2 : 0.6}
+                  opacity={hoveredFloor === "F4" || activeFloorIndex === 3 ? 0.9 : 0.5}
+                />
+              ))}
+            </g>
+          </g>
+
+          {/* Central vertical pillars connecting floors */}
+          <g opacity="0.3">
+            <line x1="0" y1="80" x2="0" y2="-180" stroke="var(--foreground)" strokeWidth="1" />
+            <line x1="-35" y1="60" x2="-35" y2="-60" stroke="var(--foreground)" strokeWidth="0.5" />
+            <line x1="35" y1="60" x2="35" y2="-60" stroke="var(--foreground)" strokeWidth="0.5" />
           </g>
         </svg>
       </div>
 
-      {/* Info panel */}
-      <div 
+      {/* Info panel - right side */}
+      <div
         className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 z-30 pointer-events-none transition-all duration-500"
         style={{
           opacity: activeFloor ? 1 : 0,
@@ -270,21 +484,20 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
         }}
       >
         {activeFloor && (
-          <div className="border-l-4 bg-background/90 backdrop-blur-sm pl-5 pr-6 py-4 min-w-[180px]" style={{ borderColor: activeFloor.color }}>
+          <div className="border-l-4 bg-background/90 backdrop-blur-sm pl-5 pr-6 py-4 min-w-[160px]" style={{ borderColor: activeFloor.color }}>
             <div className="flex items-center gap-2 mb-2">
               <div className="w-2.5 h-2.5" style={{ backgroundColor: activeFloor.color }} />
               <span className="text-[10px] font-mono tracking-[0.3em]" style={{ color: activeFloor.color }}>{activeFloor.id}</span>
             </div>
-            <div className="text-xl font-mono font-bold text-foreground tracking-wide">{activeFloor.label}</div>
+            <div className="text-lg font-mono font-bold text-foreground tracking-wide">{activeFloor.label}</div>
             <div className="text-[10px] font-mono text-foreground/50 mt-2 leading-relaxed">{activeFloor.desc}</div>
-            <div className="text-[8px] font-mono text-foreground/30 mt-4 tracking-[0.2em]">CLICK TO NAVIGATE</div>
           </div>
         )}
       </div>
 
-      {/* Bottom palette */}
-      <div 
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-8"
+      {/* Bottom legend */}
+      <div
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-6"
         style={{
           opacity: mounted ? 1 : 0,
           transform: mounted ? "translateY(0)" : "translateY(20px)",
@@ -297,10 +510,10 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             onClick={() => handleFloorClick(floor, i)}
             onMouseEnter={() => setHoveredFloor(floor.id)}
             onMouseLeave={() => setHoveredFloor(null)}
-            className="flex items-center gap-2.5 group cursor-pointer"
+            className="flex items-center gap-2 group cursor-pointer"
           >
             <div
-              className="w-3.5 h-3.5 border-2 transition-all duration-300"
+              className="w-3 h-3 border-2 transition-all duration-300"
               style={{
                 backgroundColor: hoveredFloor === floor.id || activeFloorIndex === i ? floor.color : "transparent",
                 borderColor: floor.color,
@@ -308,7 +521,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
               }}
             />
             <span
-              className="text-[9px] font-mono tracking-[0.2em] transition-all duration-300"
+              className="text-[9px] font-mono tracking-[0.15em] transition-all duration-300"
               style={{
                 color: hoveredFloor === floor.id || activeFloorIndex === i ? floor.color : "var(--foreground)",
                 opacity: hoveredFloor === floor.id || activeFloorIndex === i ? 1 : 0.4,
@@ -320,179 +533,5 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
         ))}
       </div>
     </section>
-  )
-}
-
-// F1: WORK - Complex modular structure with scattered project cubes
-function FloorWork({ baseY, color, isHovered, isActive }: { baseY: number; color: string; isHovered: boolean; isActive: boolean }) {
-  const opacity = isHovered || isActive ? 1 : 0.4
-  const strokeW = isHovered || isActive ? 1.8 : 1
-  const fillOpacity = isHovered || isActive ? 0.15 : 0.05
-
-  return (
-    <g transform={`translate(400, ${baseY})`} style={{ opacity, transition: "opacity 0.3s" }}>
-      {/* Base platform */}
-      <polygon points="-150,-20 0,-95 150,-20 0,55" fill={color} fillOpacity={fillOpacity} stroke={color} strokeWidth={strokeW} />
-      <polygon points="-150,-20 -150,10 0,85 0,55" fill={color} fillOpacity={fillOpacity * 0.5} stroke={color} strokeWidth={strokeW * 0.6} />
-      <polygon points="150,-20 150,10 0,85 0,55" fill={color} fillOpacity={fillOpacity * 0.3} stroke={color} strokeWidth={strokeW * 0.6} />
-      
-      {/* Grid on platform */}
-      {Array.from({ length: 5 }).map((_, i) => (
-        <line key={`g${i}`} x1={-120 + i * 60} y1={-5 - i * 15} x2={-60 + i * 60} y2={40 - i * 15} stroke={color} strokeWidth="0.4" opacity={isHovered ? 0.6 : 0.2} />
-      ))}
-      
-      {/* Project cubes - scattered */}
-      <g transform="translate(-80, -50)">
-        <polygon points="0,-25 25,-40 50,-25 25,-10" fill={color} fillOpacity={fillOpacity * 1.5} stroke={color} strokeWidth={strokeW} />
-        <polygon points="0,-25 0,5 25,20 25,-10" fill={color} fillOpacity={fillOpacity} stroke={color} strokeWidth={strokeW * 0.7} />
-        <polygon points="50,-25 50,5 25,20 25,-10" fill={color} fillOpacity={fillOpacity * 0.5} stroke={color} strokeWidth={strokeW * 0.7} />
-        <line x1="25" y1="-40" x2="25" y2="-70" stroke={color} strokeWidth={strokeW * 0.5} strokeDasharray="3 3" />
-      </g>
-      
-      <g transform="translate(40, -65)">
-        <polygon points="0,-20 20,-32 40,-20 20,-8" fill={color} fillOpacity={fillOpacity * 1.5} stroke={color} strokeWidth={strokeW} />
-        <polygon points="0,-20 0,10 20,22 20,-8" fill={color} fillOpacity={fillOpacity} stroke={color} strokeWidth={strokeW * 0.7} />
-        <polygon points="40,-20 40,10 20,22 20,-8" fill={color} fillOpacity={fillOpacity * 0.5} stroke={color} strokeWidth={strokeW * 0.7} />
-      </g>
-      
-      <g transform="translate(80, -30)">
-        <polygon points="0,-15 15,-23 30,-15 15,-7" fill={color} fillOpacity={fillOpacity * 1.5} stroke={color} strokeWidth={strokeW * 0.8} />
-        <polygon points="0,-15 0,15 15,23 15,-7" fill={color} fillOpacity={fillOpacity} stroke={color} strokeWidth={strokeW * 0.5} />
-        <polygon points="30,-15 30,15 15,23 15,-7" fill={color} fillOpacity={fillOpacity * 0.5} stroke={color} strokeWidth={strokeW * 0.5} />
-      </g>
-      
-      {/* Cross bracing lines */}
-      <line x1="-100" y1="-40" x2="100" y2="-60" stroke={color} strokeWidth="0.5" strokeDasharray="4 6" opacity={isHovered ? 0.8 : 0.3} />
-      <line x1="-80" y1="0" x2="80" y2="-80" stroke={color} strokeWidth="0.5" strokeDasharray="4 6" opacity={isHovered ? 0.8 : 0.3} />
-    </g>
-  )
-}
-
-// F2: ABOUT - Central monolithic tower with details
-function FloorAbout({ baseY, color, isHovered, isActive }: { baseY: number; color: string; isHovered: boolean; isActive: boolean }) {
-  const opacity = isHovered || isActive ? 1 : 0.4
-  const strokeW = isHovered || isActive ? 1.8 : 1
-  const fillOpacity = isHovered || isActive ? 0.15 : 0.05
-
-  return (
-    <g transform={`translate(400, ${baseY})`} style={{ opacity, transition: "opacity 0.3s" }}>
-      {/* Base */}
-      <polygon points="-130,-15 0,-80 130,-15 0,50" fill={color} fillOpacity={fillOpacity} stroke={color} strokeWidth={strokeW} />
-      <polygon points="-130,-15 -130,15 0,80 0,50" fill={color} fillOpacity={fillOpacity * 0.5} stroke={color} strokeWidth={strokeW * 0.6} />
-      <polygon points="130,-15 130,15 0,80 0,50" fill={color} fillOpacity={fillOpacity * 0.3} stroke={color} strokeWidth={strokeW * 0.6} />
-      
-      {/* Central tower */}
-      <g transform="translate(0, -40)">
-        <polygon points="-35,-30 0,-50 35,-30 0,-10" fill={color} fillOpacity={fillOpacity * 2} stroke={color} strokeWidth={strokeW * 1.2} />
-        <polygon points="-35,-30 -35,30 0,50 0,-10" fill={color} fillOpacity={fillOpacity * 1.5} stroke={color} strokeWidth={strokeW} />
-        <polygon points="35,-30 35,30 0,50 0,-10" fill={color} fillOpacity={fillOpacity} stroke={color} strokeWidth={strokeW} />
-        
-        {/* Window details */}
-        <rect x="-20" y="-25" width="8" height="12" fill="none" stroke={color} strokeWidth="0.5" transform="skewY(-30)" opacity={isHovered ? 0.8 : 0.3} />
-        <rect x="12" y="-25" width="8" height="12" fill="none" stroke={color} strokeWidth="0.5" transform="skewY(30)" opacity={isHovered ? 0.8 : 0.3} />
-      </g>
-      
-      {/* Vertical pillars */}
-      <line x1="-90" y1="-40" x2="-90" y2="30" stroke={color} strokeWidth={strokeW * 0.6} />
-      <line x1="90" y1="-40" x2="90" y2="30" stroke={color} strokeWidth={strokeW * 0.6} />
-      <line x1="-60" y1="-55" x2="-60" y2="15" stroke={color} strokeWidth={strokeW * 0.4} opacity="0.6" />
-      <line x1="60" y1="-55" x2="60" y2="15" stroke={color} strokeWidth={strokeW * 0.4} opacity="0.6" />
-      
-      {/* Horizontal connectors */}
-      <line x1="-90" y1="-20" x2="-35" y2="-50" stroke={color} strokeWidth="0.5" strokeDasharray="3 4" opacity={isHovered ? 0.8 : 0.3} />
-      <line x1="90" y1="-20" x2="35" y2="-50" stroke={color} strokeWidth="0.5" strokeDasharray="3 4" opacity={isHovered ? 0.8 : 0.3} />
-    </g>
-  )
-}
-
-// F3: PROCESS - Overlapping translucent planes (decon style)
-function FloorProcess({ baseY, color, isHovered, isActive }: { baseY: number; color: string; isHovered: boolean; isActive: boolean }) {
-  const opacity = isHovered || isActive ? 1 : 0.4
-  const strokeW = isHovered || isActive ? 1.8 : 1
-  const fillOpacity = isHovered || isActive ? 0.2 : 0.08
-
-  return (
-    <g transform={`translate(400, ${baseY})`} style={{ opacity, transition: "opacity 0.3s" }}>
-      {/* Back plane - tilted */}
-      <g transform="rotate(-8)">
-        <polygon points="-80,-60 20,-100 100,-60 0,-20" fill={color} fillOpacity={fillOpacity} stroke={color} strokeWidth={strokeW * 0.8} />
-        <polygon points="-80,-60 -80,-30 0,10 0,-20" fill={color} fillOpacity={fillOpacity * 0.5} stroke={color} strokeWidth={strokeW * 0.5} />
-      </g>
-      
-      {/* Middle plane */}
-      <polygon points="-100,-40 0,-85 100,-40 0,5" fill={color} fillOpacity={fillOpacity * 1.5} stroke={color} strokeWidth={strokeW} />
-      <polygon points="-100,-40 -100,0 0,45 0,5" fill={color} fillOpacity={fillOpacity} stroke={color} strokeWidth={strokeW * 0.7} />
-      <polygon points="100,-40 100,0 0,45 0,5" fill={color} fillOpacity={fillOpacity * 0.5} stroke={color} strokeWidth={strokeW * 0.7} />
-      
-      {/* Front plane - tilted opposite */}
-      <g transform="rotate(5)">
-        <polygon points="-60,-20 30,-55 90,-25 0,10" fill={color} fillOpacity={fillOpacity * 0.8} stroke={color} strokeWidth={strokeW * 0.8} />
-      </g>
-      
-      {/* Collision/intersection lines */}
-      <line x1="-70" y1="-50" x2="70" y2="-70" stroke={color} strokeWidth="0.6" opacity={isHovered ? 0.9 : 0.4} />
-      <line x1="-50" y1="-30" x2="80" y2="-50" stroke={color} strokeWidth="0.6" opacity={isHovered ? 0.9 : 0.4} />
-      <line x1="0" y1="-85" x2="0" y2="-120" stroke={color} strokeWidth={strokeW * 0.4} strokeDasharray="2 4" />
-      
-      {/* Internal structure hints */}
-      <line x1="-50" y1="-60" x2="-50" y2="-20" stroke={color} strokeWidth="0.4" opacity="0.5" />
-      <line x1="50" y1="-70" x2="50" y2="-30" stroke={color} strokeWidth="0.4" opacity="0.5" />
-    </g>
-  )
-}
-
-// F4: CONTACT - Beacon/antenna structure
-function FloorContact({ baseY, color, isHovered, isActive }: { baseY: number; color: string; isHovered: boolean; isActive: boolean }) {
-  const opacity = isHovered || isActive ? 1 : 0.4
-  const strokeW = isHovered || isActive ? 1.8 : 1
-  const fillOpacity = isHovered || isActive ? 0.2 : 0.08
-
-  return (
-    <g transform={`translate(400, ${baseY})`} style={{ opacity, transition: "opacity 0.3s" }}>
-      {/* Base platform */}
-      <polygon points="-90,-12 0,-60 90,-12 0,36" fill={color} fillOpacity={fillOpacity} stroke={color} strokeWidth={strokeW} />
-      <polygon points="-90,-12 -90,8 0,56 0,36" fill={color} fillOpacity={fillOpacity * 0.5} stroke={color} strokeWidth={strokeW * 0.6} />
-      <polygon points="90,-12 90,8 0,56 0,36" fill={color} fillOpacity={fillOpacity * 0.3} stroke={color} strokeWidth={strokeW * 0.6} />
-      
-      {/* Central mast */}
-      <line x1="0" y1="-60" x2="0" y2="-140" stroke={color} strokeWidth={strokeW * 1.5} />
-      
-      {/* Cross arms */}
-      <line x1="-40" y1="-100" x2="40" y2="-100" stroke={color} strokeWidth={strokeW} />
-      <line x1="-25" y1="-120" x2="25" y2="-120" stroke={color} strokeWidth={strokeW * 0.8} />
-      
-      {/* Diagonal supports */}
-      <line x1="-35" y1="-60" x2="0" y2="-100" stroke={color} strokeWidth={strokeW * 0.5} opacity="0.7" />
-      <line x1="35" y1="-60" x2="0" y2="-100" stroke={color} strokeWidth={strokeW * 0.5} opacity="0.7" />
-      
-      {/* Beacon at top */}
-      <circle cx="0" cy="-145" r={isHovered || isActive ? 10 : 6} fill={color} fillOpacity={isHovered || isActive ? 0.8 : 0.4} />
-      <circle cx="0" cy="-145" r={isHovered || isActive ? 16 : 10} fill="none" stroke={color} strokeWidth="1" opacity={isHovered ? 0.6 : 0.2} />
-      <circle cx="0" cy="-145" r={isHovered || isActive ? 24 : 14} fill="none" stroke={color} strokeWidth="0.5" opacity={isHovered ? 0.4 : 0.1} />
-      
-      {/* Signal waves when hovered */}
-      {isHovered && (
-        <>
-          <circle cx="0" cy="-145" r="32" fill="none" stroke={color} strokeWidth="0.5" opacity="0.3">
-            <animate attributeName="r" from="20" to="50" dur="1.5s" repeatCount="indefinite" />
-            <animate attributeName="opacity" from="0.5" to="0" dur="1.5s" repeatCount="indefinite" />
-          </circle>
-          <circle cx="0" cy="-145" r="40" fill="none" stroke={color} strokeWidth="0.5" opacity="0.2">
-            <animate attributeName="r" from="25" to="60" dur="1.5s" begin="0.5s" repeatCount="indefinite" />
-            <animate attributeName="opacity" from="0.4" to="0" dur="1.5s" begin="0.5s" repeatCount="indefinite" />
-          </circle>
-        </>
-      )}
-      
-      {/* Platform detail cubes */}
-      <g transform="translate(-55, -30)">
-        <polygon points="0,-8 10,-13 20,-8 10,-3" fill={color} fillOpacity={fillOpacity} stroke={color} strokeWidth="0.6" />
-        <polygon points="0,-8 0,2 10,7 10,-3" fill={color} fillOpacity={fillOpacity * 0.5} stroke={color} strokeWidth="0.4" />
-      </g>
-      <g transform="translate(40, -25)">
-        <polygon points="0,-8 10,-13 20,-8 10,-3" fill={color} fillOpacity={fillOpacity} stroke={color} strokeWidth="0.6" />
-        <polygon points="20,-8 20,2 10,7 10,-3" fill={color} fillOpacity={fillOpacity * 0.5} stroke={color} strokeWidth="0.4" />
-      </g>
-    </g>
   )
 }
