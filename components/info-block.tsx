@@ -158,99 +158,64 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
         </button>
       </div>
 
-      {/* Detail Overlay - architectural drawing detail sheet */}
+      {/* Detail Panel - inline expandable detail */}
       {showOverlay && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-            onClick={() => setShowOverlay(false)}
-          />
-          
-          {/* Detail Frame */}
-          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-card border border-border animate-in fade-in slide-in-from-bottom-4 duration-300">
-            {/* Title block header */}
-            <div className="sticky top-0 bg-card border-b border-border px-5 py-3 flex items-center justify-between">
-              <div>
-                <h3 className="text-xs font-mono font-bold text-foreground tracking-wide">DETAIL FRAME</h3>
-                <p className="text-[8px] font-mono text-foreground/35 tracking-[0.15em] mt-0.5">
-                  F2.1 — EXECUTION SYSTEM DETAIL · SCALE: NTS · LAYER: Z+1
-                </p>
-              </div>
-              <button 
-                onClick={() => setShowOverlay(false)}
-                className="p-2 hover:bg-secondary/50 transition-colors"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
+        <div className="mt-6 max-w-3xl border border-border bg-card/80 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+          {/* Title block header */}
+          <div className="bg-card border-b border-border px-4 py-2 flex items-center justify-between">
+            <div>
+              <h3 className="text-[10px] font-mono font-bold text-foreground tracking-wide">DETAIL FRAME</h3>
+              <p className="text-[8px] font-mono text-foreground/35 tracking-[0.15em] mt-0.5">
+                F2.1 — EXECUTION SYSTEM DETAIL
+              </p>
+            </div>
+            <button 
+              onClick={() => setShowOverlay(false)}
+              className="p-1.5 hover:bg-secondary/50 transition-colors"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="p-4 space-y-4">
+            {/* Context */}
+            <div>
+              <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">CONTEXT</span>
+              <p className="text-[10px] font-mono text-foreground/65 leading-relaxed mt-1.5">
+                This system converts ambiguous situations into structured, executable action.
+              </p>
             </div>
 
-            {/* Content */}
-            <div className="p-5 md:p-8 space-y-6">
-              {/* Context */}
-              <div>
-                <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">CONTEXT</span>
-                <p className="text-xs text-foreground/70 leading-relaxed mt-2">
-                  Operational environments fail when information, sequencing, and responsibility drift apart.
-                  This system converts ambiguous situations into structured, executable action.
-                </p>
-              </div>
-
-              {/* Sequence */}
-              <div>
-                <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">SEQUENCE</span>
-                <div className="mt-3 space-y-3">
-                  {phases.map((phase) => (
-                    <div key={phase.name} className="flex gap-3">
-                      <div className="w-5 h-5 flex items-center justify-center shrink-0" style={{ backgroundColor: getColor(phase.color) }}>
-                        <span className="text-[8px] font-mono text-white font-bold">{phase.num}</span>
-                      </div>
-                      <div>
-                        <h4 className="text-[10px] font-mono font-bold text-foreground">{phase.name}</h4>
-                        <p className="text-[9px] text-foreground/50 mt-0.5">{phase.description}</p>
-                      </div>
+            {/* Sequence - compact */}
+            <div>
+              <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">SEQUENCE</span>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {phases.map((phase) => (
+                  <div key={phase.name} className="flex items-center gap-1.5 px-2 py-1 bg-secondary/30 border border-border/50">
+                    <div className="w-3 h-3 flex items-center justify-center" style={{ backgroundColor: getColor(phase.color) }}>
+                      <span className="text-[6px] font-mono text-white font-bold">{phase.num}</span>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Applied Example */}
-              <div className="border-t border-border pt-5">
-                <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">APPLIED EXAMPLE</span>
-                <div className="mt-3 bg-secondary/20 border border-border/50 p-4">
-                  <h4 className="text-[10px] font-mono font-bold text-foreground">Publix Remodel Execution</h4>
-                  <p className="text-[9px] text-foreground/55 mt-2 leading-relaxed">
-                    Sequenced turnover, trade flow, reporting cadence, and issue recovery across an active remodel environment.
-                    Coordinated multiple trades simultaneously while maintaining store operations.
-                  </p>
-                </div>
-              </div>
-
-              {/* Outputs */}
-              <div className="border-t border-border pt-5">
-                <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">OUTPUTS</span>
-                <ul className="mt-3 space-y-2">
-                  {[
-                    "Cleaner project visibility",
-                    "Faster issue recovery", 
-                    "Less dropped communication",
-                    "Stronger continuity across personnel shifts"
-                  ].map((output) => (
-                    <li key={output} className="flex items-center gap-2 text-[9px] font-mono text-foreground/60">
-                      <span className="w-1 h-1 bg-foreground/30" />
-                      {output}
-                    </li>
-                  ))}
-                </ul>
+                    <span className="text-[9px] font-mono text-foreground/70">{phase.name}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="border-t border-border px-5 py-3 flex items-center justify-between text-[8px] font-mono text-foreground/30 tracking-[0.15em]">
-              <span>REV 01</span>
-              <span>BARTLETT BUILDS</span>
+            {/* Outputs - compact */}
+            <div className="flex flex-wrap gap-x-4 gap-y-1 pt-2 border-t border-border">
+              {[
+                "Cleaner visibility",
+                "Faster recovery", 
+                "Less dropped comms",
+                "Stronger continuity"
+              ].map((output) => (
+                <span key={output} className="text-[8px] font-mono text-foreground/45">
+                  {output}
+                </span>
+              ))}
             </div>
           </div>
         </div>
