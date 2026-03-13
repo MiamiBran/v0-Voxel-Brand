@@ -36,7 +36,7 @@ const SECTIONS = [
 export function DocumentFrame({ children }: DocumentFrameProps) {
   const [scrollPercent, setScrollPercent] = useState(0)
   const [currentSection, setCurrentSection] = useState("TITLE")
-  const [isAutoRotating, setIsAutoRotating] = useState(true)
+  const [isAutoRotating, setIsAutoRotating] = useState(false)
   const [showRotateCTA, setShowRotateCTA] = useState(false)
   const [rotationAngle, setRotationAngle] = useState(0)
 
@@ -68,14 +68,14 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
     return () => clearTimeout(timer)
   }, [])
 
-  // Hide CTA after user has seen it or scrolled past hero
+  // Hide CTA after user has seen it, scrolled past hero, or started rotating
   useEffect(() => {
-    if (scrollPercent > 25) {
+    if (scrollPercent > 25 || isAutoRotating) {
       setShowRotateCTA(false)
-    } else if (scrollPercent < 20 && currentSection === "HERO") {
+    } else if (scrollPercent < 20 && currentSection === "HERO" && !isAutoRotating) {
       setShowRotateCTA(true)
     }
-  }, [scrollPercent, currentSection])
+  }, [scrollPercent, currentSection, isAutoRotating])
 
   const scrollToSection = useCallback((sectionId: string) => {
     if (typeof document === "undefined") return
@@ -165,7 +165,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
               }`}
             >
               <div className="bg-background/95 border border-border px-2 py-1 rounded text-[8px] font-mono text-foreground/70">
-                <span className="text-foreground/40">click to</span> {isAutoRotating ? "pause" : "rotate"}
+                <span className="text-foreground/40">click to</span> rotate
               </div>
             </div>
 
