@@ -40,7 +40,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
   const [isAutoRotating, setIsAutoRotating] = useState(false)
   const [showRotateCTA, setShowRotateCTA] = useState(false)
   const [rotationAngle, setRotationAngle] = useState(0)
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -247,11 +247,11 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
 
           {/* Theme toggle at bottom */}
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
             className="group flex flex-col items-center gap-1.5 p-2 hover:bg-secondary/40 transition-colors rounded"
-            title={mounted ? (theme === "dark" ? "Switch to light mode" : "Switch to dark mode") : "Toggle theme"}
+            title={mounted ? (resolvedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode") : "Toggle theme"}
           >
-            {mounted && theme === "dark" ? (
+            {mounted && resolvedTheme === "dark" ? (
               <svg 
                 width="14" 
                 height="14" 
