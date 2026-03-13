@@ -97,25 +97,53 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
           </span>
         </div>
 
-        {/* COMPASS -- Rotates with scroll, acting as an orientation indicator.
-             Uses a simple cartographer-style north arrow. */}
-        <div className="flex items-center justify-center">
+        {/* COMPASS -- Cartographer-style compass rose. Rotates with scroll to 
+             indicate orientation/position within the document. */}
+        <div className="flex items-center justify-center mb-1">
           <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            className="text-muted-foreground/20 transition-transform duration-700 ease-out"
-            style={{ transform: `rotate(${scrollPercent * 1.8}deg)` }}
+            width="32"
+            height="32"
+            viewBox="0 0 48 48"
+            className="transition-transform duration-700 ease-out"
+            style={{ transform: `rotate(${scrollPercent * 3.6}deg)` }}
             aria-hidden="true"
           >
-            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="0.4" />
-            <line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" strokeWidth="0.3" />
-            <line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" strokeWidth="0.3" />
-            {/* North arrow filled */}
-            <polygon points="12,3 10.5,9 13.5,9" fill="currentColor" />
-            {/* South arrow outline */}
-            <polygon points="12,21 10.5,15 13.5,15" fill="none" stroke="currentColor" strokeWidth="0.3" />
-            <text x="12" y="1.5" textAnchor="middle" fontSize="2.5" fill="currentColor" className="font-mono">N</text>
+            {/* Outer ring */}
+            <circle cx="24" cy="24" r="22" fill="none" stroke="var(--border)" strokeWidth="0.5" />
+            {/* Inner ring */}
+            <circle cx="24" cy="24" r="16" fill="none" stroke="var(--border)" strokeWidth="0.3" />
+            {/* Degree tick marks around outer ring */}
+            {Array.from({ length: 36 }).map((_, i) => {
+              const angle = (i * 10 * Math.PI) / 180
+              const r1 = i % 9 === 0 ? 18 : 20
+              const r2 = 22
+              return (
+                <line
+                  key={i}
+                  x1={24 + r1 * Math.sin(angle)}
+                  y1={24 - r1 * Math.cos(angle)}
+                  x2={24 + r2 * Math.sin(angle)}
+                  y2={24 - r2 * Math.cos(angle)}
+                  stroke="var(--muted-foreground)"
+                  strokeWidth={i % 9 === 0 ? "0.6" : "0.25"}
+                  opacity={i % 9 === 0 ? 0.5 : 0.2}
+                />
+              )
+            })}
+            {/* North arrow -- filled dark */}
+            <polygon points="24,4 21,20 24,18 27,20" fill="var(--foreground)" opacity="0.7" />
+            {/* South arrow -- outline only */}
+            <polygon points="24,44 21,28 24,30 27,28" fill="none" stroke="var(--muted-foreground)" strokeWidth="0.4" opacity="0.3" />
+            {/* East/West lines */}
+            <line x1="4" y1="24" x2="18" y2="24" stroke="var(--muted-foreground)" strokeWidth="0.3" opacity="0.3" />
+            <line x1="30" y1="24" x2="44" y2="24" stroke="var(--muted-foreground)" strokeWidth="0.3" opacity="0.3" />
+            {/* Cardinal letters */}
+            <text x="24" y="3" textAnchor="middle" fontSize="3" fill="var(--foreground)" opacity="0.6" fontFamily="monospace">N</text>
+            <text x="24" y="47.5" textAnchor="middle" fontSize="3" fill="var(--muted-foreground)" opacity="0.25" fontFamily="monospace">S</text>
+            <text x="47" y="25" textAnchor="middle" fontSize="3" fill="var(--muted-foreground)" opacity="0.25" fontFamily="monospace">E</text>
+            <text x="1" y="25" textAnchor="middle" fontSize="3" fill="var(--muted-foreground)" opacity="0.25" fontFamily="monospace">W</text>
+            {/* Center dot */}
+            <circle cx="24" cy="24" r="1" fill="var(--foreground)" opacity="0.5" />
           </svg>
         </div>
       </div>
