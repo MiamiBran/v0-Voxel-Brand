@@ -24,20 +24,27 @@ export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref
           </p>
 
           <a
-            href="mailto:studio@isometricstrata.com"
-            className="text-xs md:text-sm font-mono text-foreground hover:text-accent transition-colors tracking-wide inline-block border-b border-foreground/15 hover:border-accent pb-px"
+            href="mailto:hello@bartlettbuilds.pro"
+            className="text-sm md:text-base font-mono text-foreground hover:text-accent transition-colors tracking-wide inline-block border-b border-foreground/30 hover:border-accent pb-px"
           >
-            studio@isometricstrata.com
+            hello@bartlettbuilds.pro
           </a>
 
-          <div className="flex flex-wrap gap-5 mt-6 pt-4 border-t border-border">
-            {["INSTAGRAM", "TWITTER/X", "BEHANCE", "ARE.NA"].map((label) => (
+          <div className="flex flex-wrap gap-4 mt-6 pt-4 border-t border-border">
+            {[
+              { label: "SUBSTACK", href: "https://substack.com/@brandonbartlett" },
+              { label: "LINKEDIN", href: "https://linkedin.com/in/brandonbartlett" },
+              { label: "X", href: "https://x.com/brandonbartlett" },
+              { label: "INSTAGRAM", href: "https://instagram.com/brandonbartlett" },
+            ].map((link) => (
               <a
-                key={label}
-                href="#"
-                className="text-[8px] font-mono tracking-[0.15em] text-muted-foreground/35 hover:text-foreground transition-colors py-1"
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] md:text-xs font-mono tracking-[0.1em] text-foreground/50 hover:text-foreground transition-colors py-2 px-2 -mx-2 hover:bg-secondary/30 rounded"
               >
-                {label}
+                {link.label}
               </a>
             ))}
           </div>
@@ -46,8 +53,8 @@ export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref
 
       {/* End of document */}
       <footer className="mt-20 pt-4 border-t border-border">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[7px] font-mono text-muted-foreground/20 tracking-[0.2em]">
-          <span>ISOMETRIC STRATA</span>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[9px] font-mono text-foreground/40 tracking-[0.15em]">
+          <span>BRANDON BARTLETT</span>
           <span>END OF DOCUMENT</span>
           <span>{'© 2026'}</span>
         </div>

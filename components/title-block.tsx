@@ -43,7 +43,7 @@ export function TitleBlock({ onProjectsClick, onInfoClick, onContactClick }: Tit
               <nav className="flex md:flex-col flex-1">
                 {[
                   { num: "01", label: "PROJECTS", onClick: onProjectsClick },
-                  { num: "02", label: "NOTES", onClick: onInfoClick },
+                  { num: "02", label: "PROCESS", onClick: onInfoClick },
                   { num: "03", label: "CONTACT", onClick: onContactClick },
                 ].map((item) => (
                   <button
