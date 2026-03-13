@@ -137,11 +137,28 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
 
       {/* RIGHT MARGIN -- Vertical info strip with drawing specs */}
       <div className="fixed right-0 top-0 h-full w-8 md:w-10 border-l border-border bg-background/90 backdrop-blur-sm z-40 flex flex-col items-center justify-between py-6">
-        {/* Top: View indicator */}
-        <div className="flex flex-col items-center gap-1">
-          <span className="text-[6px] font-mono text-muted-foreground/40 tracking-[0.2em] writing-vertical">VIEW</span>
-          <span className="text-[7px] font-mono text-foreground/50 tracking-wider writing-vertical">AXON</span>
-        </div>
+        {/* Top: CV Download button */}
+        <a
+          href="/Brandon-Bartlett-CV.pdf"
+          download
+          className="group flex flex-col items-center gap-2 py-2 px-1 hover:bg-secondary/50 transition-colors rounded"
+          title="Download CV"
+        >
+          <svg 
+            width="16" 
+            height="16" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="1.5"
+            className="text-foreground/50 group-hover:text-foreground transition-colors"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span className="text-[6px] font-mono text-muted-foreground/50 group-hover:text-foreground/70 tracking-[0.15em] writing-vertical transition-colors">CV</span>
+        </a>
         
         {/* Middle: Current section indicator */}
         <div className="flex flex-col items-center gap-2">

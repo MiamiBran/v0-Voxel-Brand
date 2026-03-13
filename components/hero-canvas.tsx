@@ -2,11 +2,11 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react"
 
-// Floors map to portfolio sections - magenta base, yellow top (like reference)
+// Floors map to portfolio sections - distinct colors for each level
 const FLOORS = [
   { id: "F1", label: "WORK", color: "#E85D4C", section: "projects", desc: "Selected projects and case studies", yOffset: 80 },
-  { id: "F2", label: "ABOUT", color: "#D64B8C", section: "info", desc: "Background, skills, and methodology", yOffset: 0 },
-  { id: "F3", label: "PROCESS", color: "#C93A7A", section: "info", desc: "How I approach challenges", yOffset: -80 },
+  { id: "F2", label: "ABOUT", color: "#4A90A4", section: "info", desc: "Background, skills, and methodology", yOffset: 0 },
+  { id: "F3", label: "PROCESS", color: "#45B07C", section: "info", desc: "How I approach challenges", yOffset: -80 },
   { id: "F4", label: "CONTACT", color: "#F5C842", section: "contact", desc: "Let's build together", yOffset: -200 },
 ]
 
@@ -201,7 +201,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
     <section
       ref={containerRef}
       data-section="HERO"
-      className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden py-12"
+      className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden pt-12 pb-32"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
     >
