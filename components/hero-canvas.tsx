@@ -9,7 +9,7 @@ import { useRotation } from "./document-frame"
 const FLOORS = [
   { id: "F1", label: "OPERATIONS", color: "#C24B75", darkColor: "#FF4D8D", section: "projects", desc: "Project index and case studies" },
   { id: "F2", label: "SYSTEMS", color: "#0099B3", darkColor: "#00D9FF", section: "process", desc: "Process and systems design" },
-  { id: "F3", label: "BUILDS", color: "#7C3AED", darkColor: "#A855F7", section: "experiments", desc: "Experiments and client feedback" },
+  { id: "F3", label: "BUILDS", color: "#2D9B6E", darkColor: "#A855F7", section: "experiments", desc: "Experiments and client feedback" },
   { id: "F4", label: "CONTACT", color: "#C9A227", darkColor: "#FFD93D", section: "contact", desc: "Get in touch" },
 ]
 
