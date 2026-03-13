@@ -2,13 +2,12 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react"
 
-// Floors aligned with document sections
+// Floors aligned with document sections - 4 floors
 const FLOORS = [
   { id: "F1", label: "OPERATIONS", color: "#E85D4C", section: "projects", desc: "Project index and case studies" },
   { id: "F2", label: "SYSTEMS", color: "#4A90A4", section: "process", desc: "Process and systems design" },
-  { id: "F3", label: "BUILDS", color: "#F5C842", section: "experiments", desc: "Architecture experiments" },
-  { id: "F3.5", label: "PROOF", color: "#9B6BC3", section: "testimonials", desc: "Social proof and references" },
-  { id: "F4", label: "SIGNAL", color: "#45B07C", section: "contact", desc: "Writing and creative signal" },
+  { id: "F3", label: "BUILDS", color: "#F5C842", section: "experiments", desc: "Experiments and social proof" },
+  { id: "F4", label: "CONTACT", color: "#45B07C", section: "contact", desc: "Get in touch" },
 ]
 
 interface HeroCanvasProps {
@@ -137,7 +136,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
       f3.push({ x: 0, y: -1, z })
     }
 
-    // F4: Ring structure (TESTIMONIALS)
+    // F4: Top structure (CONTACT)
     const f4: Array<{ x: number; y: number; z: number }> = []
     for (let x = -4; x <= 4; x++) {
       for (let y = -4; y <= 4; y++) {
@@ -146,23 +145,11 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
       }
     }
 
-    // F5: Beacon top (CONTACT)
-    const f5: Array<{ x: number; y: number; z: number }> = []
-    for (let x = -2; x <= 2; x++) {
-      for (let y = -2; y <= 2; y++) {
-        if (Math.abs(x) + Math.abs(y) <= 3) f5.push({ x, y, z: 0 })
-      }
-    }
-    // Spire
-    for (let z = 0; z < 5; z++) {
-      f5.push({ x: 0, y: 0, z })
-    }
-
-    return { f1, f2, f3, f4, f5, scale, floorHeight }
+    return { f1, f2, f3, f4, scale, floorHeight }
   }, [])
 
-  // Floor Y positions (bottom to top)
-  const floorPositions = [160, 80, 0, -80, -160]
+  // Floor Y positions (bottom to top) - 4 floors
+  const floorPositions = [140, 40, -60, -160]
 
   return (
     <section
@@ -345,7 +332,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             </g>
           </g>
 
-          {/* F4: TESTIMONIALS */}
+          {/* F4: CONTACT */}
           <g
             onMouseEnter={() => setHoveredFloor("F4")}
             onMouseLeave={() => setHoveredFloor(null)}
@@ -368,28 +355,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             </g>
           </g>
 
-          {/* F5: CONTACT */}
-          <g
-            onMouseEnter={() => setHoveredFloor("F5")}
-            onMouseLeave={() => setHoveredFloor(null)}
-            onClick={() => handleFloorClick(FLOORS[4], 4)}
-            className="cursor-pointer"
-            filter={hoveredFloor === "F5" || activeFloorIndex === 4 ? "url(#glow-F5)" : undefined}
-          >
-            <rect x="-70" y={floorPositions[4] - 30} width="140" height="80" fill="transparent" />
-            <g transform={`translate(0, ${floorPositions[4]})`}>
-              {towerStructure.f5.map((c, i) => (
-                <IsoCube
-                  key={i}
-                  x={c.x} y={c.y} z={c.z}
-                  color={FLOORS[4].color}
-                  strokeWidth={hoveredFloor === "F5" || activeFloorIndex === 4 ? 1.4 : 0.8}
-                  opacity={hoveredFloor === "F5" || activeFloorIndex === 4 ? 1 : 0.7}
-                  scale={towerStructure.scale}
-                />
-              ))}
-            </g>
-          </g>
+
 
           {/* Central axis line */}
           <line x1="0" y1="180" x2="0" y2="-200" stroke="var(--foreground)" strokeWidth="0.5" opacity="0.15" />

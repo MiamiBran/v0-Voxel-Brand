@@ -14,7 +14,7 @@ export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref
         {/* Section header inside the card */}
         <div className="flex items-baseline justify-between px-5 md:px-6 py-4 border-b border-border">
           <div className="flex items-baseline gap-3">
-            <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">SIGNAL</h2>
+            <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">CONTACT</h2>
             <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">F4</span>
           </div>
         </div>
@@ -44,7 +44,7 @@ export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[10px] md:text-xs font-mono tracking-[0.1em] text-foreground/50 hover:text-foreground transition-colors py-2 px-2 -mx-2 hover:bg-secondary/30 rounded"
+                className="text-[8px] font-mono tracking-[0.1em] text-foreground/50 hover:text-foreground transition-colors py-1.5 px-1.5 hover:bg-secondary/30 rounded"
               >
                 {link.label}
               </a>

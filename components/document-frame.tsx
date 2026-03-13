@@ -8,13 +8,12 @@ interface DocumentFrameProps {
 
 // Sections map to the document structure
 const SECTIONS = [
-  { id: "TITLE", label: "F0", percent: 2 },
-  { id: "HERO", label: "—", percent: 10 },
-  { id: "PROJECTS", label: "F1", percent: 25 },
-  { id: "PROCESS", label: "F2", percent: 40 },
-  { id: "EXPERIMENTS", label: "F3", percent: 55 },
-  { id: "TESTIMONIALS", label: "F3.5", percent: 72 },
-  { id: "CONTACT", label: "F4", percent: 90 },
+  { id: "TITLE", label: "F0", percent: 3 },
+  { id: "HERO", label: "—", percent: 15 },
+  { id: "PROJECTS", label: "F1", percent: 35 },
+  { id: "PROCESS", label: "F2", percent: 52 },
+  { id: "EXPERIMENTS", label: "F3", percent: 72 },
+  { id: "CONTACT", label: "F4", percent: 92 },
 ]
 
 export function DocumentFrame({ children }: DocumentFrameProps) {

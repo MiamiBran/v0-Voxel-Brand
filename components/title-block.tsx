@@ -4,26 +4,23 @@ import { useState } from "react"
 
 interface TitleBlockProps {
   onProjectsClick: () => void
-  onExperimentsClick: () => void
   onProcessClick: () => void
-  onTestimonialsClick: () => void
+  onBuildsClick: () => void
   onContactClick: () => void
 }
 
-// Colors aligned with hero floors
+// Colors aligned with sections
 const SECTION_COLORS = {
   projects: "#E85D4C",    // F1 OPERATIONS
   process: "#4A90A4",     // F2 SYSTEMS
-  experiments: "#F5C842", // F3 BUILDS
-  testimonials: "#9B6BC3", // F3.5 PROOF
-  contact: "#45B07C",     // F4 SIGNAL
+  builds: "#F5C842",      // F3 BUILDS
+  contact: "#45B07C",     // F4 CONTACT
 }
 
 export function TitleBlock({ 
   onProjectsClick, 
-  onExperimentsClick, 
   onProcessClick, 
-  onTestimonialsClick, 
+  onBuildsClick,
   onContactClick 
 }: TitleBlockProps) {
   const [contactHovered, setContactHovered] = useState(false)
@@ -31,8 +28,7 @@ export function TitleBlock({
   const navItems = [
     { num: "F1", label: "OPERATIONS", color: SECTION_COLORS.projects, onClick: onProjectsClick },
     { num: "F2", label: "SYSTEMS", color: SECTION_COLORS.process, onClick: onProcessClick },
-    { num: "F3", label: "BUILDS", color: SECTION_COLORS.experiments, onClick: onExperimentsClick },
-    { num: "F3.5", label: "PROOF", color: SECTION_COLORS.testimonials, onClick: onTestimonialsClick },
+    { num: "F3", label: "BUILDS", color: SECTION_COLORS.builds, onClick: onBuildsClick },
   ]
 
   return (
@@ -59,7 +55,7 @@ export function TitleBlock({
             </div>
 
             {/* Nav panel */}
-            <div className="border-t md:border-t-0 border-border flex flex-col min-w-[200px]">
+            <div className="border-t md:border-t-0 border-border flex flex-col min-w-[180px]">
               <div className="border-b border-border px-4 py-1 text-[7px] font-mono text-foreground/40 tracking-[0.2em]">
                 INDEX
               </div>
@@ -98,7 +94,7 @@ export function TitleBlock({
                     />
                     <span className="text-[7px] font-mono text-foreground/35">F4</span>
                     <span className="text-[9px] md:text-[10px] font-mono tracking-[0.1em] text-foreground/70 group-hover:text-foreground transition-colors">
-                      SIGNAL
+                      CONTACT
                     </span>
                     <svg 
                       width="8" 
@@ -124,9 +120,9 @@ export function TitleBlock({
                         href="https://cal.com/brandonbartlett"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2.5 text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 text-[8px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors"
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <rect x="3" y="4" width="18" height="18" rx="2" />
                           <line x1="16" y1="2" x2="16" y2="6" />
                           <line x1="8" y1="2" x2="8" y2="6" />
@@ -136,9 +132,9 @@ export function TitleBlock({
                       </a>
                       <a
                         href="mailto:hello@bartlettbuilds.pro"
-                        className="flex items-center gap-2 px-4 py-2.5 text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors border-t border-border"
+                        className="flex items-center gap-2 px-4 py-2 text-[8px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors border-t border-border"
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <rect x="2" y="4" width="20" height="16" rx="2" />
                           <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                         </svg>
@@ -147,14 +143,14 @@ export function TitleBlock({
                       <a
                         href="/Brandon-Bartlett-CV.pdf"
                         download
-                        className="flex items-center gap-2 px-4 py-2.5 text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors border-t border-border"
+                        className="flex items-center gap-2 px-4 py-2 text-[8px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 transition-colors border-t border-border"
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                           <polyline points="7 10 12 15 17 10" />
                           <line x1="12" y1="15" x2="12" y2="3" />
                         </svg>
-                        DOWNLOAD RESUME
+                        RESUME
                       </a>
                     </div>
                   </div>
