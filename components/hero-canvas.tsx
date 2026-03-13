@@ -335,30 +335,16 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             })}
           </g>
 
-          {/* Construction lines radiating from center */}
+          {/* Construction lines radiating from center - pre-computed to avoid hydration mismatch */}
           <g style={{ opacity: hoveredFloor ? 0.4 : 0.15, transition: "opacity 0.4s ease" }}>
-            {[
-              { angle: -80, len: 280, c: "#00d4ff" },
-              { angle: -55, len: 320, c: "#ff0066" },
-              { angle: -30, len: 260, c: "#F5C842" },
-              { angle: 20, len: 290, c: "#00ff88" },
-              { angle: 50, len: 310, c: "#ff0066" },
-              { angle: 75, len: 250, c: "#00d4ff" },
-              { angle: 120, len: 220, c: "#8855ff" },
-              { angle: 150, len: 270, c: "#F5C842" },
-            ].map((line, i) => {
-              const rad = (line.angle * Math.PI) / 180
-              return (
-                <line
-                  key={i}
-                  x1={0} y1={-120}
-                  x2={Math.cos(rad) * line.len}
-                  y2={-120 + Math.sin(rad) * line.len}
-                  stroke={line.c}
-                  strokeWidth="0.8"
-                />
-              )
-            })}
+            <line x1="0" y1="-120" x2="48.6" y2="-395.8" stroke="#00d4ff" strokeWidth="0.8" />
+            <line x1="0" y1="-120" x2="183.5" y2="-382.1" stroke="#ff0066" strokeWidth="0.8" />
+            <line x1="0" y1="-120" x2="225.2" y2="-250" stroke="#F5C842" strokeWidth="0.8" />
+            <line x1="0" y1="-120" x2="272.6" y2="-20.8" stroke="#00ff88" strokeWidth="0.8" />
+            <line x1="0" y1="-120" x2="199.3" y2="117.5" stroke="#ff0066" strokeWidth="0.8" />
+            <line x1="0" y1="-120" x2="64.7" y2="121.5" stroke="#00d4ff" strokeWidth="0.8" />
+            <line x1="0" y1="-120" x2="-110" y2="70.5" stroke="#8855ff" strokeWidth="0.8" />
+            <line x1="0" y1="-120" x2="-233.8" y2="15" stroke="#F5C842" strokeWidth="0.8" />
           </g>
 
           {/* F1: Base platform - magenta */}
