@@ -45,14 +45,10 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
       data-section="PROCESS"
     >
       {/* Floating floor container with depth */}
-      <div className="border border-border bg-card/50 backdrop-blur-sm relative max-w-3xl">
-        {/* Floor color indicator - subtle left edge */}
-        <div className="absolute left-0 top-0 w-0.5 h-full" style={{ backgroundColor: "#4A90A4" }} />
-
+      <div className="border border-border bg-card/50 backdrop-blur-sm max-w-3xl">
         {/* Section header inside the card */}
         <div className="flex items-baseline justify-between px-5 md:px-6 py-4 border-b border-border">
           <div className="flex items-baseline gap-3">
-            <div className="w-2.5 h-2.5 border border-border/50" style={{ backgroundColor: "#4A90A4" }} />
             <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">PROCESS</h2>
             <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">SEC. 02</span>
           </div>

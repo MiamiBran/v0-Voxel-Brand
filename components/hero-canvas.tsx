@@ -2,12 +2,11 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react"
 
-// Floors map to portfolio sections - distinct colors for each level
+// Floors map to portfolio sections - aligned with nav (3 sections)
 const FLOORS = [
-  { id: "F1", label: "WORK", color: "#E85D4C", section: "projects", desc: "Selected projects and case studies", yOffset: 80 },
-  { id: "F2", label: "ABOUT", color: "#4A90A4", section: "info", desc: "Background, skills, and methodology", yOffset: 0 },
-  { id: "F3", label: "PROCESS", color: "#45B07C", section: "info", desc: "How I approach challenges", yOffset: -80 },
-  { id: "F4", label: "CONTACT", color: "#F5C842", section: "contact", desc: "Let's build together", yOffset: -200 },
+  { id: "F1", label: "PROJECTS", color: "#E85D4C", section: "projects", desc: "Selected projects and case studies", yOffset: 80 },
+  { id: "F2", label: "PROCESS", color: "#4A90A4", section: "info", desc: "How I approach complex challenges", yOffset: -40 },
+  { id: "F3", label: "CONTACT", color: "#45B07C", section: "contact", desc: "Let's build together", yOffset: -180 },
 ]
 
 interface HeroCanvasProps {
@@ -155,34 +154,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
       f3Cubes.push({ x: 0, y: -1, z })
     }
 
-    // F4: Yellow dome
-    const f4Cubes: Array<{ x: number; y: number; z: number }> = []
-    for (let x = -6; x <= 6; x++) {
-      for (let y = -6; y <= 6; y++) {
-        const dist = Math.sqrt(x * x + y * y)
-        if (dist <= 6 && dist >= 4) {
-          f4Cubes.push({ x, y, z: 0 })
-        }
-      }
-    }
-    for (let x = -5; x <= 5; x++) {
-      for (let y = -5; y <= 5; y++) {
-        const dist = Math.sqrt(x * x + y * y)
-        if (dist <= 5) {
-          f4Cubes.push({ x, y, z: 1 })
-        }
-      }
-    }
-    for (let x = -4; x <= 4; x++) {
-      for (let y = -4; y <= 4; y++) {
-        const dist = Math.sqrt(x * x + y * y)
-        if (dist <= 4) f4Cubes.push({ x, y, z: 2 })
-        if (dist <= 3) f4Cubes.push({ x, y, z: 3 })
-        if (dist <= 2) f4Cubes.push({ x, y, z: 4 })
-      }
-    }
-
-    return { f1Cubes, f2Cubes, f3Cubes, f4Cubes }
+    return { f1Cubes, f2Cubes, f3Cubes }
   }, [])
 
   // Construction lines - shorter, proportional to tower
@@ -404,33 +376,6 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                   color={FLOORS[2].color}
                   strokeWidth={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1.8 : 1}
                   opacity={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1 : 0.75}
-                  scale={14}
-                />
-              ))}
-            </g>
-          </g>
-
-          {/* F4: Yellow dome */}
-          <g
-            style={{
-              transform: `translateY(${isExploded && activeFloorIndex !== 3 ? (3 - (activeFloorIndex ?? 0)) * 50 : 0}px)`,
-              transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
-            }}
-            onMouseEnter={() => setHoveredFloor("F4")}
-            onMouseLeave={() => setHoveredFloor(null)}
-            onClick={() => handleFloorClick(FLOORS[3], 3)}
-            className="cursor-pointer"
-            filter={hoveredFloor === "F4" || activeFloorIndex === 3 ? "url(#glow-F4)" : undefined}
-          >
-            <rect x="-150" y="-350" width="300" height="150" fill="transparent" />
-            <g transform="translate(0, -310)">
-              {towerStructure.f4Cubes.map((cube, i) => (
-                <IsoCube
-                  key={i}
-                  x={cube.x} y={cube.y} z={cube.z}
-                  color={FLOORS[3].color}
-                  strokeWidth={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1.8 : 1}
-                  opacity={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1 : 0.75}
                   scale={14}
                 />
               ))}

@@ -96,14 +96,10 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
       data-section="PROJECTS"
     >
       {/* Floating floor container with depth */}
-      <div className="border border-border bg-card/50 backdrop-blur-sm relative">
-        {/* Floor color indicator - subtle left edge */}
-        <div className="absolute left-0 top-0 w-0.5 h-full" style={{ backgroundColor: "#E85D4C" }} />
-        
+      <div className="border border-border bg-card/50 backdrop-blur-sm">
         {/* Section header inside the card */}
         <div className="flex items-baseline justify-between px-5 md:px-6 py-4 border-b border-border">
           <div className="flex items-baseline gap-3">
-            <div className="w-2.5 h-2.5 border border-border/50" style={{ backgroundColor: "#E85D4C" }} />
             <h2 className="text-sm md:text-base font-mono font-bold tracking-tight text-foreground">
               PROJECT INDEX
             </h2>
