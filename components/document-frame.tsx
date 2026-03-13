@@ -1,6 +1,7 @@
 "use client"
 
 import { type ReactNode, useEffect, useState, useCallback, createContext, useContext } from "react"
+import { useTheme } from "next-themes"
 
 // Context to share rotation state with hero
 export const RotationContext = createContext<{
@@ -25,12 +26,12 @@ interface DocumentFrameProps {
 
 // Sections map to the document structure
 const SECTIONS = [
-  { id: "TITLE", label: "F0", percent: 3 },
-  { id: "HERO", label: "—", percent: 15 },
-  { id: "PROJECTS", label: "F1", percent: 35 },
-  { id: "PROCESS", label: "F2", percent: 52 },
+  { id: "TITLE", label: "F0", percent: 12 },
+  { id: "HERO", label: "—", percent: 22 },
+  { id: "PROJECTS", label: "F1", percent: 40 },
+  { id: "PROCESS", label: "F2", percent: 55 },
   { id: "EXPERIMENTS", label: "F3", percent: 72 },
-  { id: "CONTACT", label: "F4", percent: 92 },
+  { id: "CONTACT", label: "F4", percent: 97 },
 ]
 
 export function DocumentFrame({ children }: DocumentFrameProps) {
@@ -39,6 +40,12 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
   const [isAutoRotating, setIsAutoRotating] = useState(false)
   const [showRotateCTA, setShowRotateCTA] = useState(false)
   const [rotationAngle, setRotationAngle] = useState(0)
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,20 +99,27 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
     <RotationContext.Provider value={{ isAutoRotating, toggleRotation, rotationAngle, setRotationAngle }}>
       <div className="min-h-screen bg-background grid-paper paper-texture relative">
         
-        {/* LEFT MARGIN -- Floor markers on a progress track */}
-        <div className="fixed left-0 top-0 h-full w-10 md:w-12 border-r border-border bg-background/90 backdrop-blur-sm z-40">
+        {/* LEFT MARGIN -- Logo at top, floor markers on a progress track */}
+        <div className="fixed left-0 top-0 h-full w-10 md:w-12 border-r border-border bg-background/90 backdrop-blur-sm z-40 flex flex-col">
           
-          {/* Progress track */}
-          <div className="absolute left-1/2 top-8 bottom-8 w-px bg-border -translate-x-1/2">
-            {/* Fill based on scroll */}
-            <div 
-              className="absolute top-0 left-0 w-full bg-foreground/30 transition-all duration-150"
-              style={{ height: `${scrollPercent}%` }}
-            />
+          {/* Logo space at top */}
+          <div className="h-12 flex items-center justify-center border-b border-border/50">
+            <span className="text-[10px] font-mono font-bold text-foreground/60 tracking-tight">BB</span>
           </div>
+          
+          {/* Progress track container */}
+          <div className="flex-1 relative">
+            {/* Progress track */}
+            <div className="absolute left-1/2 top-4 bottom-4 w-px bg-border -translate-x-1/2">
+              {/* Fill based on scroll */}
+              <div 
+                className="absolute top-0 left-0 w-full bg-foreground/30 transition-all duration-150"
+                style={{ height: `${scrollPercent}%` }}
+              />
+            </div>
 
-          {/* Floor markers */}
-          {SECTIONS.map((s) => {
+            {/* Floor markers */}
+            {SECTIONS.map((s) => {
             const active = currentSection === s.id
             return (
               <button
@@ -127,6 +141,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
               </button>
             )
           })}
+          </div>
         </div>
 
         {/* RIGHT MARGIN -- Compass rotation control centered, CV at top */}
@@ -230,8 +245,46 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
             </button>
           </div>
 
-          {/* Spacer */}
-          <div className="w-4" />
+          {/* Theme toggle at bottom */}
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="group flex flex-col items-center gap-1.5 p-2 hover:bg-secondary/40 transition-colors rounded"
+            title={mounted ? (theme === "dark" ? "Switch to light mode" : "Switch to dark mode") : "Toggle theme"}
+          >
+            {mounted && theme === "dark" ? (
+              <svg 
+                width="14" 
+                height="14" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="1.5"
+                className="text-foreground/40 group-hover:text-foreground transition-colors"
+              >
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </svg>
+            ) : (
+              <svg 
+                width="14" 
+                height="14" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="1.5"
+                className="text-foreground/40 group-hover:text-foreground transition-colors"
+              >
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
+          </button>
         </div>
 
         {/* CORNER MARKS */}
