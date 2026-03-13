@@ -1,7 +1,9 @@
 "use client"
 
 import { forwardRef, useState, useEffect, useRef } from "react"
+import { useTheme } from "next-themes"
 
+// Colors aligned with hero - light and dark mode values
 const phases = [
   {
     name: "DISCOVERY",
@@ -9,7 +11,7 @@ const phases = [
     description:
       "Audit constraints, stakeholders, timing pressure, dependencies. Map the landscape before drawing the first line.",
     outputs: ["Stakeholder Interviews", "System Audits", "Constraint Mapping"],
-    color: "#E85D4C",
+    color: { light: "#C24B75", dark: "#FF4D8D" },  // F1 pink
   },
   {
     name: "ARCHITECTURE",
@@ -17,7 +19,7 @@ const phases = [
     description:
       "Design the workflow, ownership structure, reporting rhythm, and execution map. Create the blueprint teams can build against.",
     outputs: ["Process Design", "Resource Planning", "Risk Mitigation"],
-    color: "#4A90A4",
+    color: { light: "#0099B3", dark: "#00D9FF" },  // F2 teal/cyan
   },
   {
     name: "EXECUTION",
@@ -25,7 +27,7 @@ const phases = [
     description:
       "Deploy in the field, coordinate moving parts, remove blockers, preserve momentum. Lead from the front.",
     outputs: ["Field Operations", "Team Coordination", "Progress Tracking"],
-    color: "#45B07C",
+    color: { light: "#2D9B6E", dark: "#A855F7" },  // F3 green/purple
   },
   {
     name: "ITERATION",
@@ -33,7 +35,7 @@ const phases = [
     description:
       "Refine from live feedback and convert lessons into repeatable structure. Build sustainable processes, not one-time fixes.",
     outputs: ["Performance Analysis", "Process Optimization", "Knowledge Transfer"],
-    color: "#F5C842",
+    color: { light: "#C9A227", dark: "#FFD93D" },  // F4 amber/yellow
   },
 ]
 
@@ -41,6 +43,15 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
   const [showCTA, setShowCTA] = useState(false)
   const [showOverlay, setShowOverlay] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  const isDark = mounted && resolvedTheme === "dark"
+  const getColor = (colors: { light: string; dark: string }) => isDark ? colors.dark : colors.light
 
   // Scroll-triggered CTA
   useEffect(() => {
@@ -103,7 +114,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
             <div className="flex items-stretch">
               {/* Phase number with color indicator */}
               <div className="w-10 shrink-0 border-r border-border flex flex-col items-center justify-center py-4 gap-2">
-                <div className="w-3 h-3" style={{ backgroundColor: phase.color }} />
+                <div className="w-3 h-3" style={{ backgroundColor: getColor(phase.color) }} />
                 <span className="text-[8px] font-mono text-foreground/40">{phase.num}</span>
               </div>
 
@@ -193,7 +204,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
                 <div className="mt-3 space-y-3">
                   {phases.map((phase) => (
                     <div key={phase.name} className="flex gap-3">
-                      <div className="w-5 h-5 flex items-center justify-center shrink-0" style={{ backgroundColor: phase.color }}>
+                      <div className="w-5 h-5 flex items-center justify-center shrink-0" style={{ backgroundColor: getColor(phase.color) }}>
                         <span className="text-[8px] font-mono text-white font-bold">{phase.num}</span>
                       </div>
                       <div>

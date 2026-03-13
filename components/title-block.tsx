@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useTheme } from "next-themes"
 
 interface TitleBlockProps {
   onProjectsClick: () => void
@@ -9,12 +10,12 @@ interface TitleBlockProps {
   onContactClick: () => void
 }
 
-// Colors aligned with sections
+// Colors aligned with hero - light and dark mode values
 const SECTION_COLORS = {
-  projects: "#E85D4C",    // F1 OPERATIONS
-  process: "#4A90A4",     // F2 SYSTEMS
-  builds: "#F5C842",      // F3 BUILDS
-  contact: "#45B07C",     // F4 CONTACT
+  projects: { light: "#C24B75", dark: "#FF4D8D" },    // F1 OPERATIONS - pink
+  process: { light: "#0099B3", dark: "#00D9FF" },     // F2 SYSTEMS - teal/cyan
+  builds: { light: "#2D9B6E", dark: "#A855F7" },      // F3 BUILDS - green/purple
+  contact: { light: "#C9A227", dark: "#FFD93D" },     // F4 CONTACT - amber/yellow
 }
 
 export function TitleBlock({ 
@@ -24,11 +25,20 @@ export function TitleBlock({
   onContactClick 
 }: TitleBlockProps) {
   const [contactHovered, setContactHovered] = useState(false)
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  const isDark = mounted && resolvedTheme === "dark"
+  const getColor = (colors: { light: string; dark: string }) => isDark ? colors.dark : colors.light
 
   const navItems = [
-    { num: "F1", label: "OPERATIONS", color: SECTION_COLORS.projects, onClick: onProjectsClick },
-    { num: "F2", label: "SYSTEMS", color: SECTION_COLORS.process, onClick: onProcessClick },
-    { num: "F3", label: "BUILDS", color: SECTION_COLORS.builds, onClick: onBuildsClick },
+    { num: "F1", label: "OPERATIONS", color: getColor(SECTION_COLORS.projects), onClick: onProjectsClick },
+    { num: "F2", label: "SYSTEMS", color: getColor(SECTION_COLORS.process), onClick: onProcessClick },
+    { num: "F3", label: "BUILDS", color: getColor(SECTION_COLORS.builds), onClick: onBuildsClick },
   ]
 
   return (
@@ -90,7 +100,7 @@ export function TitleBlock({
                   >
                     <div 
                       className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0" 
-                      style={{ backgroundColor: SECTION_COLORS.contact }} 
+                      style={{ backgroundColor: getColor(SECTION_COLORS.contact) }} 
                     />
                     <span className="text-[9px] font-mono text-foreground/40">F4</span>
                     <span className="text-[10px] font-mono tracking-[0.1em] text-foreground/70 group-hover:text-foreground transition-colors">
