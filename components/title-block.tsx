@@ -39,18 +39,22 @@ export function TitleBlock({ onProjectsClick, onInfoClick, onContactClick }: Tit
                 INDEX
               </div>
 
-              {/* Navigation -- styled as a drawing sheet index */}
+              {/* Navigation -- with color swatches inside each button */}
               <nav className="flex md:flex-col flex-1">
                 {[
-                  { num: "01", label: "PROJECTS", onClick: onProjectsClick },
-                  { num: "02", label: "PROCESS", onClick: onInfoClick },
-                  { num: "03", label: "CONTACT", onClick: onContactClick },
+                  { num: "01", label: "PROJECTS", color: "#E85D4C", onClick: onProjectsClick },
+                  { num: "02", label: "PROCESS", color: "#4A90A4", onClick: onInfoClick },
+                  { num: "03", label: "CONTACT", color: "#45B07C", onClick: onContactClick },
                 ].map((item) => (
                   <button
                     key={item.num}
                     onClick={item.onClick}
-                    className="flex items-center gap-3 px-4 py-2.5 text-left group border-r md:border-r-0 md:border-b border-border last:border-r-0 last:border-b-0 hover:bg-secondary/40 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 text-left group border-r md:border-r-0 md:border-b border-border last:border-r-0 last:border-b-0 hover:bg-secondary/40 transition-colors"
                   >
+                    <div 
+                      className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0" 
+                      style={{ backgroundColor: item.color }} 
+                    />
                     <span className="text-[7px] font-mono text-foreground/35">{item.num}</span>
                     <span className="text-[9px] md:text-[10px] font-mono tracking-[0.15em] text-foreground/70 group-hover:text-foreground transition-colors">
                       {item.label}
@@ -58,28 +62,6 @@ export function TitleBlock({ onProjectsClick, onInfoClick, onContactClick }: Tit
                   </button>
                 ))}
               </nav>
-
-              {/* Palette legend -- colors attached to their respective sections */}
-              <div className="border-t border-border px-4 py-2 flex items-center gap-1">
-                {[
-                  { color: "#E85D4C", key: "01", label: "PROJECTS", onClick: onProjectsClick },
-                  { color: "#4A90A4", key: "02", label: "PROCESS", onClick: onInfoClick },
-                  { color: "#45B07C", key: "03", label: "CONTACT", onClick: onContactClick },
-                ].map((s) => (
-                  <button
-                    key={s.key}
-                    onClick={s.onClick}
-                    className="flex items-center gap-1.5 px-2 py-1 hover:bg-secondary/40 rounded transition-colors group"
-                    title={s.label}
-                  >
-                    <div 
-                      className="w-2.5 h-2.5 border border-border group-hover:scale-110 transition-transform" 
-                      style={{ backgroundColor: s.color }} 
-                    />
-                    <span className="text-[7px] font-mono text-foreground/50 group-hover:text-foreground/80 hidden md:block transition-colors">{s.key}</span>
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         </div>

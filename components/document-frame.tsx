@@ -56,29 +56,23 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
             style={{ height: `${scrollPercent}%` }}
           />
           
-          {/* Floor markers positioned along the track */}
+          {/* Floor markers positioned along the track - centered */}
           {SECTIONS.map((s) => {
             const active = currentSection === s.id
             return (
               <button
                 key={s.id}
                 onClick={() => scrollToSection(s.id)}
-                className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1 group"
+                className="absolute left-1/2 flex flex-col items-center group"
                 style={{ top: `${s.percent}%`, transform: `translate(-50%, -50%)` }}
                 aria-label={`Go to ${s.id}`}
               >
-                {/* Tick mark */}
+                {/* Label centered on the line */}
                 <span
-                  className={`h-px transition-all duration-300 ${
-                    active
-                      ? "w-6 bg-foreground"
-                      : "w-3 bg-border group-hover:w-4 group-hover:bg-muted-foreground/60"
-                  }`}
-                />
-                {/* Label */}
-                <span
-                  className={`text-[10px] font-mono tracking-wider transition-colors duration-300 whitespace-nowrap ${
-                    active ? "text-foreground font-medium" : "text-muted-foreground/35 group-hover:text-muted-foreground/60"
+                  className={`text-[10px] font-mono tracking-wider transition-all duration-300 whitespace-nowrap px-1 py-0.5 rounded ${
+                    active 
+                      ? "text-foreground font-medium bg-background" 
+                      : "text-muted-foreground/40 group-hover:text-muted-foreground/70 group-hover:bg-background/50"
                   }`}
                 >
                   {s.label}
