@@ -155,7 +155,8 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
         {/* Section header with toggle */}
         <div className="flex items-center justify-between px-4 md:px-5 py-3 border-b border-border">
           <div className="flex items-baseline gap-3">
-            <span className="text-[9px] font-mono text-muted-foreground/35 tracking-[0.2em]">F1</span>
+            <h2 className="text-xs font-mono font-bold tracking-wide text-foreground">OPERATIONS</h2>
+            <span className="text-[9px] font-mono text-foreground/35 tracking-[0.2em]">F1</span>
           </div>
           
           {/* Toggle */}
