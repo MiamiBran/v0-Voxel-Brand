@@ -136,16 +136,27 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
 
         {/* Content area with animations */}
         <div className="relative overflow-hidden">
-          {/* BUILDS content - dropdown animation triggered by tab click */}
+          {/* BUILDS content - subtext always visible, list drops down */}
           <div 
-            className={`transition-all duration-400 ease-out overflow-hidden ${
-              activeTab === "builds" && buildsExpanded
-                ? "opacity-100 max-h-[600px]" 
-                : activeTab === "builds"
-                ? "opacity-100 max-h-0"
-                : "opacity-0 max-h-0 absolute inset-x-0"
+            className={`transition-all duration-500 ease-out ${
+              activeTab === "builds" 
+                ? "opacity-100" 
+                : "opacity-0 absolute inset-x-0 pointer-events-none"
             }`}
           >
+            {/* Subtext - always visible when builds tab active */}
+            <div className="px-5 md:px-6 py-3 border-b border-border">
+              <p className="text-[10px] font-mono text-foreground/50 leading-relaxed">
+                Side projects, prototypes, and ongoing investigations.
+              </p>
+            </div>
+            
+            {/* Expandable experiments list */}
+            <div 
+              className={`overflow-hidden transition-all duration-500 ease-out ${
+                buildsExpanded ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+              }`}
+            >
               {experiments.map((exp) => (
                 <div 
                   key={exp.id}
@@ -177,14 +188,15 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
                   </div>
                 </div>
               ))}
+            </div>
           </div>
 
           {/* CLIENT FEEDBACK content - slide in from right */}
           <div 
-            className={`transition-all duration-400 ease-out ${
+            className={`transition-all duration-500 ease-out ${
               activeTab === "feedback" 
                 ? "opacity-100 translate-x-0" 
-                : "opacity-0 translate-x-full absolute inset-0"
+                : "opacity-0 translate-x-full absolute inset-0 pointer-events-none"
             }`}
           >
             <div className="grid grid-cols-1 md:grid-cols-3">
