@@ -6,9 +6,13 @@ import { type ReactNode, useEffect, useState, useCallback, createContext, useCon
 export const RotationContext = createContext<{
   isAutoRotating: boolean
   toggleRotation: () => void
+  rotationAngle: number
+  setRotationAngle: (angle: number) => void
 }>({
   isAutoRotating: true,
   toggleRotation: () => {},
+  rotationAngle: 0,
+  setRotationAngle: () => {},
 })
 
 export function useRotation() {
@@ -34,6 +38,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
   const [currentSection, setCurrentSection] = useState("TITLE")
   const [isAutoRotating, setIsAutoRotating] = useState(true)
   const [showRotateCTA, setShowRotateCTA] = useState(false)
+  const [rotationAngle, setRotationAngle] = useState(0)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -84,7 +89,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
   }, [])
 
   return (
-    <RotationContext.Provider value={{ isAutoRotating, toggleRotation }}>
+    <RotationContext.Provider value={{ isAutoRotating, toggleRotation, rotationAngle, setRotationAngle }}>
       <div className="min-h-screen bg-background grid-paper paper-texture relative">
         
         {/* LEFT MARGIN -- Floor markers on a progress track */}
@@ -177,10 +182,9 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
                 width="28"
                 height="28"
                 viewBox="0 0 48 48"
-                className="transition-transform duration-700 ease-out"
                 style={{ 
-                  transform: `rotate(${isAutoRotating ? scrollPercent * 3.6 : 0}deg)`,
-                  animation: isAutoRotating ? "compass-spin 20s linear infinite" : "none",
+                  transform: `rotate(${rotationAngle}deg)`,
+                  transition: isAutoRotating ? "none" : "transform 0.5s ease-out",
                 }}
                 aria-hidden="true"
               >
