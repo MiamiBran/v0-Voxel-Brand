@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useMemo } from "react"
+import { useRef, useMemo, Suspense } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { OrthographicCamera, Line, Text } from "@react-three/drei"
 import * as THREE from "three"
@@ -361,18 +361,24 @@ export function HeroCanvas() {
       
       {/* 3D Canvas */}
       <div className="absolute inset-0">
-        <Canvas>
-          <Scene />
-        </Canvas>
+        <Suspense fallback={null}>
+          <Canvas
+            gl={{ antialias: true, alpha: false }}
+            dpr={[1, 2]}
+          >
+            <color attach="background" args={["#0a0f1a"]} />
+            <Scene />
+          </Canvas>
+        </Suspense>
       </div>
 
       {/* Caption overlay */}
       <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12 z-10">
-        <div className="border border-border/30 bg-background/80 backdrop-blur-sm px-4 py-3">
-          <div className="text-xs md:text-sm font-mono font-bold text-foreground tracking-wide">
+        <div className="border border-white/10 bg-black/60 backdrop-blur-sm px-4 py-3">
+          <div className="text-xs md:text-sm font-mono font-bold text-white tracking-wide">
             MONUMENT / TATLIN
           </div>
-          <div className="text-[8px] md:text-[9px] font-mono text-muted-foreground/60 mt-0.5 tracking-[0.15em]">
+          <div className="text-[8px] md:text-[9px] font-mono text-white/50 mt-0.5 tracking-[0.15em]">
             CONSTRUCTIVIST DIAGRAM -- 4F TOWER
           </div>
         </div>
@@ -381,8 +387,8 @@ export function HeroCanvas() {
       {/* Plate number */}
       <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 z-10">
         <div className="text-right">
-          <div className="text-[7px] font-mono text-muted-foreground/40 tracking-widest">PLATE</div>
-          <div className="text-sm font-mono text-foreground/80 font-bold">#01</div>
+          <div className="text-[7px] font-mono text-white/30 tracking-widest">PLATE</div>
+          <div className="text-sm font-mono text-white/70 font-bold">#01</div>
         </div>
       </div>
     </section>
