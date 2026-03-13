@@ -162,20 +162,20 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
           <div className="flex">
             <button
               onClick={() => { setMode("case-studies"); setExpandedId(null) }}
-              className={`px-4 py-2 text-[9px] md:text-[10px] font-mono tracking-[0.1em] transition-colors border-r border-border ${
+              className={`px-5 py-3 text-xs font-mono tracking-wider transition-colors border-r border-border ${
                 mode === "case-studies" 
-                  ? "text-foreground bg-secondary/40" 
-                  : "text-foreground/40 hover:text-foreground/70"
+                  ? "text-foreground bg-secondary/40 font-medium" 
+                  : "text-foreground/35 hover:text-foreground/60"
               }`}
             >
               CASE STUDIES
             </button>
             <button
               onClick={() => { setMode("operations"); setExpandedId(null) }}
-              className={`px-4 py-2 text-[9px] md:text-[10px] font-mono tracking-[0.1em] transition-colors ${
+              className={`px-5 py-3 text-xs font-mono tracking-wider transition-colors ${
                 mode === "operations" 
-                  ? "text-foreground bg-secondary/40" 
-                  : "text-foreground/40 hover:text-foreground/70"
+                  ? "text-foreground bg-secondary/40 font-medium" 
+                  : "text-foreground/35 hover:text-foreground/60"
               }`}
             >
               OPERATIONS
@@ -237,17 +237,17 @@ function CaseStudyRow({ study, isExpanded, onToggle }: {
         className="w-full flex items-center group text-left hover:bg-secondary/20 transition-colors"
       >
         {/* Project name */}
-        <div className="w-36 shrink-0 px-4 py-3 border-r border-border">
-          <h3 className="text-[10px] md:text-xs font-mono font-bold text-foreground group-hover:text-accent transition-colors tracking-wide">
+        <div className="w-40 shrink-0 px-4 py-4 border-r border-border">
+          <h3 className="text-sm font-mono font-bold text-foreground group-hover:text-accent transition-colors tracking-tight">
             {study.project}
           </h3>
-          <p className="text-[8px] font-mono text-foreground/35 mt-0.5">{study.role}</p>
+          <p className="text-[10px] text-foreground/40 mt-1">{study.role}</p>
         </div>
 
         {/* Domain + Signal */}
-        <div className="flex-1 px-4 py-3 md:border-r md:border-border min-w-0">
-          <p className="text-[9px] text-foreground/60 truncate">{study.domain}</p>
-          <p className="text-[8px] text-foreground/35 mt-1 truncate hidden md:block">{study.signal}</p>
+        <div className="flex-1 px-4 py-4 md:border-r md:border-border min-w-0">
+          <p className="text-xs text-foreground/55 truncate">{study.domain}</p>
+          <p className="text-[10px] text-foreground/35 mt-1.5 truncate hidden md:block leading-relaxed">{study.signal}</p>
         </div>
 
         {/* Type badge */}
@@ -274,17 +274,17 @@ function CaseStudyRow({ study, isExpanded, onToggle }: {
           isExpanded ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="border-t border-border bg-card/30 px-5 md:px-8 py-6">
+        <div className="border-t border-border bg-card/30 px-6 md:px-10 py-8">
           <div className="max-w-2xl">
             {/* Signal / thesis */}
-            <p className="text-xs md:text-sm text-foreground/70 leading-relaxed">
+            <p className="text-sm md:text-base text-foreground/75 leading-[1.7]">
               {study.signal}
             </p>
             
             {/* Keywords */}
-            <div className="flex flex-wrap gap-2 mt-4">
+            <div className="flex flex-wrap gap-3 mt-6">
               {study.keywords.map((kw) => (
-                <span key={kw} className="text-[8px] font-mono text-foreground/40 tracking-wider border border-border/50 px-2 py-1">
+                <span key={kw} className="text-[10px] font-mono text-foreground/50 tracking-widest uppercase">
                   {kw}
                 </span>
               ))}
@@ -314,21 +314,21 @@ function OperationRow({ operation }: { operation: (typeof operations)[0] }) {
     <article className="border-b border-border last:border-b-0 hover:bg-secondary/10 transition-colors">
       <div className="flex items-stretch">
         {/* Operation name */}
-        <div className="w-40 shrink-0 px-4 py-4 border-r border-border">
-          <h3 className="text-[10px] md:text-xs font-mono font-bold text-foreground tracking-wide">
+        <div className="w-44 shrink-0 px-4 py-5 border-r border-border">
+          <h3 className="text-sm font-mono font-bold text-foreground tracking-tight">
             {operation.operation}
           </h3>
-          <p className="text-[8px] font-mono text-foreground/30 mt-1 hidden md:block">{operation.tools}</p>
+          <p className="text-[10px] text-foreground/35 mt-1.5 hidden md:block leading-relaxed">{operation.tools}</p>
         </div>
 
         {/* Scope */}
-        <div className="flex-1 px-4 py-4 md:border-r md:border-border">
-          <p className="text-[9px] text-foreground/55">{operation.scope}</p>
+        <div className="flex-1 px-4 py-5 md:border-r md:border-border">
+          <p className="text-xs text-foreground/55 leading-relaxed">{operation.scope}</p>
         </div>
 
         {/* Output */}
-        <div className="hidden md:block w-64 shrink-0 px-4 py-4">
-          <p className="text-[9px] text-foreground/45">{operation.output}</p>
+        <div className="hidden md:block w-72 shrink-0 px-4 py-5">
+          <p className="text-xs text-foreground/45 leading-relaxed">{operation.output}</p>
         </div>
       </div>
     </article>
