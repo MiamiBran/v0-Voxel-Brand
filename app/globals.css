@@ -33,9 +33,9 @@
 
   --radius: 0rem;
 
-  /* Grid lines - subtle for readability */
-  --grid-fine: oklch(0.90 0.003 85 / 0.4);
-  --grid-major: oklch(0.82 0.004 85 / 0.2);
+  /* Grid lines - fine 20%, major 60% */
+  --grid-fine: oklch(0.88 0.003 85 / 0.2);
+  --grid-major: oklch(0.75 0.006 85 / 0.6);
 
   --sidebar: oklch(0.935 0.008 85);
   --sidebar-foreground: oklch(0.18 0.005 250);
