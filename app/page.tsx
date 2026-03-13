@@ -24,7 +24,13 @@ export default function Portfolio() {
         onInfoClick={() => scrollTo(infoRef)}
         onContactClick={() => scrollTo(contactRef)}
       />
-      <HeroCanvas />
+      <HeroCanvas 
+        onNavigate={(section) => {
+          if (section === "projects") scrollTo(projectsRef)
+          else if (section === "info") scrollTo(infoRef)
+          else if (section === "contact") scrollTo(contactRef)
+        }}
+      />
       <ProjectsSection ref={projectsRef} />
       <InfoBlock ref={infoRef} />
       <ContactBlock ref={contactRef} />

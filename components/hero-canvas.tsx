@@ -1,60 +1,48 @@
 "use client"
 
-import { useEffect, useState, useCallback, useRef } from "react"
+import { useState, useCallback, useRef } from "react"
 
-// Palette colors matching the title block swatches and your artwork movements
-const PALETTE = {
-  C: { color: "#E85D4C", name: "CONSTRUCTIVISM", desc: "Geometric abstraction" },
-  M: { color: "#F5C842", name: "METABOLISM", desc: "Organic modularity" },
-  D: { color: "#4A90A4", name: "DECONSTRUCTIVISM", desc: "Fragmented forms" },
-  B: { color: "#45B07C", name: "BRUTALISM", desc: "Raw materiality" },
-}
-
-// Floor configuration - each floor maps to a movement
+// Floors map to actual portfolio sections
 const FLOORS = [
-  { id: "F1", movement: "C", yBase: 380, height: 80, width: 320 },
-  { id: "F2", movement: "D", yBase: 280, height: 100, width: 260 },
-  { id: "F3", movement: "B", yBase: 160, height: 120, width: 200 },
-  { id: "F4", movement: "M", yBase: 20, height: 140, width: 140 },
+  { 
+    id: "F1", 
+    label: "PROJECTS", 
+    color: "#E85D4C", 
+    section: "projects",
+    desc: "Selected works and case studies"
+  },
+  { 
+    id: "F2", 
+    label: "ABOUT", 
+    color: "#4A90A4", 
+    section: "info",
+    desc: "Background and methodology"
+  },
+  { 
+    id: "F3", 
+    label: "PROCESS", 
+    color: "#45B07C", 
+    section: "info",
+    desc: "Design approach and tools"
+  },
+  { 
+    id: "F4", 
+    label: "CONTACT", 
+    color: "#F5C842", 
+    section: "contact",
+    desc: "Get in touch"
+  },
 ]
 
-export function HeroCanvas() {
-  const [mounted, setMounted] = useState(false)
-  const [activeFloor, setActiveFloor] = useState<string | null>(null)
+interface HeroCanvasProps {
+  onNavigate?: (section: string) => void
+}
+
+export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
+  const [hoveredFloor, setHoveredFloor] = useState<string | null>(null)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
-  const [explosionFactor, setExplosionFactor] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  // Smooth explosion animation when clicking
-  useEffect(() => {
-    if (activeFloor) {
-      const animate = () => {
-        setExplosionFactor((prev) => {
-          const target = 1
-          const diff = target - prev
-          if (Math.abs(diff) < 0.01) return target
-          return prev + diff * 0.08
-        })
-      }
-      const interval = setInterval(animate, 16)
-      return () => clearInterval(interval)
-    } else {
-      const animate = () => {
-        setExplosionFactor((prev) => {
-          if (prev < 0.01) return 0
-          return prev * 0.9
-        })
-      }
-      const interval = setInterval(animate, 16)
-      return () => clearInterval(interval)
-    }
-  }, [activeFloor])
-
-  // Track mouse for parallax
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
@@ -63,274 +51,285 @@ export function HeroCanvas() {
     setMousePos({ x, y })
   }, [])
 
-  if (!mounted) {
-    return (
-      <section data-section="HERO" className="relative w-full min-h-[90vh] flex items-center justify-center">
-        <div className="text-muted-foreground/30 font-mono text-xs tracking-widest">LOADING DIAGRAM...</div>
-      </section>
-    )
+  const handleFloorClick = (floor: typeof FLOORS[0]) => {
+    if (onNavigate) {
+      onNavigate(floor.section)
+    }
   }
 
-  const activeMovement = activeFloor
-    ? PALETTE[FLOORS.find((f) => f.id === activeFloor)?.movement as keyof typeof PALETTE]
-    : null
+  const activeFloor = hoveredFloor ? FLOORS.find(f => f.id === hoveredFloor) : null
 
   return (
     <section
       ref={containerRef}
       data-section="HERO"
-      className="relative w-full min-h-[90vh] overflow-hidden"
+      className="relative w-full min-h-screen flex items-center justify-center overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
     >
-      {/* Floor markers on left edge */}
-      <div className="absolute left-4 top-0 bottom-0 flex flex-col justify-center gap-20 z-20">
+      {/* Floor markers - left side navigation */}
+      <nav className="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-6">
         {[...FLOORS].reverse().map((floor) => {
-          const movement = PALETTE[floor.movement as keyof typeof PALETTE]
-          const isActive = activeFloor === floor.id
+          const isHovered = hoveredFloor === floor.id
           return (
             <button
               key={floor.id}
-              onClick={() => setActiveFloor(isActive ? null : floor.id)}
-              className="flex items-center gap-2 group cursor-pointer"
+              onClick={() => handleFloorClick(floor)}
+              onMouseEnter={() => setHoveredFloor(floor.id)}
+              onMouseLeave={() => setHoveredFloor(null)}
+              className="group flex items-center gap-3 text-left cursor-pointer"
             >
               <span
-                className="text-[9px] font-mono tracking-widest transition-all duration-500"
+                className="text-[10px] font-mono tracking-[0.2em] transition-all duration-300"
                 style={{
-                  color: isActive ? movement.color : "var(--muted-foreground)",
-                  opacity: isActive ? 1 : 0.3,
+                  color: isHovered ? floor.color : "var(--muted-foreground)",
+                  opacity: isHovered ? 1 : 0.4,
                 }}
               >
                 {floor.id}
               </span>
               <span
-                className="h-px transition-all duration-500"
+                className="h-px transition-all duration-300"
                 style={{
-                  width: isActive ? 40 : 16,
-                  backgroundColor: isActive ? movement.color : "var(--border)",
+                  width: isHovered ? 48 : 20,
+                  backgroundColor: isHovered ? floor.color : "var(--border)",
                 }}
               />
+              <span
+                className="text-[10px] font-mono tracking-[0.15em] transition-all duration-300 opacity-0 group-hover:opacity-100"
+                style={{ color: floor.color }}
+              >
+                {floor.label}
+              </span>
             </button>
           )
         })}
-      </div>
+      </nav>
 
-      {/* Main SVG diagram */}
+      {/* Main tower visualization */}
       <div
-        className="absolute inset-0 flex items-center justify-center"
+        className="relative w-full max-w-3xl aspect-square"
         style={{
-          transform: `translate(${mousePos.x * 8}px, ${mousePos.y * 8}px)`,
-          transition: "transform 0.3s ease-out",
+          transform: `translate(${mousePos.x * 12}px, ${mousePos.y * 12}px)`,
+          transition: "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         }}
       >
         <svg
-          viewBox="-50 -100 600 700"
-          className="w-full h-full max-w-4xl max-h-[85vh]"
+          viewBox="0 0 600 600"
+          className="w-full h-full"
           style={{ overflow: "visible" }}
         >
-          {/* Construction lines - radiate from center, visible on hover */}
-          <g style={{ opacity: activeFloor ? 0.4 : 0.15 }}>
+          <defs>
+            {/* Glow filters for each color */}
+            {FLOORS.map((floor) => (
+              <filter key={`glow-${floor.id}`} id={`glow-${floor.id}`} x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feFlood floodColor={floor.color} floodOpacity="0.6" />
+                <feComposite in2="blur" operator="in" />
+                <feMerge>
+                  <feMergeNode />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            ))}
+          </defs>
+
+          {/* Ground grid */}
+          <g transform="translate(300, 520)">
+            <IsometricGrid size={400} cells={12} opacity={0.12} />
+          </g>
+
+          {/* Construction lines - subtle */}
+          <g opacity={hoveredFloor ? 0.3 : 0.1}>
             {[
-              { angle: -70, color: "#E85D4C" },
-              { angle: -45, color: "#4A90A4" },
-              { angle: -20, color: "#F5C842" },
-              { angle: 15, color: "#45B07C" },
-              { angle: 40, color: "#E85D4C" },
-              { angle: 70, color: "#4A90A4" },
-              { angle: 95, color: "#F5C842" },
-              { angle: -95, color: "#45B07C" },
+              { angle: -60, color: "#E85D4C", length: 280 },
+              { angle: -30, color: "#4A90A4", length: 320 },
+              { angle: 30, color: "#45B07C", length: 300 },
+              { angle: 60, color: "#F5C842", length: 260 },
+              { angle: 120, color: "#E85D4C", length: 240 },
+              { angle: 150, color: "#4A90A4", length: 280 },
             ].map((line, i) => {
               const rad = (line.angle * Math.PI) / 180
-              const len = 350 + Math.sin(i * 0.5) * 50
-              const cx = 250
-              const cy = 250
               return (
                 <line
                   key={i}
-                  x1={cx}
-                  y1={cy}
-                  x2={cx + Math.cos(rad) * len}
-                  y2={cy + Math.sin(rad) * len}
+                  x1={300}
+                  y1={300}
+                  x2={300 + Math.cos(rad) * line.length}
+                  y2={300 + Math.sin(rad) * line.length}
                   stroke={line.color}
-                  strokeWidth="0.8"
-                  strokeDasharray="4 8"
+                  strokeWidth="1"
+                  strokeDasharray="6 12"
                   className="transition-opacity duration-500"
                 />
               )
             })}
           </g>
 
-          {/* Ground grid */}
-          <g transform="translate(250, 480)">
-            <IsoGrid size={340} cells={10} />
-          </g>
-
-          {/* The tower - each floor explodes outward when active */}
-          {FLOORS.map((floor, floorIndex) => {
-            const movement = PALETTE[floor.movement as keyof typeof PALETTE]
-            const isActive = activeFloor === floor.id
-            const isAnyActive = activeFloor !== null
+          {/* Tower floors - from bottom to top */}
+          {FLOORS.map((floor, index) => {
+            const isHovered = hoveredFloor === floor.id
+            const baseY = 440 - index * 100
+            const width = 280 - index * 40
+            const height = 80 + index * 10
             
-            // Calculate explosion offset for this floor
-            const explosionOffset = explosionFactor * (floorIndex - 1.5) * 35
-            const yOffset = isAnyActive ? explosionOffset : 0
+            // Explosion offset when any floor is hovered
+            const explosionOffset = hoveredFloor 
+              ? (index - FLOORS.findIndex(f => f.id === hoveredFloor)) * (isHovered ? 0 : 15)
+              : 0
 
             return (
               <g
                 key={floor.id}
-                className="cursor-pointer"
+                className="cursor-pointer transition-transform duration-500"
                 style={{
-                  transform: `translateY(${yOffset}px)`,
-                  transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  transform: `translateY(${explosionOffset}px)`,
                 }}
-                onClick={() => setActiveFloor(isActive ? null : floor.id)}
-                onMouseEnter={() => !activeFloor && setActiveFloor(floor.id)}
-                onMouseLeave={() => !activeFloor && setActiveFloor(null)}
+                onMouseEnter={() => setHoveredFloor(floor.id)}
+                onMouseLeave={() => setHoveredFloor(null)}
+                onClick={() => handleFloorClick(floor)}
+                filter={isHovered ? `url(#glow-${floor.id})` : undefined}
               >
-                <g transform={`translate(250, ${floor.yBase})`}>
-                  {/* Wireframe cube for this floor */}
-                  <IsoCube
-                    width={floor.width}
-                    depth={floor.width}
-                    height={floor.height}
-                    color={movement.color}
-                    active={isActive}
-                    strokeWidth={isActive ? 2 : 1}
+                <g transform={`translate(300, ${baseY})`}>
+                  <IsometricCube
+                    width={width}
+                    depth={width}
+                    height={height}
+                    color={floor.color}
+                    strokeWidth={isHovered ? 2.5 : 1.2}
+                    opacity={isHovered ? 1 : 0.5}
                   />
                   
-                  {/* Grid on top face */}
-                  <IsoTopGrid
-                    width={floor.width}
-                    depth={floor.width}
-                    cells={Math.floor(floor.width / 40)}
-                    color={movement.color}
-                    yOffset={-floor.height}
-                    active={isActive}
+                  {/* Inner grid on top face */}
+                  <IsometricTopFace
+                    width={width}
+                    depth={width}
+                    height={height}
+                    color={floor.color}
+                    cells={Math.max(3, Math.floor(width / 60))}
+                    opacity={isHovered ? 0.5 : 0.15}
                   />
 
-                  {/* Inner detail cubes */}
-                  {floor.id === "F4" && (
-                    <>
-                      <g transform="translate(0, -60)">
-                        <IsoCube width={80} depth={80} height={60} color={movement.color} active={isActive} strokeWidth={isActive ? 1.5 : 0.8} />
-                      </g>
-                      <g transform="translate(30, -30)">
-                        <IsoCube width={40} depth={40} height={30} color={movement.color} active={isActive} strokeWidth={isActive ? 1.5 : 0.8} />
-                      </g>
-                    </>
+                  {/* Additional detail cubes for visual interest */}
+                  {index === 3 && (
+                    <g transform="translate(0, -50)">
+                      <IsometricCube
+                        width={80}
+                        depth={80}
+                        height={50}
+                        color={floor.color}
+                        strokeWidth={isHovered ? 2 : 1}
+                        opacity={isHovered ? 0.9 : 0.4}
+                      />
+                    </g>
                   )}
-
-                  {floor.id === "F3" && (
+                  {index === 2 && (
                     <>
-                      <g transform="translate(-40, 0)">
-                        <IsoCube width={60} depth={100} height={floor.height} color={movement.color} active={isActive} strokeWidth={isActive ? 1.5 : 0.8} />
+                      <g transform="translate(-50, 0)">
+                        <IsometricCube
+                          width={60}
+                          depth={60}
+                          height={height}
+                          color={floor.color}
+                          strokeWidth={isHovered ? 1.5 : 0.8}
+                          opacity={isHovered ? 0.8 : 0.35}
+                        />
                       </g>
                       <g transform="translate(50, 0)">
-                        <IsoCube width={50} depth={80} height={floor.height * 0.8} color={movement.color} active={isActive} strokeWidth={isActive ? 1.5 : 0.8} />
+                        <IsometricCube
+                          width={50}
+                          depth={50}
+                          height={height * 0.7}
+                          color={floor.color}
+                          strokeWidth={isHovered ? 1.5 : 0.8}
+                          opacity={isHovered ? 0.8 : 0.35}
+                        />
                       </g>
                     </>
-                  )}
-
-                  {floor.id === "F2" && (
-                    <g transform="translate(0, 0)">
-                      <IsoCube width={160} depth={160} height={50} color={movement.color} active={isActive} strokeWidth={isActive ? 1.5 : 0.8} />
-                    </g>
                   )}
                 </g>
               </g>
             )
           })}
 
-          {/* Vertical construction lines / pillars */}
-          <g opacity="0.2">
-            {[[-60, 0], [60, 0], [0, -60], [0, 60]].map(([dx, dy], i) => (
-              <line
-                key={i}
-                x1={250 + dx * 1.5}
-                y1={100}
-                x2={250 + dx * 1.5}
-                y2={460}
-                stroke="var(--foreground)"
-                strokeWidth="0.5"
-                strokeDasharray="2 6"
-              />
-            ))}
-          </g>
-
-          {/* Dimension lines */}
+          {/* Dimension annotations */}
           <g opacity="0.15" className="pointer-events-none">
-            {/* Horizontal dimension */}
-            <line x1="80" y1="500" x2="420" y2="500" stroke="var(--foreground)" strokeWidth="0.5" />
-            <line x1="80" y1="495" x2="80" y2="505" stroke="var(--foreground)" strokeWidth="0.5" />
-            <line x1="420" y1="495" x2="420" y2="505" stroke="var(--foreground)" strokeWidth="0.5" />
-            <text x="250" y="515" textAnchor="middle" fontSize="8" fill="var(--muted-foreground)" fontFamily="monospace">320</text>
-            
-            {/* Vertical dimension */}
-            <line x1="30" y1="20" x2="30" y2="460" stroke="var(--foreground)" strokeWidth="0.5" />
-            <line x1="25" y1="20" x2="35" y2="20" stroke="var(--foreground)" strokeWidth="0.5" />
-            <line x1="25" y1="460" x2="35" y2="460" stroke="var(--foreground)" strokeWidth="0.5" />
-            <text x="20" y="240" textAnchor="middle" fontSize="8" fill="var(--muted-foreground)" fontFamily="monospace" transform="rotate(-90, 20, 240)">440</text>
+            <line x1="520" y1="140" x2="520" y2="440" stroke="var(--foreground)" strokeWidth="0.5" />
+            <line x1="515" y1="140" x2="525" y2="140" stroke="var(--foreground)" strokeWidth="0.5" />
+            <line x1="515" y1="440" x2="525" y2="440" stroke="var(--foreground)" strokeWidth="0.5" />
+            <text x="530" y="290" fontSize="9" fill="var(--muted-foreground)" fontFamily="monospace">4F</text>
           </g>
         </svg>
       </div>
 
-      {/* Info panel - appears when a floor is active */}
-      {activeMovement && activeFloor && (
-        <div
-          className="absolute top-8 right-4 md:right-8 z-30 border bg-background/95 backdrop-blur-sm px-5 py-4 max-w-xs transition-all duration-300"
-          style={{ borderColor: activeMovement.color }}
+      {/* Info tooltip - follows hovered floor */}
+      {activeFloor && (
+        <div 
+          className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 z-30 pointer-events-none"
         >
-          <div className="flex items-center gap-3 mb-2">
-            <div
-              className="w-3 h-3 border"
-              style={{ backgroundColor: activeMovement.color, borderColor: activeMovement.color }}
-            />
-            <span className="text-xs font-mono tracking-[0.2em]" style={{ color: activeMovement.color }}>
-              {activeFloor}
-            </span>
-          </div>
-          <div className="text-sm font-mono font-bold text-foreground tracking-wide">
-            {activeMovement.name}
-          </div>
-          <div className="text-[10px] font-mono text-muted-foreground/60 mt-1">
-            {activeMovement.desc}
-          </div>
-          <div className="text-[8px] font-mono text-muted-foreground/30 mt-3 tracking-wider">
-            CLICK TO LOCK / UNLOCK VIEW
+          <div
+            className="border-2 bg-background/95 backdrop-blur-sm px-5 py-4 min-w-[200px] transition-all duration-300"
+            style={{ borderColor: activeFloor.color }}
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div
+                className="w-3 h-3"
+                style={{ backgroundColor: activeFloor.color }}
+              />
+              <span 
+                className="text-xs font-mono tracking-[0.2em]" 
+                style={{ color: activeFloor.color }}
+              >
+                {activeFloor.id}
+              </span>
+            </div>
+            <div className="text-lg font-mono font-bold text-foreground tracking-wide">
+              {activeFloor.label}
+            </div>
+            <div className="text-[11px] font-mono text-muted-foreground/70 mt-1">
+              {activeFloor.desc}
+            </div>
+            <div className="text-[9px] font-mono text-muted-foreground/40 mt-4 tracking-wider">
+              CLICK TO NAVIGATE
+            </div>
           </div>
         </div>
       )}
 
-      {/* Bottom caption */}
-      <div className="absolute bottom-12 left-4 md:left-8 z-20">
-        <div className="border border-border bg-background/80 backdrop-blur-sm px-5 py-4">
-          <div className="text-base md:text-lg font-mono font-bold text-foreground tracking-wide">
-            ISOMETRIC STRATA
-          </div>
-          <div className="text-[8px] md:text-[9px] font-mono text-muted-foreground/50 mt-1 tracking-[0.2em]">
-            MONUMENT / TATLIN — AXONOMETRIC VIEW
-          </div>
-          <div className="flex gap-3 mt-3">
-            {Object.entries(PALETTE).map(([key, { color }]) => (
-              <div key={key} className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 border border-border/50" style={{ backgroundColor: color }} />
-                <span className="text-[7px] font-mono text-muted-foreground/40">{key}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+      {/* Palette legend - bottom */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-6">
+        {FLOORS.map((floor) => (
+          <button
+            key={floor.id}
+            onClick={() => handleFloorClick(floor)}
+            onMouseEnter={() => setHoveredFloor(floor.id)}
+            onMouseLeave={() => setHoveredFloor(null)}
+            className="flex items-center gap-2 group cursor-pointer"
+          >
+            <div
+              className="w-3 h-3 border transition-all duration-300"
+              style={{
+                backgroundColor: hoveredFloor === floor.id ? floor.color : "transparent",
+                borderColor: floor.color,
+              }}
+            />
+            <span
+              className="text-[9px] font-mono tracking-[0.15em] transition-all duration-300"
+              style={{
+                color: hoveredFloor === floor.id ? floor.color : "var(--muted-foreground)",
+                opacity: hoveredFloor === floor.id ? 1 : 0.5,
+              }}
+            >
+              {floor.label}
+            </span>
+          </button>
+        ))}
       </div>
 
-      {/* Plate number */}
-      <div className="absolute bottom-12 right-4 md:right-8 z-20 text-right hidden md:block">
-        <div className="text-[7px] font-mono text-muted-foreground/20 tracking-[0.3em]">PLATE</div>
-        <div className="text-xl font-mono text-muted-foreground/30 font-bold">#01</div>
-      </div>
-
-      {/* Mobile hint */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 md:hidden">
-        <div className="text-[8px] font-mono text-muted-foreground/30 tracking-[0.15em]">
-          TAP FLOORS TO EXPLORE
+      {/* Scroll hint */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
+        <div className="text-[8px] font-mono text-muted-foreground/30 tracking-[0.2em] animate-pulse">
+          HOVER OR CLICK TO EXPLORE
         </div>
       </div>
     </section>
@@ -338,87 +337,90 @@ export function HeroCanvas() {
 }
 
 // Isometric cube wireframe
-function IsoCube({
+function IsometricCube({
   width,
   depth,
   height,
   color,
-  active = false,
   strokeWidth = 1,
+  opacity = 1,
 }: {
   width: number
   depth: number
   height: number
   color: string
-  active?: boolean
   strokeWidth?: number
+  opacity?: number
 }) {
   const cos30 = 0.866
   const sin30 = 0.5
   const hw = width / 2
   const hd = depth / 2
 
-  const project = (x: number, y: number, z: number): [number, number] => [
-    (x - y) * cos30,
-    (x + y) * sin30 - z,
-  ]
-
-  const vertices = {
-    b1: project(-hw, -hd, 0),
-    b2: project(hw, -hd, 0),
-    b3: project(hw, hd, 0),
-    b4: project(-hw, hd, 0),
-    t1: project(-hw, -hd, height),
-    t2: project(hw, -hd, height),
-    t3: project(hw, hd, height),
-    t4: project(-hw, hd, height),
+  const project = (x: number, y: number, z: number): string => {
+    const px = (x - y) * cos30
+    const py = (x + y) * sin30 - z
+    return `${px.toFixed(1)},${py.toFixed(1)}`
   }
 
-  const pt = (v: [number, number]) => `${v[0].toFixed(1)},${v[1].toFixed(1)}`
+  // Vertices
+  const b1 = project(-hw, -hd, 0)
+  const b2 = project(hw, -hd, 0)
+  const b3 = project(hw, hd, 0)
+  const b4 = project(-hw, hd, 0)
+  const t1 = project(-hw, -hd, height)
+  const t2 = project(hw, -hd, height)
+  const t3 = project(hw, hd, height)
+  const t4 = project(-hw, hd, height)
 
   return (
-    <g style={{ opacity: active ? 1 : 0.6, transition: "opacity 0.3s ease" }}>
+    <g style={{ opacity, transition: "opacity 0.3s ease" }}>
       {/* Top face */}
       <polygon
-        points={`${pt(vertices.t1)} ${pt(vertices.t2)} ${pt(vertices.t3)} ${pt(vertices.t4)}`}
+        points={`${t1} ${t2} ${t3} ${t4}`}
         fill="none"
         stroke={color}
         strokeWidth={strokeWidth}
         strokeLinejoin="round"
       />
-      {/* Bottom face - fainter */}
+      {/* Right face */}
       <polygon
-        points={`${pt(vertices.b1)} ${pt(vertices.b2)} ${pt(vertices.b3)} ${pt(vertices.b4)}`}
+        points={`${t2} ${b2} ${b3} ${t3}`}
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeWidth * 0.7}
+        strokeLinejoin="round"
+      />
+      {/* Left face */}
+      <polygon
+        points={`${t4} ${t3} ${b3} ${b4}`}
         fill="none"
         stroke={color}
         strokeWidth={strokeWidth * 0.5}
-        opacity={0.3}
         strokeLinejoin="round"
       />
       {/* Vertical edges */}
-      <line x1={vertices.t1[0]} y1={vertices.t1[1]} x2={vertices.b1[0]} y2={vertices.b1[1]} stroke={color} strokeWidth={strokeWidth} />
-      <line x1={vertices.t2[0]} y1={vertices.t2[1]} x2={vertices.b2[0]} y2={vertices.b2[1]} stroke={color} strokeWidth={strokeWidth} />
-      <line x1={vertices.t3[0]} y1={vertices.t3[1]} x2={vertices.b3[0]} y2={vertices.b3[1]} stroke={color} strokeWidth={strokeWidth} />
-      <line x1={vertices.t4[0]} y1={vertices.t4[1]} x2={vertices.b4[0]} y2={vertices.b4[1]} stroke={color} strokeWidth={strokeWidth} />
+      <line x1={t1.split(",")[0]} y1={t1.split(",")[1]} x2={b1.split(",")[0]} y2={b1.split(",")[1]} stroke={color} strokeWidth={strokeWidth * 0.4} />
+      <line x1={t4.split(",")[0]} y1={t4.split(",")[1]} x2={b4.split(",")[0]} y2={b4.split(",")[1]} stroke={color} strokeWidth={strokeWidth * 0.4} />
     </g>
   )
 }
 
-// Isometric grid on top face of cube
-function IsoTopGrid({
+// Grid on top face
+function IsometricTopFace({
   width,
   depth,
-  cells,
+  height,
   color,
-  yOffset = 0,
-  active = false,
+  cells,
+  opacity = 0.2,
 }: {
   width: number
   depth: number
-  cells: number
+  height: number
   color: string
-  yOffset?: number
-  active?: boolean
+  cells: number
+  opacity?: number
 }) {
   const cos30 = 0.866
   const sin30 = 0.5
@@ -427,7 +429,7 @@ function IsoTopGrid({
 
   const project = (x: number, y: number): [number, number] => [
     (x - y) * cos30,
-    (x + y) * sin30 + yOffset,
+    (x + y) * sin30 - height,
   ]
 
   const lines: JSX.Element[] = []
@@ -436,45 +438,27 @@ function IsoTopGrid({
 
   for (let i = 1; i < cells; i++) {
     const x = -hw + i * stepX
-    const p1 = project(x, -hd)
-    const p2 = project(x, hd)
+    const [x1, y1] = project(x, -hd)
+    const [x2, y2] = project(x, hd)
     lines.push(
-      <line
-        key={`x${i}`}
-        x1={p1[0].toFixed(1)}
-        y1={p1[1].toFixed(1)}
-        x2={p2[0].toFixed(1)}
-        y2={p2[1].toFixed(1)}
-        stroke={color}
-        strokeWidth={active ? 0.6 : 0.3}
-        opacity={active ? 0.4 : 0.2}
-      />
+      <line key={`x${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="0.5" />
     )
   }
 
   for (let i = 1; i < cells; i++) {
     const y = -hd + i * stepY
-    const p1 = project(-hw, y)
-    const p2 = project(hw, y)
+    const [x1, y1] = project(-hw, y)
+    const [x2, y2] = project(hw, y)
     lines.push(
-      <line
-        key={`y${i}`}
-        x1={p1[0].toFixed(1)}
-        y1={p1[1].toFixed(1)}
-        x2={p2[0].toFixed(1)}
-        y2={p2[1].toFixed(1)}
-        stroke={color}
-        strokeWidth={active ? 0.6 : 0.3}
-        opacity={active ? 0.4 : 0.2}
-      />
+      <line key={`y${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="0.5" />
     )
   }
 
-  return <g>{lines}</g>
+  return <g style={{ opacity, transition: "opacity 0.3s ease" }}>{lines}</g>
 }
 
-// Ground plane isometric grid
-function IsoGrid({ size, cells }: { size: number; cells: number }) {
+// Ground grid
+function IsometricGrid({ size, cells, opacity = 0.1 }: { size: number; cells: number; opacity?: number }) {
   const cos30 = 0.866
   const sin30 = 0.5
   const half = size / 2
@@ -487,64 +471,34 @@ function IsoGrid({ size, cells }: { size: number; cells: number }) {
   const lines: JSX.Element[] = []
   const step = size / cells
 
-  // Grid lines
   for (let i = 0; i <= cells; i++) {
     const pos = -half + i * step
-    const isMajor = i % 5 === 0
+    const isMajor = i % 4 === 0
     
-    // X direction
-    const x1 = project(pos, -half)
-    const x2 = project(pos, half)
-    lines.push(
-      <line
-        key={`gx${i}`}
-        x1={x1[0].toFixed(1)}
-        y1={x1[1].toFixed(1)}
-        x2={x2[0].toFixed(1)}
-        y2={x2[1].toFixed(1)}
-        stroke="var(--foreground)"
-        strokeWidth={isMajor ? 0.4 : 0.15}
-        opacity={isMajor ? 0.15 : 0.08}
-      />
-    )
+    const [x1a, y1a] = project(pos, -half)
+    const [x2a, y2a] = project(pos, half)
+    const [x1b, y1b] = project(-half, pos)
+    const [x2b, y2b] = project(half, pos)
     
-    // Y direction
-    const y1 = project(-half, pos)
-    const y2 = project(half, pos)
     lines.push(
-      <line
-        key={`gy${i}`}
-        x1={y1[0].toFixed(1)}
-        y1={y1[1].toFixed(1)}
-        x2={y2[0].toFixed(1)}
-        y2={y2[1].toFixed(1)}
-        stroke="var(--foreground)"
-        strokeWidth={isMajor ? 0.4 : 0.15}
-        opacity={isMajor ? 0.15 : 0.08}
-      />
+      <line key={`gx${i}`} x1={x1a} y1={y1a} x2={x2a} y2={y2a} stroke="var(--foreground)" strokeWidth={isMajor ? 0.6 : 0.2} />,
+      <line key={`gy${i}`} x1={x1b} y1={y1b} x2={x2b} y2={y2b} stroke="var(--foreground)" strokeWidth={isMajor ? 0.6 : 0.2} />
     )
   }
 
   // Outline
-  const corners = [
-    project(-half, -half),
-    project(half, -half),
-    project(half, half),
-    project(-half, half),
-  ]
-  
+  const corners = [project(-half, -half), project(half, -half), project(half, half), project(-half, half)]
   lines.push(
     <polygon
       key="outline"
-      points={corners.map((c) => `${c[0].toFixed(1)},${c[1].toFixed(1)}`).join(" ")}
+      points={corners.map(c => `${c[0]},${c[1]}`).join(" ")}
       fill="none"
       stroke="var(--foreground)"
-      strokeWidth="0.5"
-      opacity="0.2"
+      strokeWidth="0.8"
     />
   )
 
-  return <g>{lines}</g>
+  return <g style={{ opacity }}>{lines}</g>
 }
 
 export default HeroCanvas
