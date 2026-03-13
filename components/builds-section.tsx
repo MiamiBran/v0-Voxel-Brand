@@ -97,13 +97,17 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
               <span className="text-[9px] font-mono text-muted-foreground/35 tracking-[0.2em]">F3</span>
             </div>
             <svg 
-              width="10" 
-              height="10" 
+              width="12" 
+              height="12" 
               viewBox="0 0 24 24" 
               fill="none" 
               stroke="currentColor" 
-              strokeWidth="2"
-              className={`text-foreground/30 transition-transform duration-300 ${activeTab === "builds" && buildsExpanded ? 'rotate-180' : ''}`}
+              strokeWidth="2.5"
+              className={`transition-all duration-300 ${
+                activeTab === "builds" 
+                  ? buildsExpanded ? 'rotate-180 text-foreground/60' : 'text-foreground/50' 
+                  : 'text-foreground/20'
+              }`}
             >
               <polyline points="6 9 12 15 18 9" />
             </svg>
@@ -123,6 +127,19 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
               </h2>
               <span className="text-[9px] font-mono text-muted-foreground/35 tracking-[0.2em]">F3.5</span>
             </div>
+            <svg 
+              width="12" 
+              height="12" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2.5"
+              className={`transition-all duration-300 ${
+                activeTab === "feedback" ? 'text-foreground/50' : 'text-foreground/20'
+              }`}
+            >
+              <polyline points="9 6 15 12 9 18" />
+            </svg>
           </button>
         </div>
 
