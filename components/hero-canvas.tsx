@@ -201,7 +201,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
     <section
       ref={containerRef}
       data-section="HERO"
-      className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden pt-12 pb-32"
+      className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden pt-4 pb-24"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
     >

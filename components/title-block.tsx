@@ -11,7 +11,7 @@ export function TitleBlock({ onProjectsClick, onInfoClick, onContactClick }: Tit
     <header data-section="TITLE">
       {/* Floating cartouche -- standard title block on architectural drawing sheets.
            Contains project metadata, navigation index, and palette legend. */}
-      <div className="px-5 md:px-10 py-8 md:py-12">
+      <div className="px-5 md:px-10 py-4 md:py-6">
         <div className="border border-border bg-card/60 backdrop-blur-sm max-w-4xl">
           {/* Metadata row -- drawing-sheet header fields */}
           <div className="border-b border-border flex flex-wrap text-[7px] md:text-[8px] font-mono text-foreground/40 tracking-[0.15em]">
@@ -59,18 +59,25 @@ export function TitleBlock({ onProjectsClick, onInfoClick, onContactClick }: Tit
                 ))}
               </nav>
 
-              {/* Palette legend -- colors map to the four movements in the artwork */}
-              <div className="border-t border-border px-4 py-2 flex items-center gap-2">
+              {/* Palette legend -- colors attached to their respective sections */}
+              <div className="border-t border-border px-4 py-2 flex items-center gap-1">
                 {[
-                  { color: "#E85D4C", key: "C" },
-                  { color: "#F5C842", key: "M" },
-                  { color: "#4A90A4", key: "D" },
-                  { color: "#45B07C", key: "B" },
+                  { color: "#E85D4C", key: "01", label: "PROJECTS", onClick: onProjectsClick },
+                  { color: "#4A90A4", key: "02", label: "PROCESS", onClick: onInfoClick },
+                  { color: "#45B07C", key: "03", label: "CONTACT", onClick: onContactClick },
                 ].map((s) => (
-                  <div key={s.key} className="flex items-center gap-1">
-                    <div className="w-2.5 h-2.5 border border-border" style={{ backgroundColor: s.color }} />
-                    <span className="text-[6px] font-mono text-foreground/40 hidden md:block">{s.key}</span>
-                  </div>
+                  <button
+                    key={s.key}
+                    onClick={s.onClick}
+                    className="flex items-center gap-1.5 px-2 py-1 hover:bg-secondary/40 rounded transition-colors group"
+                    title={s.label}
+                  >
+                    <div 
+                      className="w-2.5 h-2.5 border border-border group-hover:scale-110 transition-transform" 
+                      style={{ backgroundColor: s.color }} 
+                    />
+                    <span className="text-[7px] font-mono text-foreground/50 group-hover:text-foreground/80 hidden md:block transition-colors">{s.key}</span>
+                  </button>
                 ))}
               </div>
             </div>

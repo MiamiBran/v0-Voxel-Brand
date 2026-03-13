@@ -71,14 +71,14 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
                 <span
                   className={`h-px transition-all duration-300 ${
                     active
-                      ? "w-5 bg-foreground"
-                      : "w-2 bg-border group-hover:w-3 group-hover:bg-muted-foreground/60"
+                      ? "w-6 bg-foreground"
+                      : "w-3 bg-border group-hover:w-4 group-hover:bg-muted-foreground/60"
                   }`}
                 />
                 {/* Label */}
                 <span
-                  className={`text-[7px] font-mono tracking-wider transition-colors duration-300 whitespace-nowrap ${
-                    active ? "text-foreground" : "text-muted-foreground/25 group-hover:text-muted-foreground/50"
+                  className={`text-[10px] font-mono tracking-wider transition-colors duration-300 whitespace-nowrap ${
+                    active ? "text-foreground font-medium" : "text-muted-foreground/35 group-hover:text-muted-foreground/60"
                   }`}
                 >
                   {s.label}
