@@ -39,9 +39,36 @@ const phases = [
   },
 ]
 
+// Workflow data for tabs
+const workflows = {
+  digital: {
+    title: "DIGITAL SYSTEMS",
+    subtitle: "Software & data infrastructure",
+    thinking: "Digital systems require clear data flow, version control, and automated feedback loops. The goal is reducing manual intervention while maintaining visibility.",
+    steps: [
+      { num: "01", name: "MAP", desc: "Data sources, dependencies, user flows" },
+      { num: "02", name: "ARCHITECT", desc: "System design, API contracts, state management" },
+      { num: "03", name: "BUILD", desc: "Iterative development, testing, deployment" },
+      { num: "04", name: "MONITOR", desc: "Analytics, error tracking, optimization" },
+    ]
+  },
+  analog: {
+    title: "ANALOG OPERATIONS", 
+    subtitle: "Field work & physical coordination",
+    thinking: "Physical operations demand clear handoffs, visual progress tracking, and contingency planning. People and materials don't have undo buttons.",
+    steps: [
+      { num: "01", name: "SCOUT", desc: "Site conditions, constraints, stakeholders" },
+      { num: "02", name: "SEQUENCE", desc: "Trade flow, material staging, milestones" },
+      { num: "03", name: "EXECUTE", desc: "Daily coordination, issue resolution, QC" },
+      { num: "04", name: "CLOSE", desc: "Punchlist, documentation, lessons learned" },
+    ]
+  }
+}
+
 export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
   const [showCTA, setShowCTA] = useState(false)
   const [showOverlay, setShowOverlay] = useState(false)
+  const [activeTab, setActiveTab] = useState<"digital" | "analog">("digital")
   const sectionRef = useRef<HTMLElement>(null)
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -158,71 +185,98 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
         </button>
       </div>
 
-      {/* Detail Frame - collage/comic book style overlay sitting ON TOP of the content */}
+      {/* Detail Frame - collage style overlay with tabs */}
       {showOverlay && (
         <div 
-          className="absolute top-16 right-4 md:right-8 z-20 w-72 md:w-80 animate-in fade-in zoom-in-95 slide-in-from-right-4 duration-300"
+          className="absolute top-12 right-4 md:right-8 z-20 w-72 md:w-80 animate-in fade-in zoom-in-95 slide-in-from-right-4 duration-300"
           style={{ 
-            transform: 'rotate(1.5deg)',
-            boxShadow: '8px 8px 0 rgba(0,0,0,0.15), 16px 16px 24px rgba(0,0,0,0.1)'
+            transform: 'rotate(1deg)',
+            boxShadow: '6px 6px 0 rgba(0,0,0,0.1), 12px 12px 20px rgba(0,0,0,0.08)'
           }}
         >
-          {/* Paper texture effect */}
-          <div className="bg-card border-2 border-foreground/20">
-            {/* Title block header - like a comic panel caption */}
-            <div className="bg-foreground text-background px-3 py-1.5 flex items-center justify-between">
-              <div>
-                <h3 className="text-[9px] font-mono font-bold tracking-wide">DETAIL FRAME F2.1</h3>
-              </div>
+          <div className="bg-card border border-border">
+            {/* Header with close */}
+            <div className="px-3 py-2 border-b border-border flex items-center justify-between">
+              <span className="text-[9px] font-mono text-foreground/50 tracking-[0.15em]">DETAIL FRAME F2.1</span>
               <button 
                 onClick={() => setShowOverlay(false)}
-                className="p-1 hover:bg-background/20 transition-colors"
+                className="p-1 hover:bg-secondary/50 transition-colors"
               >
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-foreground/40">
                   <path d="M18 6L6 18M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            {/* Content - dense like a reference card */}
-            <div className="p-3 space-y-3">
-              {/* Hand-drawn style divider */}
-              <div className="h-px bg-foreground/20" style={{ transform: 'rotate(-0.5deg)' }} />
-              
-              {/* Context blurb */}
-              <p className="text-[9px] font-mono text-foreground/70 leading-relaxed italic">
-                "Converting ambiguity into executable structure."
-              </p>
+            {/* Tabs */}
+            <div className="flex border-b border-border">
+              <button
+                onClick={() => setActiveTab("digital")}
+                className={`flex-1 px-3 py-2 text-[9px] font-mono tracking-wide transition-colors ${
+                  activeTab === "digital" 
+                    ? "text-foreground bg-secondary/30 border-b-2 border-foreground/50" 
+                    : "text-foreground/40 hover:text-foreground/60"
+                }`}
+              >
+                DIGITAL
+              </button>
+              <button
+                onClick={() => setActiveTab("analog")}
+                className={`flex-1 px-3 py-2 text-[9px] font-mono tracking-wide transition-colors border-l border-border ${
+                  activeTab === "analog" 
+                    ? "text-foreground bg-secondary/30 border-b-2 border-foreground/50" 
+                    : "text-foreground/40 hover:text-foreground/60"
+                }`}
+              >
+                ANALOG
+              </button>
+            </div>
 
-              {/* Sequence - stacked cards effect */}
+            {/* Tab content */}
+            <div className="p-3 space-y-3">
+              {/* Title & subtitle */}
+              <div>
+                <h4 className="text-[10px] font-mono font-bold text-foreground tracking-wide">
+                  {workflows[activeTab].title}
+                </h4>
+                <p className="text-[8px] font-mono text-foreground/40 mt-0.5">
+                  {workflows[activeTab].subtitle}
+                </p>
+              </div>
+
+              {/* Thinking section */}
+              <div className="border-l-2 border-foreground/20 pl-2">
+                <p className="text-[8px] font-mono text-foreground/60 leading-relaxed italic">
+                  {workflows[activeTab].thinking}
+                </p>
+              </div>
+
+              {/* Steps */}
               <div className="space-y-1.5">
-                {phases.map((phase, i) => (
+                {workflows[activeTab].steps.map((step, i) => (
                   <div 
-                    key={phase.name} 
-                    className="flex items-center gap-2 p-1.5 border border-border/60 bg-secondary/20"
-                    style={{ transform: `rotate(${(i % 2 === 0 ? -0.3 : 0.3)}deg)` }}
+                    key={step.num} 
+                    className="flex items-start gap-2 p-1.5 bg-secondary/20 border border-border/50"
+                    style={{ transform: `rotate(${(i % 2 === 0 ? -0.2 : 0.2)}deg)` }}
                   >
                     <div 
-                      className="w-5 h-5 flex items-center justify-center shrink-0" 
-                      style={{ backgroundColor: getColor(phase.color) }}
+                      className="w-5 h-5 flex items-center justify-center shrink-0 mt-0.5" 
+                      style={{ backgroundColor: getColor(phases[i].color) }}
                     >
-                      <span className="text-[7px] font-mono text-white font-bold">{phase.num}</span>
+                      <span className="text-[7px] font-mono text-white font-bold">{step.num}</span>
                     </div>
-                    <div className="min-w-0">
-                      <span className="text-[8px] font-mono font-bold text-foreground block">{phase.name}</span>
-                      <span className="text-[7px] font-mono text-foreground/50 block truncate">{phase.outputs[0]}</span>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[9px] font-mono font-bold text-foreground">{step.name}</span>
+                      <p className="text-[7px] font-mono text-foreground/50 mt-0.5 leading-relaxed">{step.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Stamp-like footer */}
-              <div 
-                className="border-2 border-dashed border-foreground/30 p-2 text-center"
-                style={{ transform: 'rotate(-1deg)' }}
-              >
-                <span className="text-[7px] font-mono text-foreground/50 tracking-[0.2em]">
-                  EXECUTION SYSTEM REV.01
+              {/* Footer */}
+              <div className="pt-2 border-t border-border/50 text-center">
+                <span className="text-[7px] font-mono text-foreground/35 tracking-[0.15em]">
+                  {activeTab === "digital" ? "SOFTWARE SYSTEMS" : "FIELD OPERATIONS"} REV.01
                 </span>
               </div>
             </div>
