@@ -185,16 +185,16 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
     return { f1Cubes, f2Cubes, f3Cubes, f4Cubes }
   }, [])
 
-  // Construction lines - static pre-computed coordinates
+  // Construction lines - shorter, proportional to tower
   const constructionLines = [
-    { x2: 60, y2: -450, color: "#00d4ff" },
-    { x2: 220, y2: -430, color: "#ff0066" },
-    { x2: 280, y2: -280, color: "#F5C842" },
-    { x2: 340, y2: -20, color: "#00ff88" },
-    { x2: 250, y2: 150, color: "#ff0066" },
-    { x2: 80, y2: 150, color: "#00d4ff" },
-    { x2: -140, y2: 90, color: "#8855ff" },
-    { x2: -290, y2: 20, color: "#F5C842" },
+    { x2: 35, y2: -280, color: "#00d4ff" },
+    { x2: 130, y2: -260, color: "#ff0066" },
+    { x2: 165, y2: -160, color: "#F5C842" },
+    { x2: 200, y2: 20, color: "#00ff88" },
+    { x2: 150, y2: 100, color: "#ff0066" },
+    { x2: 50, y2: 100, color: "#00d4ff" },
+    { x2: -85, y2: 60, color: "#8855ff" },
+    { x2: -175, y2: 15, color: "#F5C842" },
   ]
 
   return (
@@ -342,15 +342,15 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             filter={hoveredFloor === "F1" || activeFloorIndex === 0 ? "url(#glow-F1)" : undefined}
           >
             <rect x="-180" y="20" width="360" height="150" fill="transparent" />
-            <g transform="translate(0, 100)">
+            <g transform="translate(0, 140)">
               {towerStructure.f1Cubes.map((cube, i) => (
                 <IsoCube
                   key={i}
                   x={cube.x} y={cube.y} z={cube.z}
                   color={FLOORS[0].color}
-                  strokeWidth={hoveredFloor === "F1" || activeFloorIndex === 0 ? 1.5 : 0.7}
-                  opacity={hoveredFloor === "F1" || activeFloorIndex === 0 ? 1 : 0.55}
-                  scale={10}
+                  strokeWidth={hoveredFloor === "F1" || activeFloorIndex === 0 ? 1.8 : 1}
+                  opacity={hoveredFloor === "F1" || activeFloorIndex === 0 ? 1 : 0.75}
+                  scale={14}
                 />
               ))}
             </g>
@@ -375,9 +375,9 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                   key={i}
                   x={cube.x} y={cube.y} z={cube.z}
                   color={FLOORS[1].color}
-                  strokeWidth={hoveredFloor === "F2" || activeFloorIndex === 1 ? 1.5 : 0.7}
-                  opacity={hoveredFloor === "F2" || activeFloorIndex === 1 ? 1 : 0.55}
-                  scale={10}
+                  strokeWidth={hoveredFloor === "F2" || activeFloorIndex === 1 ? 1.8 : 1}
+                  opacity={hoveredFloor === "F2" || activeFloorIndex === 1 ? 1 : 0.75}
+                  scale={14}
                 />
               ))}
             </g>
@@ -396,15 +396,15 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             filter={hoveredFloor === "F3" || activeFloorIndex === 2 ? "url(#glow-F3)" : undefined}
           >
             <rect x="-130" y="-160" width="260" height="120" fill="transparent" />
-            <g transform="translate(0, -100)">
+            <g transform="translate(0, -140)">
               {towerStructure.f3Cubes.map((cube, i) => (
                 <IsoCube
                   key={i}
                   x={cube.x} y={cube.y} z={cube.z}
                   color={FLOORS[2].color}
-                  strokeWidth={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1.5 : 0.7}
-                  opacity={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1 : 0.55}
-                  scale={10}
+                  strokeWidth={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1.8 : 1}
+                  opacity={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1 : 0.75}
+                  scale={14}
                 />
               ))}
             </g>
@@ -423,15 +423,15 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             filter={hoveredFloor === "F4" || activeFloorIndex === 3 ? "url(#glow-F4)" : undefined}
           >
             <rect x="-150" y="-350" width="300" height="150" fill="transparent" />
-            <g transform="translate(0, -220)">
+            <g transform="translate(0, -310)">
               {towerStructure.f4Cubes.map((cube, i) => (
                 <IsoCube
                   key={i}
                   x={cube.x} y={cube.y} z={cube.z}
                   color={FLOORS[3].color}
-                  strokeWidth={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1.5 : 0.7}
-                  opacity={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1 : 0.55}
-                  scale={10}
+                  strokeWidth={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1.8 : 1}
+                  opacity={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1 : 0.75}
+                  scale={14}
                 />
               ))}
             </g>
