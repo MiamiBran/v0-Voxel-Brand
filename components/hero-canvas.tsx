@@ -5,12 +5,12 @@ import { useTheme } from "next-themes"
 import { useRotation } from "./document-frame"
 
 // Floors aligned with document sections - 4 floors
-// Light mode uses original muted colors, dark mode uses vibrant neon
+// Light mode uses original muted colors, dark mode uses vibrant neon versions
 const FLOORS = [
-  { id: "F1", label: "OPERATIONS", color: "#E85D4C", darkColor: "#FF4D8D", section: "projects", desc: "Project index and case studies" },
-  { id: "F2", label: "SYSTEMS", color: "#4A90A4", darkColor: "#00D9FF", section: "process", desc: "Process and systems design" },
-  { id: "F3", label: "BUILDS", color: "#F5C842", darkColor: "#A855F7", section: "experiments", desc: "Experiments and client feedback" },
-  { id: "F4", label: "CONTACT", color: "#45B07C", darkColor: "#FFD93D", section: "contact", desc: "Get in touch" },
+  { id: "F1", label: "OPERATIONS", color: "#E85D4C", darkColor: "#FF6B6B", section: "projects", desc: "Project index and case studies" },
+  { id: "F2", label: "SYSTEMS", color: "#4A90A4", darkColor: "#4ECDC4", section: "process", desc: "Process and systems design" },
+  { id: "F3", label: "BUILDS", color: "#F5C842", darkColor: "#FFE66D", section: "experiments", desc: "Experiments and client feedback" },
+  { id: "F4", label: "CONTACT", color: "#45B07C", darkColor: "#95E879", section: "contact", desc: "Get in touch" },
 ]
 
 interface HeroCanvasProps {
