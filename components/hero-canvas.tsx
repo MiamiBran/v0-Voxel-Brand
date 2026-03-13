@@ -1,99 +1,388 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import Image from "next/image"
+import { useRef, useMemo } from "react"
+import { Canvas, useFrame } from "@react-three/fiber"
+import { OrthographicCamera, Line, Text } from "@react-three/drei"
+import * as THREE from "three"
 
-export function HeroCanvas() {
-  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight })
-    }
-    window.addEventListener("mousemove", onMove)
-    return () => window.removeEventListener("mousemove", onMove)
-  }, [])
-
-  const offsetX = (mousePos.x - 0.5) * 8
-  const offsetY = (mousePos.y - 0.5) * 8
+// Wireframe box component - creates the cube outlines like in the artwork
+function WireframeBox({ 
+  position, 
+  size, 
+  color 
+}: { 
+  position: [number, number, number]
+  size: [number, number, number]
+  color: string 
+}) {
+  const edges = useMemo(() => {
+    const geo = new THREE.BoxGeometry(...size)
+    return new THREE.EdgesGeometry(geo)
+  }, [size])
 
   return (
+    <lineSegments position={position}>
+      <primitive object={edges} attach="geometry" />
+      <lineBasicMaterial color={color} linewidth={1} />
+    </lineSegments>
+  )
+}
+
+// Grid of wireframe cubes forming a floor/platform
+function WireframeGrid({ 
+  position, 
+  gridSize, 
+  cubeSize, 
+  color,
+  pattern = "full"
+}: { 
+  position: [number, number, number]
+  gridSize: [number, number]
+  cubeSize: number
+  color: string
+  pattern?: "full" | "ring" | "cross" | "dome"
+}) {
+  const cubes = useMemo(() => {
+    const result: [number, number, number][] = []
+    const [cols, rows] = gridSize
+    const halfCols = Math.floor(cols / 2)
+    const halfRows = Math.floor(rows / 2)
+
+    for (let x = -halfCols; x <= halfCols; x++) {
+      for (let z = -halfRows; z <= halfRows; z++) {
+        const dist = Math.sqrt(x * x + z * z)
+        const maxDist = Math.max(halfCols, halfRows)
+        
+        let include = false
+        if (pattern === "full") {
+          include = true
+        } else if (pattern === "ring") {
+          include = dist >= maxDist - 1.5
+        } else if (pattern === "cross") {
+          include = Math.abs(x) <= 1 || Math.abs(z) <= 1
+        } else if (pattern === "dome") {
+          include = dist <= maxDist * 0.8
+        }
+        
+        if (include) {
+          result.push([x * cubeSize, 0, z * cubeSize])
+        }
+      }
+    }
+    return result
+  }, [gridSize, cubeSize, pattern])
+
+  return (
+    <group position={position}>
+      {cubes.map((pos, i) => (
+        <WireframeBox 
+          key={i} 
+          position={pos} 
+          size={[cubeSize * 0.95, cubeSize * 0.95, cubeSize * 0.95]} 
+          color={color} 
+        />
+      ))}
+    </group>
+  )
+}
+
+// Construction lines radiating from center
+function ConstructionLines({ y }: { y: number }) {
+  const lines = useMemo(() => {
+    const colors = ["#00ffff", "#ff00ff", "#ffff00", "#ff4444", "#4444ff", "#00ff88"]
+    return colors.map((color, i) => {
+      const angle = (i / colors.length) * Math.PI * 2 + Math.PI / 6
+      const length = 8 + Math.random() * 6
+      const endY = y + (Math.random() - 0.3) * 8
+      return {
+        points: [
+          new THREE.Vector3(0, y, 0),
+          new THREE.Vector3(Math.cos(angle) * length, endY, Math.sin(angle) * length)
+        ],
+        color
+      }
+    })
+  }, [y])
+
+  return (
+    <>
+      {lines.map((line, i) => (
+        <Line
+          key={i}
+          points={line.points}
+          color={line.color}
+          lineWidth={1}
+          opacity={0.6}
+          transparent
+        />
+      ))}
+    </>
+  )
+}
+
+// Blueprint grid on the ground plane
+function BlueprintGrid() {
+  const gridLines = useMemo(() => {
+    const lines: { start: THREE.Vector3; end: THREE.Vector3 }[] = []
+    const size = 20
+    const divisions = 40
+    const step = size / divisions
+
+    for (let i = -divisions / 2; i <= divisions / 2; i++) {
+      const pos = i * step
+      // X lines
+      lines.push({
+        start: new THREE.Vector3(-size / 2, -0.01, pos),
+        end: new THREE.Vector3(size / 2, -0.01, pos)
+      })
+      // Z lines
+      lines.push({
+        start: new THREE.Vector3(pos, -0.01, -size / 2),
+        end: new THREE.Vector3(pos, -0.01, size / 2)
+      })
+    }
+    return lines
+  }, [])
+
+  return (
+    <>
+      {gridLines.map((line, i) => (
+        <Line
+          key={i}
+          points={[line.start, line.end]}
+          color="#1a2744"
+          lineWidth={0.5}
+          opacity={0.5}
+          transparent
+        />
+      ))}
+    </>
+  )
+}
+
+// Floor markers along the left side
+function FloorMarkers() {
+  const floors = [
+    { label: "F1", y: 0 },
+    { label: "F2", y: 1.2 },
+    { label: "F3", y: 2.8 },
+    { label: "F4", y: 4.5 },
+  ]
+
+  return (
+    <>
+      {floors.map((floor) => (
+        <group key={floor.label} position={[-7, floor.y, 0]}>
+          <Text
+            fontSize={0.3}
+            color="#3a4a6a"
+            anchorX="right"
+            anchorY="middle"
+            font="/fonts/GeistMono-Regular.ttf"
+          >
+            {floor.label}
+          </Text>
+          <Line
+            points={[
+              new THREE.Vector3(0.2, 0, 0),
+              new THREE.Vector3(1.5, 0, 0)
+            ]}
+            color="#2a3a5a"
+            lineWidth={0.5}
+            opacity={0.4}
+            transparent
+          />
+        </group>
+      ))}
+    </>
+  )
+}
+
+// The main tower structure
+function Tower() {
+  const groupRef = useRef<THREE.Group>(null)
+
+  useFrame((state) => {
+    if (groupRef.current) {
+      // Gentle float animation
+      groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.05
+    }
+  })
+
+  return (
+    <group ref={groupRef}>
+      {/* F1 - Base platform: wide ring of magenta cubes */}
+      <WireframeGrid
+        position={[0, 0, 0]}
+        gridSize={[9, 9]}
+        cubeSize={0.4}
+        color="#ff1493"
+        pattern="ring"
+      />
+      
+      {/* F1 - Inner base structure */}
+      <WireframeGrid
+        position={[0, 0.4, 0]}
+        gridSize={[7, 7]}
+        cubeSize={0.4}
+        color="#ff1493"
+        pattern="full"
+      />
+
+      {/* F2 - Stepped middle section */}
+      <WireframeGrid
+        position={[0, 1.2, 0]}
+        gridSize={[5, 5]}
+        cubeSize={0.4}
+        color="#ff1493"
+        pattern="full"
+      />
+      
+      {/* F2 - Upper step */}
+      <WireframeGrid
+        position={[0, 1.6, 0]}
+        gridSize={[4, 4]}
+        cubeSize={0.4}
+        color="#ff1493"
+        pattern="ring"
+      />
+
+      {/* F3 - Transition section - mixed colors */}
+      <WireframeGrid
+        position={[0, 2.4, 0]}
+        gridSize={[5, 5]}
+        cubeSize={0.35}
+        color="#ff1493"
+        pattern="cross"
+      />
+      
+      {/* F3 - Yellow emerging */}
+      <WireframeGrid
+        position={[0, 2.8, 0]}
+        gridSize={[4, 4]}
+        cubeSize={0.35}
+        color="#ffd700"
+        pattern="full"
+      />
+
+      {/* F4 - Yellow dome top */}
+      <WireframeGrid
+        position={[0, 3.4, 0]}
+        gridSize={[5, 5]}
+        cubeSize={0.35}
+        color="#ffd700"
+        pattern="dome"
+      />
+      
+      {/* F4 - Crown */}
+      <WireframeGrid
+        position={[0, 3.9, 0]}
+        gridSize={[4, 4]}
+        cubeSize={0.3}
+        color="#ffd700"
+        pattern="dome"
+      />
+      
+      {/* F4 - Peak */}
+      <WireframeGrid
+        position={[0, 4.3, 0]}
+        gridSize={[3, 3]}
+        cubeSize={0.25}
+        color="#ffd700"
+        pattern="dome"
+      />
+      
+      {/* F4 - Tip */}
+      <WireframeGrid
+        position={[0, 4.6, 0]}
+        gridSize={[2, 2]}
+        cubeSize={0.2}
+        color="#ffd700"
+        pattern="full"
+      />
+
+      {/* Vertical support pillars */}
+      {[[-0.8, -0.8], [0.8, -0.8], [-0.8, 0.8], [0.8, 0.8]].map(([x, z], i) => (
+        <Line
+          key={i}
+          points={[
+            new THREE.Vector3(x, 0.4, z),
+            new THREE.Vector3(x, 2.4, z)
+          ]}
+          color="#2a2a4a"
+          lineWidth={1}
+          opacity={0.5}
+          transparent
+        />
+      ))}
+
+      {/* Construction lines from the tower */}
+      <ConstructionLines y={3.5} />
+    </group>
+  )
+}
+
+// Scene component with camera and lighting
+function Scene() {
+  return (
+    <>
+      {/* Isometric camera - true isometric angle */}
+      <OrthographicCamera
+        makeDefault
+        position={[10, 8, 10]}
+        zoom={55}
+        near={0.1}
+        far={100}
+      />
+      
+      {/* Minimal lighting for wireframe visibility */}
+      <ambientLight intensity={1} />
+      
+      {/* Blueprint grid floor */}
+      <BlueprintGrid />
+      
+      {/* Floor markers */}
+      <FloorMarkers />
+      
+      {/* The main tower */}
+      <Tower />
+    </>
+  )
+}
+
+export function HeroCanvas() {
+  return (
     <section
-      ref={containerRef}
-      className="relative py-16 md:py-24 px-5 md:px-10 min-h-[70vh] md:min-h-[90vh] flex items-center justify-center"
+      className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center"
       data-section="HERO"
     >
-      {/* Construction lines -- crosshair through center, like the axis lines in the actual artwork.
-           These establish the isometric grid origin point for the hero piece. */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <svg className="w-full h-full" preserveAspectRatio="none">
-          <line x1="50%" y1="0" x2="50%" y2="100%" stroke="var(--border)" strokeWidth="0.5" strokeDasharray="4 12" opacity="0.25" />
-          <line x1="0" y1="50%" x2="100%" y2="50%" stroke="var(--border)" strokeWidth="0.5" strokeDasharray="4 12" opacity="0.25" />
-          {/* 30-degree isometric guidelines radiating from center */}
-          <line x1="50%" y1="50%" x2="100%" y2="21%" stroke="var(--border)" strokeWidth="0.3" strokeDasharray="2 8" opacity="0.12" />
-          <line x1="50%" y1="50%" x2="0%" y2="21%" stroke="var(--border)" strokeWidth="0.3" strokeDasharray="2 8" opacity="0.12" />
-        </svg>
+      {/* Dark blueprint background */}
+      <div className="absolute inset-0 bg-[#0a0f1a]" />
+      
+      {/* 3D Canvas */}
+      <div className="absolute inset-0">
+        <Canvas>
+          <Scene />
+        </Canvas>
       </div>
 
-      <div
-        className="relative w-full max-w-lg mx-auto"
-        style={{
-          transform: `translate(${offsetX}px, ${offsetY}px)`,
-          transition: "transform 0.6s cubic-bezier(.22,1,.36,1)",
-        }}
-      >
-        {/* Dimension line -- horizontal, shows width. Standard technical drawing notation. */}
-        <div className="flex items-center gap-2 mb-2 px-1" aria-hidden="true">
-          <span className="w-px h-2 bg-muted-foreground/15" />
-          <div className="flex-1 h-px bg-muted-foreground/15" />
-          <span className="text-[7px] font-mono text-muted-foreground/20 tracking-widest">3M</span>
-          <div className="flex-1 h-px bg-muted-foreground/15" />
-          <span className="w-px h-2 bg-muted-foreground/15" />
-        </div>
-
-        {/* Image frame with floor markers */}
-        <div className="border border-border bg-card/20 p-3 md:p-4 relative">
-          {/* Floor markers along left edge -- matching the artwork's own F1-F4 markers visible in the image */}
-          <div className="absolute left-0 top-3 md:top-4 bottom-3 md:bottom-4 w-4 flex flex-col justify-between items-center pointer-events-none" aria-hidden="true">
-            {["F4", "F3", "F2", "F1"].map((f) => (
-              <span key={f} className="text-[6px] font-mono text-muted-foreground/15 -rotate-90 tracking-wider">{f}</span>
-            ))}
+      {/* Caption overlay */}
+      <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12 z-10">
+        <div className="border border-border/30 bg-background/80 backdrop-blur-sm px-4 py-3">
+          <div className="text-xs md:text-sm font-mono font-bold text-foreground tracking-wide">
+            MONUMENT / TATLIN
           </div>
-
-          {/* The hero artwork */}
-          <div className="relative aspect-[3/4] overflow-hidden bg-[#0a1628] ml-3">
-            <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ef8490ab-0a2d-4277-af17-224c34ae8d74.jpeg"
-              alt="Constructivist tower diagram: magenta, yellow, cyan geometric wireframe forms stacked on dark blue ground with colored construction lines"
-              fill
-              className="object-contain"
-              priority
-            />
-          </div>
-
-          {/* Caption -- plate identification, standard below any technical illustration */}
-          <div className="pt-3 flex items-end justify-between border-t border-border/50 mt-3">
-            <div>
-              <div className="text-xs md:text-sm font-mono font-bold text-foreground tracking-wide">MONUMENT / TATLIN</div>
-              <div className="text-[8px] md:text-[9px] font-mono text-muted-foreground/50 mt-0.5 tracking-[0.15em]">
-                CONSTRUCTIVIST DIAGRAM -- 4F TOWER
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-[7px] font-mono text-muted-foreground/30 tracking-widest">PLATE</div>
-              <div className="text-sm font-mono text-foreground font-bold">#01</div>
-            </div>
+          <div className="text-[8px] md:text-[9px] font-mono text-muted-foreground/60 mt-0.5 tracking-[0.15em]">
+            CONSTRUCTIVIST DIAGRAM -- 4F TOWER
           </div>
         </div>
+      </div>
 
-        {/* Dimension line -- vertical height indicator along right edge */}
-        <div className="absolute right-0 top-2 bottom-0 translate-x-full pl-3 flex flex-col items-center" aria-hidden="true">
-          <span className="h-px w-2 bg-muted-foreground/15" />
-          <div className="flex-1 w-px bg-muted-foreground/15" />
-          <span className="text-[7px] font-mono text-muted-foreground/20 -rotate-90 my-2 tracking-widest">4F</span>
-          <div className="flex-1 w-px bg-muted-foreground/15" />
-          <span className="h-px w-2 bg-muted-foreground/15" />
+      {/* Plate number */}
+      <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 z-10">
+        <div className="text-right">
+          <div className="text-[7px] font-mono text-muted-foreground/40 tracking-widest">PLATE</div>
+          <div className="text-sm font-mono text-foreground/80 font-bold">#01</div>
         </div>
       </div>
     </section>
