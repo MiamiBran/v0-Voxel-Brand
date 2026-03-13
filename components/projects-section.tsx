@@ -153,9 +153,9 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
     >
       <div className="border border-border bg-card/50 backdrop-blur-sm">
         {/* Section header with toggle */}
-        <div className="flex items-center justify-between px-5 md:px-6 py-3 border-b border-border">
-          <div className="flex items-baseline gap-3">
-            <span className="text-[9px] font-mono text-muted-foreground/40 tracking-[0.2em]">F1</span>
+        <div className="flex items-center justify-between px-6 md:px-8 py-4 border-b border-border">
+          <div className="flex items-baseline gap-4">
+            <span className="text-[10px] font-mono text-muted-foreground/30 tracking-[0.3em]">F1</span>
           </div>
           
           {/* Toggle */}
@@ -237,17 +237,17 @@ function CaseStudyRow({ study, isExpanded, onToggle }: {
         className="w-full flex items-center group text-left hover:bg-secondary/20 transition-colors"
       >
         {/* Project name */}
-        <div className="w-40 shrink-0 px-4 py-4 border-r border-border">
-          <h3 className="text-sm font-mono font-bold text-foreground group-hover:text-accent transition-colors tracking-tight">
+        <div className="w-44 shrink-0 px-5 py-5 border-r border-border">
+          <h3 className="text-sm md:text-base font-mono font-bold text-foreground group-hover:text-accent transition-colors tracking-tight">
             {study.project}
           </h3>
-          <p className="text-[10px] text-foreground/40 mt-1">{study.role}</p>
+          <p className="text-[10px] font-mono text-foreground/40 mt-1.5">{study.role}</p>
         </div>
 
         {/* Domain + Signal */}
-        <div className="flex-1 px-4 py-4 md:border-r md:border-border min-w-0">
-          <p className="text-xs text-foreground/55 truncate">{study.domain}</p>
-          <p className="text-[10px] text-foreground/35 mt-1.5 truncate hidden md:block leading-relaxed">{study.signal}</p>
+        <div className="flex-1 px-5 py-5 md:border-r md:border-border min-w-0">
+          <p className="text-xs md:text-sm text-foreground/55 truncate">{study.domain}</p>
+          <p className="text-[10px] text-foreground/35 mt-2 truncate hidden md:block leading-relaxed">{study.signal}</p>
         </div>
 
         {/* Type badge */}
@@ -314,21 +314,21 @@ function OperationRow({ operation }: { operation: (typeof operations)[0] }) {
     <article className="border-b border-border last:border-b-0 hover:bg-secondary/10 transition-colors">
       <div className="flex items-stretch">
         {/* Operation name */}
-        <div className="w-44 shrink-0 px-4 py-5 border-r border-border">
-          <h3 className="text-sm font-mono font-bold text-foreground tracking-tight">
+        <div className="w-44 shrink-0 px-5 py-5 border-r border-border">
+          <h3 className="text-sm md:text-base font-mono font-bold text-foreground tracking-tight">
             {operation.operation}
           </h3>
-          <p className="text-[10px] text-foreground/35 mt-1.5 hidden md:block leading-relaxed">{operation.tools}</p>
+          <p className="text-[10px] font-mono text-foreground/40 mt-2 hidden md:block leading-relaxed">{operation.tools}</p>
         </div>
 
         {/* Scope */}
-        <div className="flex-1 px-4 py-5 md:border-r md:border-border">
-          <p className="text-xs text-foreground/55 leading-relaxed">{operation.scope}</p>
+        <div className="flex-1 px-5 py-5 md:border-r md:border-border">
+          <p className="text-xs md:text-sm text-foreground/50 leading-[1.7]">{operation.scope}</p>
         </div>
 
         {/* Output */}
-        <div className="hidden md:block w-72 shrink-0 px-4 py-5">
-          <p className="text-xs text-foreground/45 leading-relaxed">{operation.output}</p>
+        <div className="hidden md:block w-72 shrink-0 px-5 py-5">
+          <p className="text-xs md:text-sm text-foreground/45 leading-[1.7]">{operation.output}</p>
         </div>
       </div>
     </article>
