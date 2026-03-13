@@ -135,6 +135,33 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
         </div>
       </div>
 
+      {/* RIGHT MARGIN -- Vertical info strip with drawing specs */}
+      <div className="fixed right-0 top-0 h-full w-8 md:w-10 border-l border-border bg-background/90 backdrop-blur-sm z-40 flex flex-col items-center justify-between py-6">
+        {/* Top: View indicator */}
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-[6px] font-mono text-muted-foreground/40 tracking-[0.2em] writing-vertical">VIEW</span>
+          <span className="text-[7px] font-mono text-foreground/50 tracking-wider writing-vertical">AXON</span>
+        </div>
+        
+        {/* Middle: Current section indicator */}
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-[6px] font-mono text-muted-foreground/40 tracking-[0.2em] writing-vertical">SECTION</span>
+          <span className="text-[9px] font-mono text-foreground/70 font-bold tracking-wider writing-vertical">{currentSection}</span>
+        </div>
+        
+        {/* Bottom: Scale */}
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-[6px] font-mono text-muted-foreground/40 tracking-[0.2em] writing-vertical">1:100</span>
+        </div>
+      </div>
+
+      {/* TOP BAR -- Drawing title strip */}
+      <div className="fixed top-0 left-10 md:left-14 right-8 md:right-10 h-7 border-b border-border bg-background/90 backdrop-blur-sm z-40 flex items-center px-4 gap-6">
+        <span className="text-[7px] font-mono text-muted-foreground/40 tracking-[0.2em]">PORTFOLIO DIAGRAM</span>
+        <span className="text-[7px] font-mono text-muted-foreground/30 tracking-[0.2em] ml-auto hidden sm:block">BRANDON BARTLETT</span>
+        <span className="text-[7px] font-mono text-muted-foreground/30 tracking-[0.2em]">2026</span>
+      </div>
+
       {/* REGISTRATION MARKS -- Corner crop marks indicating document boundaries.
            These are standard in print/technical drawing to define trim area. */}
       {[
@@ -161,7 +188,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
       </div>
 
       {/* Main content */}
-      <main className="ml-10 md:ml-14 pb-8 relative z-10">
+      <main className="ml-10 md:ml-14 mr-8 md:mr-10 pt-8 pb-8 relative z-10">
         {children}
       </main>
     </div>

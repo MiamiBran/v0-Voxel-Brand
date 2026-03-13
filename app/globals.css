@@ -129,6 +129,12 @@
   font-family: var(--font-mono);
 }
 
+/* Vertical text for side margins */
+.writing-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
 ::selection {
   background: var(--accent);
   color: var(--accent-foreground);
