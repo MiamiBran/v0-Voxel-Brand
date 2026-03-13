@@ -4,39 +4,54 @@ import { forwardRef } from "react"
 
 export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref) {
   return (
-    <section ref={ref} className="py-16 md:py-24 border-t border-border px-5 md:px-10" data-section="CONTACT">
+    <section ref={ref} className="py-12 md:py-20 border-t border-border px-5 md:px-8" data-section="CONTACT">
       {/* Section header */}
-      <div className="flex items-baseline justify-between mb-8 md:mb-12">
-        <h2 className="text-lg md:text-xl font-mono font-bold tracking-tight text-foreground">
-          CONTACT
-        </h2>
-      </div>
-
-      <div className="max-w-2xl">
-        <p className="text-sm font-mono text-foreground/85 leading-relaxed mb-6">
-          For print editions, commissions, licensing, or collaboration inquiries.
-        </p>
-
-        <a
-          href="mailto:studio@isometricstrata.com"
-          className="text-sm md:text-base font-mono text-foreground hover:text-accent transition-colors tracking-wide border-b border-foreground/20 hover:border-accent pb-0.5"
-        >
-          studio@isometricstrata.com
-        </a>
-
-        {/* Social links */}
-        <div className="flex flex-wrap gap-4 mt-8">
-          <SocialLink label="INSTAGRAM" href="#" />
-          <SocialLink label="TWITTER/X" href="#" />
-          <SocialLink label="BEHANCE" href="#" />
-          <SocialLink label="ARE.NA" href="#" />
+      <div className="flex items-baseline justify-between mb-6 md:mb-10">
+        <div className="flex items-baseline gap-3">
+          <h2 className="text-base md:text-lg font-mono font-bold tracking-tight text-foreground">
+            CONTACT
+          </h2>
+          <span className="text-[8px] font-mono text-muted-foreground/30 tracking-widest">
+            SEC. 04
+          </span>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="mt-16 md:mt-24 pt-6 border-t border-border">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[10px] font-mono text-muted-foreground/40 tracking-widest">
+      {/* Contact info in a bordered container — like a revision/approval block on a drawing sheet */}
+      <div className="border border-border max-w-lg">
+        <div className="border-b border-border px-4 py-1.5 text-[8px] font-mono text-muted-foreground/30 tracking-widest">
+          INQUIRIES
+        </div>
+
+        <div className="px-4 py-4">
+          <p className="text-xs font-mono text-foreground/70 leading-relaxed mb-4">
+            For print editions, commissions, licensing, or collaboration.
+          </p>
+
+          <a
+            href="mailto:studio@isometricstrata.com"
+            className="text-xs md:text-sm font-mono text-foreground hover:text-accent transition-colors tracking-wide inline-flex items-center gap-2 group"
+          >
+            <span className="border-b border-foreground/20 group-hover:border-accent pb-px transition-colors">
+              studio@isometricstrata.com
+            </span>
+          </a>
+
+          {/* Social links */}
+          <div className="flex flex-wrap gap-4 mt-5 pt-4 border-t border-border">
+            <SocialLink label="INSTAGRAM" href="#" />
+            <SocialLink label="TWITTER/X" href="#" />
+            <SocialLink label="BEHANCE" href="#" />
+            <SocialLink label="ARE.NA" href="#" />
+          </div>
+        </div>
+      </div>
+
+      {/* Footer — end of document marker */}
+      <footer className="mt-16 md:mt-20 pt-4 border-t border-border">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-[8px] font-mono text-muted-foreground/25 tracking-widest">
           <span>ISOMETRIC STRATA</span>
+          <span>END OF DOCUMENT</span>
           <span>{'© 2026'}</span>
         </div>
       </footer>
@@ -48,7 +63,7 @@ function SocialLink({ label, href }: { label: string; href: string }) {
   return (
     <a
       href={href}
-      className="text-[10px] font-mono tracking-widest text-muted-foreground hover:text-foreground transition-colors py-2 min-h-[44px] flex items-center"
+      className="text-[9px] font-mono tracking-widest text-muted-foreground/40 hover:text-foreground transition-colors py-1.5 min-h-[44px] flex items-center"
     >
       {label}
     </a>
