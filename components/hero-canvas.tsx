@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 
-// Isometric tower built with SVG - no Three.js needed
+// Isometric tower built with pure SVG - no external 3D libraries
 // Matches the visual style: dark navy grid, magenta/yellow wireframe cubes, construction lines
 
 export function HeroCanvas() {
