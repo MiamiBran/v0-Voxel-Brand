@@ -85,6 +85,11 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
     return () => clearTimeout(timer)
   }, [])
 
+  // Sync rotation to parent context
+  useEffect(() => {
+    if (setRotationAngle) setRotationAngle(rotation)
+  }, [rotation, setRotationAngle])
+
   // Continuous rotation animation
   useEffect(() => {
     if (!isAutoRotating) {
@@ -98,11 +103,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
       const delta = (time - lastTime) / 1000
       lastTime = time
       
-      setRotation(prev => {
-        const newRot = (prev + delta * 8) % 360
-        if (setRotationAngle) setRotationAngle(newRot)
-        return newRot
-      })
+      setRotation(prev => (prev + delta * 8) % 360)
 
       animationRef.current = requestAnimationFrame(animate)
     }
@@ -112,7 +113,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
     return () => {
       if (animationRef.current) cancelAnimationFrame(animationRef.current)
     }
-  }, [isAutoRotating, setRotationAngle])
+  }, [isAutoRotating])
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current) return
