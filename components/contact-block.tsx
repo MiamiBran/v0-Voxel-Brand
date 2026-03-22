@@ -4,63 +4,100 @@ import { forwardRef } from "react"
 
 export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref) {
   return (
-    <section 
-      ref={ref} 
-      className="py-12 md:py-20 px-5 md:px-10" 
-      data-section="CONTACT"
-    >
-      {/* Floating floor container with depth */}
-      <div className="border border-border bg-card/50 backdrop-blur-sm max-w-lg">
-        {/* Section header inside the card */}
-        <div className="flex items-baseline justify-between px-4 md:px-5 py-3 border-b border-border">
-          <div className="flex items-baseline gap-3">
-            <h2 className="text-xs font-mono font-bold tracking-wide text-foreground">CONTACT</h2>
-            <span className="text-[9px] font-mono text-foreground/35 tracking-[0.2em]">F4</span>
+    <section ref={ref} className="py-16 md:py-24 border-t border-border" data-section="S4">
+      {/* Section header */}
+      <div className="flex items-start justify-between mb-8 md:mb-12">
+        <div>
+          <div className="annotation mb-2">SECTION 04</div>
+          <h2 className="text-lg md:text-xl font-mono font-bold tracking-tight">CONTACT</h2>
+        </div>
+        <div className="annotation text-right hidden sm:block">
+          <div>STATUS: AVAILABLE</div>
+          <div>RESPONSE: 24-48H</div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-border border border-border">
+        {/* Main contact */}
+        <div className="bg-card p-6 md:p-8 lg:col-span-2">
+          <span className="annotation block mb-4 pb-3 border-b border-border">INQUIRIES</span>
+          <div className="space-y-6">
+            <p className="text-sm md:text-base font-mono text-foreground/90 leading-relaxed">
+              For print editions, commissions, licensing, or collaboration inquiries.
+            </p>
+            
+            <a 
+              href="mailto:studio@isometricstrata.com"
+              className="inline-flex items-center gap-3 group"
+            >
+              <span className="w-3 h-3 border border-foreground group-hover:bg-accent group-hover:border-accent transition-colors" />
+              <span className="text-base md:text-lg font-mono hover:text-accent transition-colors">
+                studio@isometricstrata.com
+              </span>
+            </a>
+
+            <div className="pt-6 border-t border-border">
+              <span className="annotation block mb-4">FOLLOW</span>
+              <div className="flex flex-wrap gap-4">
+                <SocialLink label="INSTAGRAM" href="#" />
+                <SocialLink label="TWITTER" href="#" />
+                <SocialLink label="BEHANCE" href="#" />
+                <SocialLink label="ARENA" href="#" />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Contact content */}
-        <div className="px-4 md:px-5 py-5">
-          <p className="text-[10px] font-mono text-foreground/55 leading-relaxed mb-5 max-w-sm">
-            Writing, creative signal, and direct contact. Let's build something.
-          </p>
-
-          <a
-            href="mailto:hello@bartlettbuilds.pro"
-            className="text-[12px] md:text-[11px] font-mono text-foreground hover:text-accent active:text-accent transition-colors tracking-wide inline-block border-b border-foreground/30 hover:border-accent pb-px touch-manipulation"
-          >
-            hello@bartlettbuilds.pro
-          </a>
-
-          <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-border">
-            {[
-              { label: "SUBSTACK", href: "https://substack.com/@brandonbartlett" },
-              { label: "LINKEDIN", href: "https://linkedin.com/in/brandonbartlett" },
-              { label: "X", href: "https://x.com/brandonbartlett" },
-              { label: "INSTAGRAM", href: "https://instagram.com/brandonbartlett" },
-            ].map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[10px] md:text-[9px] font-mono tracking-wider text-foreground/40 hover:text-foreground active:text-foreground transition-colors px-2 py-2 min-h-[44px] flex items-center touch-manipulation"
-              >
-                {link.label}
-              </a>
-            ))}
+        {/* Location info */}
+        <div className="bg-card p-6 md:p-8">
+          <span className="annotation block mb-4 pb-3 border-b border-border">COORDINATES</span>
+          <div className="space-y-4 text-sm font-mono">
+            <div>
+              <span className="text-muted-foreground block mb-1">LATITUDE:</span>
+              <span>47.3769° N</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground block mb-1">LONGITUDE:</span>
+              <span>8.5417° E</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground block mb-1">CITY:</span>
+              <span>ZÜRICH, CH</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground block mb-1">TIMEZONE:</span>
+              <span>CET (UTC+1)</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* End of document */}
-      <footer className="mt-16 pt-4 border-t border-border">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[9px] font-mono text-foreground/30 tracking-wider">
-          <span>BRANDON BARTLETT</span>
-          <span className="text-foreground/20">END OF DOCUMENT</span>
-          <span>{'© 2026'}</span>
+      {/* Footer */}
+      <footer className="mt-12 pt-8 border-t border-border">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div className="space-y-2">
+            <div className="text-lg md:text-xl font-mono font-bold">ISOMETRIC STRATA</div>
+            <div className="annotation">ARCHITECTURAL DIAGRAM STUDIES</div>
+          </div>
+          
+          <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 text-xs font-mono text-muted-foreground">
+            <span>© 2026</span>
+            <span>ALL RIGHTS RESERVED</span>
+            <span>DWG: IS-2026 REV.01</span>
+          </div>
         </div>
       </footer>
     </section>
   )
 })
+
+function SocialLink({ label, href }: { label: string; href: string }) {
+  return (
+    <a 
+      href={href}
+      className="text-sm font-mono px-3 py-2 border border-border hover:border-foreground hover:bg-foreground hover:text-background transition-colors min-h-[44px] flex items-center"
+    >
+      {label}
+    </a>
+  )
+}

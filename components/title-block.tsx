@@ -1,184 +1,106 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useTheme } from "next-themes"
-
 interface TitleBlockProps {
   onProjectsClick: () => void
-  onProcessClick: () => void
-  onBuildsClick: () => void
+  onInfoClick: () => void
   onContactClick: () => void
 }
 
-// Colors aligned with hero - light and dark mode values
-const SECTION_COLORS = {
-  projects: { light: "#C24B75", dark: "#FF4D8D" },    // F1 OPERATIONS - pink
-  process: { light: "#0099B3", dark: "#00D9FF" },     // F2 SYSTEMS - teal/cyan
-  builds: { light: "#2D9B6E", dark: "#A855F7" },      // F3 BUILDS - green/purple
-  contact: { light: "#C9A227", dark: "#FFD93D" },     // F4 CONTACT - amber/yellow
-}
-
-export function TitleBlock({ 
-  onProjectsClick, 
-  onProcessClick, 
-  onBuildsClick,
-  onContactClick 
-}: TitleBlockProps) {
-  const [contactHovered, setContactHovered] = useState(false)
-  const { resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-  
-  const isDark = mounted && resolvedTheme === "dark"
-  const getColor = (colors: { light: string; dark: string }) => isDark ? colors.dark : colors.light
-
-  const navItems = [
-    { num: "F1", label: "OPERATIONS", color: getColor(SECTION_COLORS.projects), onClick: onProjectsClick },
-    { num: "F2", label: "SYSTEMS", color: getColor(SECTION_COLORS.process), onClick: onProcessClick },
-    { num: "F3", label: "BUILDS", color: getColor(SECTION_COLORS.builds), onClick: onBuildsClick },
-  ]
-
+export function TitleBlock({ onProjectsClick, onInfoClick, onContactClick }: TitleBlockProps) {
   return (
-    <header data-section="TITLE">
-      <div className="px-5 md:px-10 py-4 md:py-6">
-        <div className="border border-border bg-card/60 backdrop-blur-sm max-w-4xl">
-          {/* Metadata row */}
-          <div className="border-b border-border flex flex-wrap text-[8px] font-mono text-foreground/40 tracking-[0.15em]">
-            <span className="px-3 py-1.5 border-r border-border">PROJECTION: ISOMETRIC 30{'°'}</span>
-            <span className="px-3 py-1.5 border-r border-border hidden sm:block">SUBSTRATE: 5mm GRID</span>
-            <span className="px-3 py-1.5 ml-auto">DWG NO. IS-2026-001</span>
-          </div>
-
-          {/* Main area */}
-          <div className="flex flex-col md:flex-row md:items-stretch">
-            {/* Title */}
-            <div className="flex-1 px-5 py-5 md:border-r md:border-border">
-              <h1 className="text-xl md:text-2xl font-mono font-bold tracking-tight text-foreground">
-                BRANDON BARTLETT
-              </h1>
-              <p className="text-[10px] font-mono text-foreground/45 mt-2 tracking-wider">
-                Execution Architect • Field Operations • Systems Builder
-              </p>
-            </div>
-
-            {/* Nav panel */}
-            <div className="border-t md:border-t-0 border-border flex flex-col min-w-[180px]">
-              <div className="border-b border-border px-4 py-1 text-[8px] font-mono text-foreground/40 tracking-[0.2em]">
-                INDEX
-              </div>
-
-              <nav className="flex flex-wrap md:flex-col flex-1">
-                {navItems.map((item) => (
-                  <button
-                    key={item.num}
-                    onClick={item.onClick}
-                    className="flex items-center gap-2 px-4 py-3 min-h-[48px] text-left group border-r md:border-r-0 md:border-b border-border last:border-r-0 hover:bg-secondary/40 active:bg-secondary/50 transition-colors touch-manipulation"
-                  >
-                    <div 
-                      className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0" 
-                      style={{ backgroundColor: item.color }} 
-                    />
-                    <span className="text-[9px] font-mono text-foreground/40">{item.num}</span>
-                    <span className="text-[10px] font-mono tracking-[0.1em] text-foreground/70 group-hover:text-foreground transition-colors">
-                      {item.label}
-                    </span>
-                  </button>
-                ))}
-
-                {/* CONTACT with hover/touch dropdown */}
-                <div 
-                  className="relative flex-1"
-                  onMouseEnter={() => setContactHovered(true)}
-                  onMouseLeave={() => setContactHovered(false)}
-                  onTouchStart={() => setContactHovered(true)}
-                >
-                  <button
-                    onClick={(e) => {
-                      // On touch, toggle dropdown. On click (mouse), navigate
-                      if (contactHovered) {
-                        onContactClick()
-                        setContactHovered(false)
-                      } else {
-                        setContactHovered(true)
-                      }
-                    }}
-                    className="w-full h-full flex items-center gap-2 px-4 py-3 min-h-[48px] text-left group hover:bg-secondary/40 active:bg-secondary/50 transition-colors touch-manipulation"
-                  >
-                    <div 
-                      className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0" 
-                      style={{ backgroundColor: getColor(SECTION_COLORS.contact) }} 
-                    />
-                    <span className="text-[9px] font-mono text-foreground/40">F4</span>
-                    <span className="text-[10px] font-mono tracking-[0.1em] text-foreground/70 group-hover:text-foreground transition-colors">
-                      CONTACT
-                    </span>
-                    <svg 
-                      width="8" 
-                      height="8" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="2"
-                      className={`ml-auto text-foreground/30 transition-transform duration-200 ${contactHovered ? 'rotate-180' : ''}`}
-                    >
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </button>
-                  
-                  {/* Quick actions dropdown */}
-                  <div 
-                    className={`absolute left-0 right-0 top-full z-50 overflow-hidden transition-all duration-200 ease-out ${
-                      contactHovered ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
-                    }`}
-                  >
-                    <div className="border border-t-0 border-border bg-card/95 backdrop-blur-sm">
-                      <a
-                        href="https://cal.com/brandonbartlett"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-3 min-h-[44px] text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 active:bg-secondary/50 transition-colors touch-manipulation"
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <rect x="3" y="4" width="18" height="18" rx="2" />
-                          <line x1="16" y1="2" x2="16" y2="6" />
-                          <line x1="8" y1="2" x2="8" y2="6" />
-                          <line x1="3" y1="10" x2="21" y2="10" />
-                        </svg>
-                        BOOK A CALL
-                      </a>
-                      <a
-                        href="mailto:hello@bartlettbuilds.pro"
-                        className="flex items-center gap-2 px-4 py-3 min-h-[44px] text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 active:bg-secondary/50 transition-colors border-t border-border touch-manipulation"
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <rect x="2" y="4" width="20" height="16" rx="2" />
-                          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                        </svg>
-                        EMAIL
-                      </a>
-                      <a
-                        href="/Brandon-Bartlett-CV.pdf"
-                        download
-                        className="flex items-center gap-2 px-4 py-3 min-h-[44px] text-[9px] font-mono text-foreground/60 hover:text-foreground hover:bg-secondary/40 active:bg-secondary/50 transition-colors border-t border-border touch-manipulation"
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                          <polyline points="7 10 12 15 17 10" />
-                          <line x1="12" y1="15" x2="12" y2="3" />
-                        </svg>
-                        RESUME
-                      </a>
-                    </div>
-                  </div>
+    <header className="border-b border-border py-6 md:py-8" data-section="S0">
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        {/* Main title block - like a technical drawing header */}
+        <div className="flex-1">
+          <div className="border border-border p-4 md:p-6 bg-card/50">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-xl md:text-2xl lg:text-3xl font-mono font-bold tracking-tight text-foreground leading-none">
+                    ISOMETRIC STRATA
+                  </h1>
+                  <p className="text-xs md:text-sm font-mono text-muted-foreground mt-2 tracking-wide">
+                    ARCHITECTURAL DIAGRAM STUDIES
+                  </p>
                 </div>
-              </nav>
+                <div className="flex gap-1">
+                  <ColorSwatch color="#E85D4C" />
+                  <ColorSwatch color="#4A90A4" />
+                  <ColorSwatch color="#F5C842" />
+                  <ColorSwatch color="#45B07C" />
+                  <ColorSwatch color="#9B59B6" />
+                </div>
+              </div>
+              
+              <div className="h-px bg-border" />
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-mono">
+                <div>
+                  <span className="text-muted-foreground block">VIEW:</span>
+                  <span className="text-foreground">AXONOMETRIC</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block">DETAIL:</span>
+                  <span className="text-foreground">TECHNICAL</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block">DENSITY:</span>
+                  <span className="text-foreground">MODERATE</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block">PALETTE:</span>
+                  <span className="text-foreground">MULTI</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Navigation - styled as legend/index */}
+        <nav className="md:w-48">
+          <div className="border border-border p-4 bg-card/50">
+            <span className="annotation block mb-3 pb-2 border-b border-border">INDEX</span>
+            <ul className="space-y-2 text-xs font-mono">
+              <li>
+                <button 
+                  onClick={onProjectsClick}
+                  className="flex items-center gap-2 hover:text-accent transition-colors w-full text-left group min-h-[44px] md:min-h-0"
+                >
+                  <span className="w-3 h-3 border border-current group-hover:bg-accent group-hover:border-accent transition-colors" />
+                  <span>PROJECTS</span>
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={onInfoClick}
+                  className="flex items-center gap-2 hover:text-accent transition-colors w-full text-left group min-h-[44px] md:min-h-0"
+                >
+                  <span className="w-3 h-3 border border-current group-hover:bg-accent group-hover:border-accent transition-colors" />
+                  <span>INFO</span>
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={onContactClick}
+                  className="flex items-center gap-2 hover:text-accent transition-colors w-full text-left group min-h-[44px] md:min-h-0"
+                >
+                  <span className="w-3 h-3 border border-current group-hover:bg-accent group-hover:border-accent transition-colors" />
+                  <span>CONTACT</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </nav>
       </div>
     </header>
+  )
+}
+
+function ColorSwatch({ color }: { color: string }) {
+  return (
+    <div 
+      className="w-4 h-4 md:w-5 md:h-5 border border-foreground/20"
+      style={{ backgroundColor: color }}
+    />
   )
 }

@@ -6,13 +6,11 @@ import { TitleBlock } from "@/components/title-block"
 import { HeroCanvas } from "@/components/hero-canvas"
 import { ProjectsSection } from "@/components/projects-section"
 import { InfoBlock } from "@/components/info-block"
-import { BuildsSection } from "@/components/builds-section"
 import { ContactBlock } from "@/components/contact-block"
 
 export default function Portfolio() {
   const projectsRef = useRef<HTMLElement>(null)
-  const processRef = useRef<HTMLElement>(null)
-  const buildsRef = useRef<HTMLElement>(null)
+  const infoRef = useRef<HTMLElement>(null)
   const contactRef = useRef<HTMLElement>(null)
 
   const scrollTo = (ref: React.RefObject<HTMLElement | null>) => {
@@ -21,23 +19,14 @@ export default function Portfolio() {
 
   return (
     <DocumentFrame>
-      <TitleBlock
+      <TitleBlock 
         onProjectsClick={() => scrollTo(projectsRef)}
-        onProcessClick={() => scrollTo(processRef)}
-        onBuildsClick={() => scrollTo(buildsRef)}
+        onInfoClick={() => scrollTo(infoRef)}
         onContactClick={() => scrollTo(contactRef)}
       />
-      <HeroCanvas 
-        onNavigate={(section) => {
-          if (section === "projects") scrollTo(projectsRef)
-          else if (section === "process") scrollTo(processRef)
-          else if (section === "experiments" || section === "testimonials") scrollTo(buildsRef)
-          else if (section === "contact") scrollTo(contactRef)
-        }}
-      />
+      <HeroCanvas />
       <ProjectsSection ref={projectsRef} />
-      <InfoBlock ref={processRef} />
-      <BuildsSection ref={buildsRef} />
+      <InfoBlock ref={infoRef} />
       <ContactBlock ref={contactRef} />
     </DocumentFrame>
   )

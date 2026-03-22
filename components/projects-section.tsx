@@ -1,335 +1,212 @@
 "use client"
 
 import { forwardRef, useState } from "react"
+import Image from "next/image"
 
-// Real case studies based on actual work
-const caseStudies = [
+const projects = [
   {
     id: "01",
-    project: "SSIG",
-    domain: "Construction / Infrastructure",
-    role: "Founder / Operator",
-    signal: "Commercial remodel systems and structural execution thinking",
-    type: "FIELD",
-    palette: ["#505558", "#8C9196", "#4A6FA5", "#7B68EE"],
-    keywords: ["durability", "execution", "systems", "field intelligence"],
+    title: "METABOLISM DIAGRAM",
+    subtitle: "CAPSULE / CLUSTER",
+    projectNumber: "#2707",
+    style: "METABOLISM",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/2c378cf8-3176-4939-88f3-98fe48260e3a.jpeg",
+    palette: ["#E85D4C", "#404040", "#606060", "#E85D4C"],
+    floors: 3,
+    density: "MODERATE"
   },
   {
-    id: "02",
-    project: "Bartlett Builds",
-    domain: "Personal Brand / Portfolio",
-    role: "Creative Director / Systems Builder",
-    signal: "Public-facing identity layer for work, writing, and capability",
-    type: "SIGNAL",
-    palette: ["#FAF9F6", "#6B6B6B", "#1A1A1A", "#7000FF"],
-    keywords: ["operator", "architectural", "restrained", "precise"],
+    id: "02", 
+    title: "DECON DIAGRAM",
+    subtitle: "CRYSTALLINE / 3F",
+    projectNumber: "#0575",
+    style: "DECONSTRUCTIVIST",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/6e517dd6-1f1f-40fa-9c16-f7fcc965f90d.jpeg",
+    palette: ["#4A90A4", "#5BA4B8", "#6DB8CC", "#7FCCDF"],
+    floors: 3,
+    density: "MODERATE"
   },
   {
     id: "03",
-    project: "RunFrame",
-    domain: "Execution Software / Personal OS",
-    role: "Product Architect",
-    signal: "Daily execution surface for routines, tasks, and module-based workflows",
-    type: "SYSTEM",
-    palette: ["#0A0A0A", "#7000FF", "#4ECDC4", "#6B7280"],
-    keywords: ["execution", "modular", "alive", "kinetic"],
+    title: "STRUCTURAL DIAGRAM",
+    subtitle: "QUADPLEX / CHAOTIC",
+    projectNumber: "#2102",
+    style: "ISOMETRIC STRATA",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/8d5afaef-8a62-48db-a75a-c73b7ca0ee2e.jpeg",
+    palette: ["#4A90A4", "#45B07C", "#F5C842", "#E85D4C"],
+    floors: 4,
+    density: "HIGH"
   },
   {
     id: "04",
-    project: "RootFrame",
-    domain: "Memory Engine / Knowledge Infrastructure",
-    role: "Systems Architect",
-    signal: "Structured memory base for AI, documents, and reusable context",
-    type: "INFRA",
-    palette: ["#1C1C1C", "#8B5CF6", "#D4D0C8", "#14B8A6"],
-    keywords: ["depth", "cognition", "framework", "continuity"],
+    title: "CONSTRUCTIVIST DIAGRAM",
+    subtitle: "MONUMENT / RUSAKOV",
+    projectNumber: "#3519",
+    style: "ISOMETRIC STRATA",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/81506255-d117-49f8-8ed1-bd7dfa6f8c10.jpeg",
+    palette: ["#404040", "#505050", "#606060", "#707070"],
+    floors: 4,
+    density: "MODERATE"
   },
   {
     id: "05",
-    project: "The Art of Progress",
-    domain: "Media / Writing / Analysis",
-    role: "Strategist / Writer / Host",
-    signal: "Narrative engine for worldview, systems thinking, and public intellectual output",
-    type: "SIGNAL",
-    palette: ["#1A1A1A", "#FFFFF0", "#7B68EE", "#B8860B"],
-    keywords: ["analysis", "persuasion", "worldview", "signal"],
+    title: "DECON DIAGRAM",
+    subtitle: "COLLIDING / 3F",
+    projectNumber: "#7751",
+    style: "DECONSTRUCTIVIST",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/a59ddc49-5e18-40c5-8e39-6bb4e4b7a7e5.jpeg",
+    palette: ["#E85D4C", "#4A90A4", "#45B07C", "#F5C842"],
+    floors: 3,
+    density: "MODERATE"
   },
   {
     id: "06",
-    project: "OpenCLAW Ops Engine",
-    domain: "Agent Systems / Automation",
-    role: "Agent Designer / Workflow Architect",
-    signal: "Autonomous operational support for planning, capture, scheduling, and execution",
-    type: "BUILD",
-    palette: ["#0A0A0A", "#4B5563", "#22C55E", "#7000FF"],
-    keywords: ["autonomous", "operational", "capture", "orchestration"],
+    title: "DECON DIAGRAM",
+    subtitle: "COLLIDING / 5F",
+    projectNumber: "#1961",
+    style: "DECONSTRUCTIVIST",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/2a05e9fb-9389-46f0-b96d-eab8cb2f7874.jpeg",
+    palette: ["#4A90A4", "#5BA4B8", "#6DB8CC", "#7FCCDF"],
+    floors: 5,
+    density: "HIGH"
   },
   {
     id: "07",
-    project: "Publix Remodel Execution",
-    domain: "Field Operations / Construction",
-    role: "Superintendent / Execution Lead",
-    signal: "Real-world proof of logistics, coordination, sequencing, and chaos containment",
-    type: "FIELD",
-    palette: ["#FFFFFF", "#4B5563", "#4ADE80", "#F59E0B"],
-    keywords: ["logistics", "coordination", "sequencing", "delivery"],
+    title: "BRUTALIST DIAGRAM",
+    subtitle: "MOSAIC / 9F",
+    projectNumber: "#7443",
+    style: "BRUTALIST",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/83c3c43c-e345-43f2-9a9b-aa4df39e200f.jpeg",
+    palette: ["#E85D4C", "#F5C842", "#606060", "#4A90A4"],
+    floors: 9,
+    density: "HIGH"
   },
   {
     id: "08",
-    project: "Comet Construction",
-    domain: "Operations / Remodel Delivery",
-    role: "Day Superintendent",
-    signal: "Live execution under real constraints, teams, timelines, and turnover pressure",
-    type: "FIELD",
-    palette: ["#6B7280", "#1A1A1A", "#3B82F6", "#F97316"],
-    keywords: ["execution", "constraints", "teams", "pressure"],
+    title: "CONSTRUCTIVIST DIAGRAM",
+    subtitle: "MONUMENT / TATLIN",
+    projectNumber: "#2125",
+    style: "ISOMETRIC STRATA",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ef8490ab-0a2d-4277-af17-224c34ae8d74.jpeg",
+    palette: ["#4A90A4", "#9B59B6", "#F5C842", "#45B07C", "#E85D4C"],
+    floors: 4,
+    density: "HIGH"
   },
 ]
-
-// Operations view - what you actually do across all projects
-const operations = [
-  {
-    id: "01",
-    operation: "Field Execution",
-    scope: "Active construction sites",
-    output: "Coordinated delivery across trades, schedule, access, constraints",
-    tools: "Field coordination, daily planning, trade sequencing",
-  },
-  {
-    id: "02",
-    operation: "Systems Design",
-    scope: "Workflows, planning, team structure",
-    output: "Repeatable execution frameworks that survive turnover",
-    tools: "Process architecture, documentation, training systems",
-  },
-  {
-    id: "03",
-    operation: "Documentation",
-    scope: "Reports, tracking, punch logic, communication",
-    output: "Cleaner visibility, fewer dropped details, faster recovery",
-    tools: "Reporting cadence, issue tracking, status systems",
-  },
-  {
-    id: "04",
-    operation: "Operational Architecture",
-    scope: "Projects, products, internal systems",
-    output: "Structures that convert ambiguity into action",
-    tools: "Workflow design, role mapping, decision frameworks",
-  },
-  {
-    id: "05",
-    operation: "Automation Thinking",
-    scope: "AI workflows, capture systems, scheduling tools",
-    output: "Less manual friction, tighter follow-through",
-    tools: "Agent systems, automation logic, integration design",
-  },
-  {
-    id: "06",
-    operation: "Creative Strategy",
-    scope: "Portfolio, writing, public-facing work",
-    output: "Clearer identity, stronger signal, coherent narrative",
-    tools: "Brand systems, content architecture, editorial direction",
-  },
-]
-
-// Type colors
-const TYPE_COLORS: Record<string, string> = {
-  FIELD: "#E85D4C",
-  SYSTEM: "#4A90A4",
-  BUILD: "#F5C842",
-  SIGNAL: "#9B6BC3",
-  INFRA: "#45B07C",
-}
 
 export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(_, ref) {
-  const [mode, setMode] = useState<"case-studies" | "operations">("case-studies")
-  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   return (
-    <section 
-      ref={ref} 
-      className="py-12 md:py-20 px-5 md:px-10" 
-      data-section="PROJECTS"
-    >
-      <div className="border border-border bg-card/50 backdrop-blur-sm">
-        {/* Section header with toggle */}
-        <div className="flex items-center justify-between px-4 md:px-5 py-3 border-b border-border">
-          <div className="flex items-baseline gap-3">
-            <h2 className="text-xs font-mono font-bold tracking-wide text-foreground">OPERATIONS</h2>
-            <span className="text-[9px] font-mono text-foreground/35 tracking-[0.2em]">F1</span>
-          </div>
-          
-          {/* Toggle */}
-          <div className="flex">
-            <button
-              onClick={() => { setMode("case-studies"); setExpandedId(null) }}
-              className={`px-3 py-3 min-h-[44px] text-[10px] font-mono tracking-wider transition-colors border-r border-border touch-manipulation ${
-                mode === "case-studies" 
-                  ? "text-foreground bg-secondary/40 font-medium" 
-                  : "text-foreground/40 hover:text-foreground/60 active:text-foreground/80"
-              }`}
-            >
-              CASE STUDIES
-            </button>
-            <button
-              onClick={() => { setMode("operations"); setExpandedId(null) }}
-              className={`px-3 py-3 min-h-[44px] text-[10px] font-mono tracking-wider transition-colors touch-manipulation ${
-                mode === "operations" 
-                  ? "text-foreground bg-secondary/40 font-medium" 
-                  : "text-foreground/40 hover:text-foreground/60 active:text-foreground/80"
-              }`}
-            >
-              OPERATIONS
-            </button>
-          </div>
+    <section ref={ref} className="py-16 md:py-24 border-t border-border" data-section="S2">
+      {/* Section header */}
+      <div className="flex items-start justify-between mb-8 md:mb-12">
+        <div>
+          <div className="annotation mb-2">SECTION 02</div>
+          <h2 className="text-lg md:text-xl font-mono font-bold tracking-tight">PROJECT INDEX</h2>
         </div>
+        <div className="annotation text-right">
+          <div>TOTAL: {projects.length}</div>
+          <div>VIEW: GRID</div>
+        </div>
+      </div>
 
-        {/* CASE STUDIES view */}
-        {mode === "case-studies" && (
-          <>
-            {/* Table header */}
-            <div className="hidden md:flex items-center border-b border-border text-[8px] font-mono text-muted-foreground/35 tracking-[0.15em]">
-              <span className="w-36 px-4 py-2 border-r border-border">PROJECT</span>
-              <span className="flex-1 px-4 py-2 border-r border-border">DOMAIN</span>
-              <span className="w-20 px-3 py-2 border-r border-border text-center">TYPE</span>
-              <span className="w-28 px-3 py-2 text-center">PALETTE</span>
-            </div>
-
-            {caseStudies.map((study) => (
-              <CaseStudyRow
-                key={study.id}
-                study={study}
-                isExpanded={expandedId === study.id}
-                onToggle={() => setExpandedId(expandedId === study.id ? null : study.id)}
-              />
-            ))}
-          </>
-        )}
-
-        {/* OPERATIONS view */}
-        {mode === "operations" && (
-          <>
-            {/* Table header */}
-            <div className="hidden md:flex items-center border-b border-border text-[8px] font-mono text-muted-foreground/35 tracking-[0.15em]">
-              <span className="w-40 px-4 py-2 border-r border-border">OPERATION</span>
-              <span className="flex-1 px-4 py-2 border-r border-border">SCOPE</span>
-              <span className="w-64 px-4 py-2">OUTPUT</span>
-            </div>
-
-            {operations.map((op) => (
-              <OperationRow key={op.id} operation={op} />
-            ))}
-          </>
-        )}
+      {/* Projects grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
+        {projects.map((project) => (
+          <ProjectCard 
+            key={project.id} 
+            project={project}
+            isHovered={hoveredId === project.id}
+            onHover={() => setHoveredId(project.id)}
+            onLeave={() => setHoveredId(null)}
+          />
+        ))}
       </div>
     </section>
   )
 })
 
-function CaseStudyRow({ study, isExpanded, onToggle }: {
-  study: (typeof caseStudies)[0]
-  isExpanded: boolean
-  onToggle: () => void
-}) {
+interface ProjectCardProps {
+  project: typeof projects[0]
+  isHovered: boolean
+  onHover: () => void
+  onLeave: () => void
+}
+
+function ProjectCard({ project, isHovered, onHover, onLeave }: ProjectCardProps) {
   return (
-    <article className="border-b border-border last:border-b-0">
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center group text-left hover:bg-secondary/20 active:bg-secondary/30 transition-colors touch-manipulation"
-      >
-        {/* Project name */}
-        <div className="w-36 shrink-0 px-4 py-3 border-r border-border">
-          <h3 className="text-[11px] font-mono font-bold text-foreground group-hover:text-accent transition-colors tracking-wide">
-            {study.project}
-          </h3>
-          <p className="text-[9px] font-mono text-foreground/40 mt-1">{study.role}</p>
-        </div>
-
-        {/* Domain + Signal */}
-        <div className="flex-1 px-4 py-3 md:border-r md:border-border min-w-0">
-          <p className="text-[10px] font-mono text-foreground/55 truncate">{study.domain}</p>
-          <p className="text-[9px] font-mono text-foreground/35 mt-1 truncate hidden md:block">{study.signal}</p>
-        </div>
-
-        {/* Type badge */}
-        <div className="hidden md:flex w-20 shrink-0 items-center justify-center border-r border-border py-3">
-          <span 
-            className="text-[8px] font-mono tracking-wider px-2 py-0.5"
-            style={{ color: TYPE_COLORS[study.type], borderColor: TYPE_COLORS[study.type], borderWidth: 1 }}
-          >
-            {study.type}
-          </span>
-        </div>
-
-        {/* Palette swatches */}
-        <div className="w-24 md:w-28 shrink-0 flex items-center justify-center gap-1 px-3 py-3">
-          {study.palette.map((c, i) => (
-            <div key={i} className="w-3 h-3 md:w-4 md:h-4 border border-border/30" style={{ backgroundColor: c }} />
-          ))}
-        </div>
-      </button>
-
-      {/* Expanded detail */}
-      <div
-        className={`overflow-hidden transition-all duration-500 ease-out ${
-          isExpanded ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        <div className="border-t border-border bg-card/30 px-4 md:px-6 py-5">
-          <div className="max-w-2xl">
-            {/* Signal / thesis */}
-            <p className="text-[11px] font-mono text-foreground/70 leading-relaxed">
-              {study.signal}
-            </p>
-            
-            {/* Keywords */}
-            <div className="flex flex-wrap gap-3 mt-4">
-              {study.keywords.map((kw) => (
-                <span key={kw} className="text-[8px] font-mono text-foreground/40 tracking-widest uppercase">
-                  {kw}
-                </span>
+    <article 
+      className="bg-card group cursor-pointer relative"
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
+    >
+      {/* Image container */}
+      <div className="relative aspect-[4/5] overflow-hidden">
+        <Image
+          src={project.image}
+          alt={`${project.title} - ${project.subtitle}`}
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+        
+        {/* Overlay on hover */}
+        <div className={`absolute inset-0 bg-background/90 transition-opacity duration-300 flex flex-col justify-between p-4 md:p-6 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="flex justify-between">
+            <span className="annotation">{project.projectNumber}</span>
+            <div className="flex gap-1">
+              {project.palette.map((color, i) => (
+                <div 
+                  key={i}
+                  className="w-3 h-3 border border-foreground/20"
+                  style={{ backgroundColor: color }}
+                />
               ))}
             </div>
-
-            {/* Palette detail */}
-            <div className="mt-5 pt-4 border-t border-border/50">
-              <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">PROJECT PALETTE</span>
-              <div className="flex gap-2 mt-2">
-                {study.palette.map((c, i) => (
-                  <div key={i} className="flex flex-col items-center gap-1">
-                    <div className="w-8 h-8 border border-border/30" style={{ backgroundColor: c }} />
-                    <span className="text-[8px] font-mono text-foreground/35">{c}</span>
-                  </div>
-                ))}
+          </div>
+          
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4 text-xs font-mono">
+              <div>
+                <span className="text-muted-foreground block">STYLE:</span>
+                <span>{project.style}</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground block">FLOORS:</span>
+                <span>{project.floors}</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground block">DENSITY:</span>
+                <span>{project.density}</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground block">VIEW:</span>
+                <span>AXONOMETRIC</span>
               </div>
             </div>
+            
+            <button className="w-full py-3 border border-foreground text-sm font-mono hover:bg-foreground hover:text-background transition-colors">
+              VIEW PROJECT
+            </button>
           </div>
         </div>
       </div>
-    </article>
-  )
-}
 
-function OperationRow({ operation }: { operation: (typeof operations)[0] }) {
-  return (
-    <article className="border-b border-border last:border-b-0 hover:bg-secondary/10 transition-colors">
-      <div className="flex items-stretch">
-        {/* Operation name */}
-        <div className="w-36 shrink-0 px-4 py-3 border-r border-border">
-          <h3 className="text-[11px] font-mono font-bold text-foreground tracking-wide">
-            {operation.operation}
-          </h3>
-          <p className="text-[9px] font-mono text-foreground/40 mt-1 hidden md:block">{operation.tools}</p>
+      {/* Info bar */}
+      <div className="p-4 border-t border-border flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <div className="annotation mb-1">{project.id}/{String(projects.length).padStart(2, '0')}</div>
+          <h3 className="text-sm font-mono font-bold truncate">{project.title}</h3>
+          <p className="text-xs font-mono text-muted-foreground truncate">{project.subtitle}</p>
         </div>
-
-        {/* Scope */}
-        <div className="flex-1 px-4 py-3 md:border-r md:border-border">
-          <p className="text-[10px] font-mono text-foreground/55 leading-relaxed">{operation.scope}</p>
-        </div>
-
-        {/* Output */}
-        <div className="hidden md:block w-56 shrink-0 px-4 py-3">
-          <p className="text-[10px] font-mono text-foreground/45 leading-relaxed">{operation.output}</p>
+        <div className="flex gap-1 shrink-0">
+          {project.palette.slice(0, 4).map((color, i) => (
+            <div 
+              key={i}
+              className="w-2.5 h-2.5 border border-foreground/10"
+              style={{ backgroundColor: color }}
+            />
+          ))}
         </div>
       </div>
     </article>

@@ -1,313 +1,137 @@
 "use client"
 
-import { type ReactNode, useEffect, useState, useCallback, createContext, useContext } from "react"
-import { useTheme } from "next-themes"
-
-// Context to share rotation state with hero
-export const RotationContext = createContext<{
-  isAutoRotating: boolean
-  toggleRotation: () => void
-  rotationAngle: number
-  setRotationAngle: (angle: number) => void
-}>({
-  isAutoRotating: true,
-  toggleRotation: () => {},
-  rotationAngle: 0,
-  setRotationAngle: () => {},
-})
-
-export function useRotation() {
-  return useContext(RotationContext)
-}
+import { ReactNode, useEffect, useState } from "react"
 
 interface DocumentFrameProps {
   children: ReactNode
 }
 
-// Sections map to the document structure
-const SECTIONS = [
-  { id: "TITLE", label: "F0", percent: 12 },
-  { id: "HERO", label: "—", percent: 22 },
-  { id: "PROJECTS", label: "F1", percent: 40 },
-  { id: "PROCESS", label: "F2", percent: 55 },
-  { id: "EXPERIMENTS", label: "F3", percent: 72 },
-  { id: "CONTACT", label: "F4", percent: 97 },
-]
-
 export function DocumentFrame({ children }: DocumentFrameProps) {
+  const [scrollY, setScrollY] = useState(0)
   const [scrollPercent, setScrollPercent] = useState(0)
-  const [currentSection, setCurrentSection] = useState("TITLE")
-  const [isAutoRotating, setIsAutoRotating] = useState(false)
-  const [showRotateCTA, setShowRotateCTA] = useState(false)
-  const [rotationAngle, setRotationAngle] = useState(0)
-  const { theme, setTheme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  const [currentSection, setCurrentSection] = useState("S1")
 
   useEffect(() => {
     const handleScroll = () => {
-      if (typeof document === "undefined" || typeof window === "undefined") return
-      const total = document.body.scrollHeight - window.innerHeight
-      if (total > 0) setScrollPercent(Math.round((window.scrollY / total) * 100))
-
-      const sections = document.querySelectorAll("[data-section]")
-      sections.forEach((s) => {
-        const rect = s.getBoundingClientRect()
-        if (rect.top <= 120 && rect.bottom >= 120) {
-          setCurrentSection(s.getAttribute("data-section") || "TITLE")
+      const currentScrollY = window.scrollY
+      const maxScroll = document.body.scrollHeight - window.innerHeight
+      setScrollY(currentScrollY)
+      setScrollPercent(maxScroll > 0 ? Math.min((currentScrollY / maxScroll) * 100, 100) : 0)
+      
+      const sections = document.querySelectorAll('[data-section]')
+      sections.forEach((section) => {
+        const rect = section.getBoundingClientRect()
+        if (rect.top <= 100 && rect.bottom >= 100) {
+          setCurrentSection(section.getAttribute('data-section') || "S1")
         }
       })
     }
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    handleScroll()
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  // Show CTA after a delay on load, or when scrolling near hero
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowRotateCTA(true)
-    }, 2000)
-    
-    return () => clearTimeout(timer)
-  }, [])
-
-  // Hide CTA after user has seen it, scrolled past hero, or started rotating
-  useEffect(() => {
-    if (scrollPercent > 25 || isAutoRotating) {
-      setShowRotateCTA(false)
-    } else if (scrollPercent < 20 && currentSection === "HERO" && !isAutoRotating) {
-      setShowRotateCTA(true)
-    }
-  }, [scrollPercent, currentSection, isAutoRotating])
-
-  const scrollToSection = useCallback((sectionId: string) => {
-    if (typeof document === "undefined") return
-    const el = document.querySelector(`[data-section="${sectionId}"]`)
-    el?.scrollIntoView({ behavior: "smooth" })
-  }, [])
-
-  const toggleRotation = useCallback(() => {
-    setIsAutoRotating(prev => !prev)
-    setShowRotateCTA(false)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
-    <RotationContext.Provider value={{ isAutoRotating, toggleRotation, rotationAngle, setRotationAngle }}>
-      <div className="min-h-screen bg-background grid-paper paper-texture relative">
-        
-        {/* LEFT MARGIN -- Logo at top, floor markers on a progress track */}
-        <div className="fixed left-0 top-0 h-full w-10 md:w-12 border-r border-border bg-background/90 backdrop-blur-sm z-40 flex flex-col">
-          
-          {/* Logo space at top */}
-          <div className="h-12 flex items-center justify-center border-b border-border/50">
-            <span className="text-[10px] font-mono font-bold text-foreground/60 tracking-tight">BB</span>
-          </div>
-          
-          {/* Progress track container */}
-          <div className="flex-1 relative">
-            {/* Progress track */}
-            <div className="absolute left-1/2 top-4 bottom-4 w-px bg-border -translate-x-1/2">
-              {/* Fill based on scroll */}
-              <div 
-                className="absolute top-0 left-0 w-full bg-foreground/30 transition-all duration-150"
-                style={{ height: `${scrollPercent}%` }}
-              />
-            </div>
-
-            {/* Floor markers */}
-            {SECTIONS.map((s) => {
-            const active = currentSection === s.id
-            return (
-              <button
-                key={s.id}
-                onClick={() => scrollToSection(s.id)}
-                className="absolute left-0 right-0 flex justify-center group min-h-[36px] touch-manipulation"
-                style={{ top: `${s.percent}%`, transform: 'translateY(-50%)' }}
-                aria-label={`Go to ${s.id}`}
-              >
-                <span
-                  className={`block text-[9px] font-mono tracking-wider px-2 py-1 transition-all duration-200 ${
-                    active 
-                      ? "text-foreground font-medium" 
-                      : "text-muted-foreground/50 hover:text-foreground/70 active:text-foreground"
-                  }`}
-                >
-                  {s.label}
-                </span>
-              </button>
-            )
-          })}
-          </div>
+    <div className="min-h-screen bg-background grid-paper paper-texture relative">
+      {/* Left margin with floor markers */}
+      <div className="fixed left-0 top-0 h-full w-8 md:w-12 border-r border-border bg-background/80 backdrop-blur-sm z-40 flex flex-col items-center justify-center">
+        <div className="floor-marker text-muted-foreground tracking-widest">
+          {currentSection}
         </div>
-
-        {/* RIGHT MARGIN -- Compass rotation control centered, CV at top */}
-        <div className="fixed right-0 top-0 h-full w-8 md:w-10 border-l border-border bg-background/90 backdrop-blur-sm z-40 flex flex-col items-center justify-between py-6">
-          {/* CV download at top */}
-          <a
-            href="/Brandon-Bartlett-CV.pdf"
-            download
-            className="group flex flex-col items-center gap-1.5 p-3 hover:bg-secondary/40 active:bg-secondary/50 transition-colors rounded min-h-[48px] min-w-[40px] touch-manipulation"
-            title="Download Resume"
-          >
-            <svg 
-              width="14" 
-              height="14" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="1.5"
-              className="text-foreground/40 group-hover:text-foreground transition-colors"
-            >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            <span className="text-[6px] font-mono text-foreground/30 group-hover:text-foreground/60 tracking-wider writing-vertical transition-colors">CV</span>
-          </a>
-
-          {/* Compass rotation button - centered */}
-          <div className="relative">
-            {/* CTA tooltip */}
-            <div 
-              className={`absolute right-full mr-2 top-1/2 -translate-y-1/2 whitespace-nowrap transition-all duration-500 ${
-                showRotateCTA 
-                  ? "opacity-100 translate-x-0" 
-                  : "opacity-0 translate-x-2 pointer-events-none"
-              }`}
-            >
-              <div className="bg-background/95 border border-border px-2 py-1 rounded text-[8px] font-mono text-foreground/70">
-                <span className="text-foreground/40">click to</span> rotate
-              </div>
-            </div>
-
-            <button
-              onClick={toggleRotation}
-              className={`group p-3 rounded transition-all duration-300 min-h-[48px] min-w-[48px] flex items-center justify-center touch-manipulation ${
-                isAutoRotating 
-                  ? "hover:bg-secondary/40 active:bg-secondary/50" 
-                  : "bg-secondary/30 hover:bg-secondary/50 active:bg-secondary/60"
-              }`}
-              title={isAutoRotating ? "Pause rotation" : "Enable rotation"}
-            >
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 48 48"
-                style={{ 
-                  transform: `rotate(${rotationAngle}deg)`,
-                  transition: isAutoRotating ? "none" : "transform 0.5s ease-out",
-                }}
-                aria-hidden="true"
-              >
-                <circle 
-                  cx="24" cy="24" r="20" 
-                  fill="none" 
-                  stroke={isAutoRotating ? "var(--foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} 
-                  strokeWidth="0.5" 
-                  opacity={isAutoRotating ? 0.5 : 0.6}
-                />
-                <circle 
-                  cx="24" cy="24" r="14" 
-                  fill="none" 
-                  stroke={isAutoRotating ? "var(--border)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")}
-                  strokeWidth="0.3"
-                  opacity={isAutoRotating ? 1 : 0.4}
-                />
-                {/* Cardinal ticks */}
-                <line x1="24" y1="4" x2="24" y2="8" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
-                <line x1="44" y1="24" x2="40" y2="24" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
-                <line x1="24" y1="44" x2="24" y2="40" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
-                <line x1="4" y1="24" x2="8" y2="24" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
-                {/* North arrow */}
-                <polygon 
-                  points="24,6 21,18 24,16 27,18" 
-                  fill={isAutoRotating ? "var(--foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} 
-                  opacity={isAutoRotating ? 0.7 : 0.7} 
-                />
-                <polygon 
-                  points="24,42 21,30 24,32 27,30" 
-                  fill="none" 
-                  stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")}
-                  strokeWidth="0.3" 
-                  opacity={isAutoRotating ? 0.25 : 0.4} 
-                />
-                {/* N label */}
-                <text x="24" y="3" textAnchor="middle" fontSize="4" fill={isAutoRotating ? "var(--foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} opacity={isAutoRotating ? 0.4 : 0.7} fontFamily="monospace">N</text>
-                <circle 
-                  cx="24" cy="24" r="1.5" 
-                  fill={isAutoRotating ? "var(--foreground)" : "var(--muted-foreground)"} 
-                  opacity={isAutoRotating ? 0.5 : 0.2} 
-                />
-              </svg>
-            </button>
-          </div>
-
-          {/* Theme toggle at bottom */}
-          <button
-            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-            className="group flex flex-col items-center gap-1.5 p-3 hover:bg-secondary/40 active:bg-secondary/50 transition-colors rounded min-h-[48px] min-w-[40px] touch-manipulation"
-            title={mounted ? (resolvedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode") : "Toggle theme"}
-          >
-            {mounted && resolvedTheme === "dark" ? (
-              <svg 
-                width="14" 
-                height="14" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="1.5"
-                className="text-foreground/40 group-hover:text-foreground transition-colors"
-              >
-                <circle cx="12" cy="12" r="5" />
-                <line x1="12" y1="1" x2="12" y2="3" />
-                <line x1="12" y1="21" x2="12" y2="23" />
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                <line x1="1" y1="12" x2="3" y2="12" />
-                <line x1="21" y1="12" x2="23" y2="12" />
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-              </svg>
-            ) : (
-              <svg 
-                width="14" 
-                height="14" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="1.5"
-                className="text-foreground/40 group-hover:text-foreground transition-colors"
-              >
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-              </svg>
-            )}
-          </button>
-        </div>
-
-        {/* CORNER MARKS */}
-        {[
-          "top-2 left-[44px]",
-          "top-2 right-[36px] -scale-x-100",
-          "bottom-2 left-[44px] -scale-y-100",
-          "bottom-2 right-[36px] scale-[-1]",
-        ].map((pos, i) => (
-          <div key={i} className={`fixed z-30 pointer-events-none ${pos}`} aria-hidden="true">
-            <svg width="8" height="8" viewBox="0 0 10 10" className="text-border/30">
-              <line x1="0" y1="0" x2="8" y2="0" stroke="currentColor" strokeWidth="0.5" />
-              <line x1="0" y1="0" x2="0" y2="8" stroke="currentColor" strokeWidth="0.5" />
-            </svg>
-          </div>
-        ))}
-
-        {/* Main content */}
-        <main className="ml-10 md:ml-12 mr-8 md:mr-10 py-4 relative z-10">
-          {children}
-        </main>
       </div>
-    </RotationContext.Provider>
+
+      {/* Right margin with scroll indicator */}
+      <div className="fixed right-0 top-0 h-full w-8 md:w-12 border-l border-border bg-background/80 backdrop-blur-sm z-40 hidden md:flex flex-col items-center justify-between py-8">
+        <div className="annotation rotate-90 origin-center whitespace-nowrap mt-16">
+          SCROLL
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <div className="w-px h-24 bg-border relative">
+            <div 
+              className="absolute top-0 left-0 w-full bg-foreground transition-all duration-300"
+              style={{ height: `${scrollPercent}%` }}
+            />
+          </div>
+          <span className="annotation">
+            {Math.round(scrollPercent)}%
+          </span>
+        </div>
+        <CompassRose />
+      </div>
+
+      {/* Top border with revision info */}
+      <div className="fixed top-0 left-8 md:left-12 right-8 md:right-12 h-8 md:h-10 border-b border-border bg-background/80 backdrop-blur-sm z-40 flex items-center justify-between px-4 md:px-6">
+        <span className="annotation">DWG: IS-2026</span>
+        <span className="annotation hidden sm:block">ISOMETRIC STRATA</span>
+        <span className="annotation">REV: 01</span>
+      </div>
+
+      {/* Bottom border with scale */}
+      <div className="fixed bottom-0 left-8 md:left-12 right-8 md:right-12 h-8 md:h-10 border-t border-border bg-background/80 backdrop-blur-sm z-40 flex items-center justify-between px-4 md:px-6">
+        <ScaleBar />
+        <span className="annotation hidden sm:block">SHEET 1/1</span>
+        <span className="annotation">1:100</span>
+      </div>
+
+      {/* Main content area */}
+      <main className="ml-8 md:ml-12 mr-8 md:mr-12 mt-8 md:mt-10 mb-8 md:mb-10 relative z-10">
+        {children}
+      </main>
+
+      {/* Corner markers */}
+      <CornerMarker position="top-left" />
+      <CornerMarker position="top-right" />
+      <CornerMarker position="bottom-left" />
+      <CornerMarker position="bottom-right" />
+    </div>
+  )
+}
+
+function CompassRose() {
+  return (
+    <div className="w-8 h-8 relative">
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-border" />
+        <circle cx="20" cy="20" r="14" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-border" />
+        <line x1="20" y1="2" x2="20" y2="8" stroke="currentColor" strokeWidth="1" className="text-foreground" />
+        <line x1="20" y1="32" x2="20" y2="38" stroke="currentColor" strokeWidth="0.5" className="text-muted-foreground" />
+        <line x1="2" y1="20" x2="8" y2="20" stroke="currentColor" strokeWidth="0.5" className="text-muted-foreground" />
+        <line x1="32" y1="20" x2="38" y2="20" stroke="currentColor" strokeWidth="0.5" className="text-muted-foreground" />
+        <text x="20" y="6" textAnchor="middle" className="fill-foreground text-[6px] font-mono">N</text>
+      </svg>
+    </div>
+  )
+}
+
+function ScaleBar() {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex h-2">
+        <div className="w-4 md:w-6 h-full bg-foreground" />
+        <div className="w-4 md:w-6 h-full bg-transparent border border-foreground" />
+        <div className="w-4 md:w-6 h-full bg-foreground" />
+        <div className="w-4 md:w-6 h-full bg-transparent border border-foreground" />
+      </div>
+      <span className="annotation">0___1:100___M</span>
+    </div>
+  )
+}
+
+function CornerMarker({ position }: { position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' }) {
+  const positionClasses = {
+    'top-left': 'top-8 md:top-10 left-8 md:left-12',
+    'top-right': 'top-8 md:top-10 right-8 md:right-12',
+    'bottom-left': 'bottom-8 md:bottom-10 left-8 md:left-12',
+    'bottom-right': 'bottom-8 md:bottom-10 right-8 md:right-12',
+  }
+
+  const lineStyles = {
+    'top-left': 'border-t border-l',
+    'top-right': 'border-t border-r',
+    'bottom-left': 'border-b border-l',
+    'bottom-right': 'border-b border-r',
+  }
+
+  return (
+    <div className={`fixed ${positionClasses[position]} w-4 h-4 ${lineStyles[position]} border-muted-foreground z-50 pointer-events-none`} />
   )
 }
