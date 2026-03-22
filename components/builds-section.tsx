@@ -84,8 +84,8 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
                 setBuildsExpanded(true)
               }
             }}
-            className={`flex-1 flex items-center justify-between px-4 md:px-5 py-3 transition-colors text-left ${
-              activeTab === "builds" ? "bg-secondary/30" : "hover:bg-secondary/10"
+            className={`flex-1 flex items-center justify-between px-4 md:px-5 py-4 min-h-[52px] transition-colors text-left touch-manipulation ${
+              activeTab === "builds" ? "bg-secondary/30" : "hover:bg-secondary/10 active:bg-secondary/20"
             }`}
           >
             <div className="flex items-baseline gap-3">
@@ -97,8 +97,8 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
               <span className="text-[9px] font-mono text-muted-foreground/35 tracking-[0.2em]">F3</span>
             </div>
             <svg 
-              width="12" 
-              height="12" 
+              width="14" 
+              height="14" 
               viewBox="0 0 24 24" 
               fill="none" 
               stroke="currentColor" 
@@ -115,8 +115,8 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
           
           <button
             onClick={() => setActiveTab("feedback")}
-            className={`flex-1 flex items-center justify-between px-4 md:px-5 py-3 border-l border-border transition-colors text-left ${
-              activeTab === "feedback" ? "bg-secondary/30" : "hover:bg-secondary/10"
+            className={`flex-1 flex items-center justify-between px-4 md:px-5 py-4 min-h-[52px] border-l border-border transition-colors text-left touch-manipulation ${
+              activeTab === "feedback" ? "bg-secondary/30" : "hover:bg-secondary/10 active:bg-secondary/20"
             }`}
           >
             <div className="flex items-baseline gap-3">
@@ -128,8 +128,8 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
               <span className="text-[9px] font-mono text-muted-foreground/35 tracking-[0.2em]">F3.5</span>
             </div>
             <svg 
-              width="12" 
-              height="12" 
+              width="14" 
+              height="14" 
               viewBox="0 0 24 24" 
               fill="none" 
               stroke="currentColor" 

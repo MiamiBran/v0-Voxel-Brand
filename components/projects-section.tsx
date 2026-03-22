@@ -163,20 +163,20 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
           <div className="flex">
             <button
               onClick={() => { setMode("case-studies"); setExpandedId(null) }}
-              className={`px-3 py-2 text-[10px] font-mono tracking-wider transition-colors border-r border-border ${
+              className={`px-3 py-3 min-h-[44px] text-[10px] font-mono tracking-wider transition-colors border-r border-border touch-manipulation ${
                 mode === "case-studies" 
                   ? "text-foreground bg-secondary/40 font-medium" 
-                  : "text-foreground/40 hover:text-foreground/60"
+                  : "text-foreground/40 hover:text-foreground/60 active:text-foreground/80"
               }`}
             >
               CASE STUDIES
             </button>
             <button
               onClick={() => { setMode("operations"); setExpandedId(null) }}
-              className={`px-3 py-2 text-[10px] font-mono tracking-wider transition-colors ${
+              className={`px-3 py-3 min-h-[44px] text-[10px] font-mono tracking-wider transition-colors touch-manipulation ${
                 mode === "operations" 
                   ? "text-foreground bg-secondary/40 font-medium" 
-                  : "text-foreground/40 hover:text-foreground/60"
+                  : "text-foreground/40 hover:text-foreground/60 active:text-foreground/80"
               }`}
             >
               OPERATIONS
@@ -235,7 +235,7 @@ function CaseStudyRow({ study, isExpanded, onToggle }: {
     <article className="border-b border-border last:border-b-0">
       <button
         onClick={onToggle}
-        className="w-full flex items-center group text-left hover:bg-secondary/20 transition-colors"
+        className="w-full flex items-center group text-left hover:bg-secondary/20 active:bg-secondary/30 transition-colors touch-manipulation"
       >
         {/* Project name */}
         <div className="w-36 shrink-0 px-4 py-3 border-r border-border">

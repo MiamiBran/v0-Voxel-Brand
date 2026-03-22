@@ -1,7 +1,9 @@
 "use client"
 
 import { forwardRef, useState, useEffect, useRef } from "react"
+import { useTheme } from "next-themes"
 
+// Colors aligned with hero - light and dark mode values
 const phases = [
   {
     name: "DISCOVERY",
@@ -9,7 +11,7 @@ const phases = [
     description:
       "Audit constraints, stakeholders, timing pressure, dependencies. Map the landscape before drawing the first line.",
     outputs: ["Stakeholder Interviews", "System Audits", "Constraint Mapping"],
-    color: "#E85D4C",
+    color: { light: "#C24B75", dark: "#FF4D8D" },  // F1 pink
   },
   {
     name: "ARCHITECTURE",
@@ -17,7 +19,7 @@ const phases = [
     description:
       "Design the workflow, ownership structure, reporting rhythm, and execution map. Create the blueprint teams can build against.",
     outputs: ["Process Design", "Resource Planning", "Risk Mitigation"],
-    color: "#4A90A4",
+    color: { light: "#0099B3", dark: "#00D9FF" },  // F2 teal/cyan
   },
   {
     name: "EXECUTION",
@@ -25,7 +27,7 @@ const phases = [
     description:
       "Deploy in the field, coordinate moving parts, remove blockers, preserve momentum. Lead from the front.",
     outputs: ["Field Operations", "Team Coordination", "Progress Tracking"],
-    color: "#45B07C",
+    color: { light: "#2D9B6E", dark: "#A855F7" },  // F3 green/purple
   },
   {
     name: "ITERATION",
@@ -33,14 +35,123 @@ const phases = [
     description:
       "Refine from live feedback and convert lessons into repeatable structure. Build sustainable processes, not one-time fixes.",
     outputs: ["Performance Analysis", "Process Optimization", "Knowledge Transfer"],
-    color: "#F5C842",
+    color: { light: "#C9A227", dark: "#FFD93D" },  // F4 amber/yellow
   },
 ]
+
+// Top-level categories with their sub-tabs
+const detailFrameData = {
+  systems: {
+    label: "SYSTEMS",
+    subtabs: {
+      digital: {
+        title: "DIGITAL SYSTEMS",
+        subtitle: "Software & data infrastructure",
+        thinking: "Digital systems require clear data flow, version control, and automated feedback loops. The goal is reducing manual intervention while maintaining visibility.",
+        steps: [
+          { num: "01", name: "MAP", desc: "Data sources, dependencies, user flows" },
+          { num: "02", name: "ARCHITECT", desc: "System design, API contracts, state management" },
+          { num: "03", name: "BUILD", desc: "Iterative development, testing, deployment" },
+          { num: "04", name: "MONITOR", desc: "Analytics, error tracking, optimization" },
+        ]
+      },
+      analog: {
+        title: "ANALOG OPERATIONS", 
+        subtitle: "Field work & physical coordination",
+        thinking: "Physical operations demand clear handoffs, visual progress tracking, and contingency planning. People and materials don't have undo buttons.",
+        steps: [
+          { num: "01", name: "SCOUT", desc: "Site conditions, constraints, stakeholders" },
+          { num: "02", name: "SEQUENCE", desc: "Trade flow, material staging, milestones" },
+          { num: "03", name: "EXECUTE", desc: "Daily coordination, issue resolution, QC" },
+          { num: "04", name: "CLOSE", desc: "Punchlist, documentation, lessons learned" },
+        ]
+      }
+    }
+  },
+  workflows: {
+    label: "WORKFLOWS",
+    subtabs: {
+      project: {
+        title: "PROJECT WORKFLOW",
+        subtitle: "End-to-end project delivery",
+        thinking: "Projects need clear phases with defined handoffs. Each gate ensures quality before moving forward, preventing costly rework downstream.",
+        steps: [
+          { num: "01", name: "SCOPE", desc: "Define deliverables, timeline, budget" },
+          { num: "02", name: "PLAN", desc: "Resource allocation, dependencies, milestones" },
+          { num: "03", name: "DELIVER", desc: "Execute phases, track progress, manage changes" },
+          { num: "04", name: "TRANSFER", desc: "Handoff, documentation, support transition" },
+        ]
+      },
+      review: {
+        title: "REVIEW CYCLE",
+        subtitle: "Feedback and iteration loops",
+        thinking: "Good feedback is specific, timely, and actionable. Structure the review process to maximize signal while minimizing churn.",
+        steps: [
+          { num: "01", name: "PRESENT", desc: "Share work in appropriate context" },
+          { num: "02", name: "COLLECT", desc: "Gather structured feedback from stakeholders" },
+          { num: "03", name: "SYNTHESIZE", desc: "Identify patterns, prioritize changes" },
+          { num: "04", name: "ITERATE", desc: "Implement revisions, document decisions" },
+        ]
+      }
+    }
+  },
+  routines: {
+    label: "ROUTINES",
+    subtabs: {
+      daily: {
+        title: "DAILY RHYTHM",
+        subtitle: "Day-to-day operational cadence",
+        thinking: "Consistency compounds. Small daily habits create the foundation for larger achievements. Design the day to protect deep work.",
+        steps: [
+          { num: "01", name: "PLAN", desc: "Review priorities, block time, set intentions" },
+          { num: "02", name: "FOCUS", desc: "Deep work sessions, minimize interruptions" },
+          { num: "03", name: "SYNC", desc: "Check-ins, updates, unblock others" },
+          { num: "04", name: "REFLECT", desc: "Review progress, prepare tomorrow" },
+        ]
+      },
+      weekly: {
+        title: "WEEKLY REVIEW",
+        subtitle: "Recurring strategic checkpoints",
+        thinking: "Weekly reviews zoom out from daily tasks to ensure alignment with bigger goals. Course-correct before small drifts become large detours.",
+        steps: [
+          { num: "01", name: "ASSESS", desc: "Review completed work against goals" },
+          { num: "02", name: "CLEAR", desc: "Process inbox, update task lists" },
+          { num: "03", name: "PLAN", desc: "Set priorities for upcoming week" },
+          { num: "04", name: "PREPARE", desc: "Prep materials, schedule key meetings" },
+        ]
+      }
+    }
+  }
+}
+
+type CategoryKey = keyof typeof detailFrameData
 
 export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
   const [showCTA, setShowCTA] = useState(false)
   const [showOverlay, setShowOverlay] = useState(false)
+  const [activeCategory, setActiveCategory] = useState<CategoryKey>("systems")
+  const [activeSubtab, setActiveSubtab] = useState<string>("digital")
   const sectionRef = useRef<HTMLElement>(null)
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  
+  // Get current data
+  const currentCategory = detailFrameData[activeCategory]
+  const subtabKeys = Object.keys(currentCategory.subtabs)
+  const currentSubtab = currentCategory.subtabs[activeSubtab as keyof typeof currentCategory.subtabs] || currentCategory.subtabs[subtabKeys[0] as keyof typeof currentCategory.subtabs]
+  
+  // Reset subtab when category changes
+  useEffect(() => {
+    const firstSubtab = Object.keys(detailFrameData[activeCategory].subtabs)[0]
+    setActiveSubtab(firstSubtab)
+  }, [activeCategory])
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  const isDark = mounted && resolvedTheme === "dark"
+  const getColor = (colors: { light: string; dark: string }) => isDark ? colors.dark : colors.light
 
   // Scroll-triggered CTA
   useEffect(() => {
@@ -103,7 +214,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
             <div className="flex items-stretch">
               {/* Phase number with color indicator */}
               <div className="w-10 shrink-0 border-r border-border flex flex-col items-center justify-center py-4 gap-2">
-                <div className="w-3 h-3" style={{ backgroundColor: phase.color }} />
+                <div className="w-3 h-3" style={{ backgroundColor: getColor(phase.color) }} />
                 <span className="text-[8px] font-mono text-foreground/40">{phase.num}</span>
               </div>
 
@@ -128,7 +239,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
 
       {/* Scroll-triggered CTA - materializes from bottom-right */}
       <div 
-        className={`fixed bottom-8 right-12 md:right-16 z-50 transition-all duration-500 ease-out ${
+        className={`fixed bottom-6 right-4 md:bottom-8 md:right-16 z-50 transition-all duration-500 ease-out ${
           showCTA && !showOverlay
             ? "opacity-100 translate-y-0" 
             : "opacity-0 translate-y-4 pointer-events-none"
@@ -136,110 +247,120 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
       >
         <button
           onClick={() => setShowOverlay(true)}
-          className="flex items-center gap-3 px-4 py-3 bg-card/95 backdrop-blur-sm border border-border hover:bg-secondary/50 transition-colors group"
+          className="flex items-center gap-3 px-4 py-4 min-h-[48px] bg-card/95 backdrop-blur-sm border border-border hover:bg-secondary/50 active:bg-secondary/60 transition-colors group touch-manipulation"
         >
-          <span className="text-[9px] font-mono text-foreground/70 tracking-[0.1em] group-hover:text-foreground transition-colors">
-            OPEN EXECUTION FRAME
+          <span className="text-[10px] md:text-[9px] font-mono text-foreground/70 tracking-[0.1em] group-hover:text-foreground transition-colors">
+            OPEN DETAIL FRAME
           </span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-foreground/40 group-hover:text-foreground transition-colors">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-foreground/40 group-hover:text-foreground transition-colors">
             <path d="M7 17L17 7M17 7H7M17 7V17" />
           </svg>
         </button>
       </div>
 
-      {/* Detail Overlay - architectural drawing detail sheet */}
+      {/* Detail Frame - collage style overlay with tabs */}
       {showOverlay && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-            onClick={() => setShowOverlay(false)}
-          />
-          
-          {/* Detail Frame */}
-          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-card border border-border animate-in fade-in slide-in-from-bottom-4 duration-300">
-            {/* Title block header */}
-            <div className="sticky top-0 bg-card border-b border-border px-5 py-3 flex items-center justify-between">
-              <div>
-                <h3 className="text-xs font-mono font-bold text-foreground tracking-wide">DETAIL FRAME</h3>
-                <p className="text-[8px] font-mono text-foreground/35 tracking-[0.15em] mt-0.5">
-                  F2.1 — EXECUTION SYSTEM DETAIL · SCALE: NTS · LAYER: Z+1
-                </p>
-              </div>
+        <div 
+          className="fixed md:absolute inset-4 md:inset-auto md:top-12 md:right-8 z-50 md:z-20 md:w-80 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 md:slide-in-from-right-4 duration-300 flex flex-col"
+          style={{ 
+            boxShadow: '6px 6px 0 rgba(0,0,0,0.1), 12px 12px 20px rgba(0,0,0,0.08)'
+          }}
+        >
+          <div className="bg-card border border-border flex flex-col h-full md:h-auto overflow-hidden">
+            {/* Header with close */}
+            <div className="px-3 py-3 border-b border-border flex items-center justify-between shrink-0">
+              <span className="text-[9px] font-mono text-foreground/50 tracking-[0.15em]">DETAIL FRAME F2.1</span>
               <button 
                 onClick={() => setShowOverlay(false)}
-                className="p-2 hover:bg-secondary/50 transition-colors"
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-secondary/50 active:bg-secondary/60 transition-colors touch-manipulation -mr-1"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-foreground/60">
                   <path d="M18 6L6 18M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            {/* Content */}
-            <div className="p-5 md:p-8 space-y-6">
-              {/* Context */}
+            {/* Top-level category tabs */}
+            <div className="flex border-b border-border bg-secondary/20 shrink-0">
+              {(Object.keys(detailFrameData) as CategoryKey[]).map((key) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveCategory(key)}
+                  className={`flex-1 px-2 py-3 min-h-[44px] text-[9px] md:text-[8px] font-mono tracking-wider transition-colors touch-manipulation ${
+                    activeCategory === key 
+                      ? "text-foreground bg-card border-b-2 border-foreground/40" 
+                      : "text-foreground/35 hover:text-foreground/55 active:text-foreground/70"
+                  }`}
+                >
+                  {detailFrameData[key].label}
+                </button>
+              ))}
+            </div>
+
+            {/* Sub-tabs */}
+            <div className="flex border-b border-border shrink-0">
+              {subtabKeys.map((key, i) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveSubtab(key)}
+                  className={`flex-1 px-3 py-3 min-h-[44px] text-[10px] md:text-[9px] font-mono tracking-wide transition-colors touch-manipulation ${
+                    activeSubtab === key 
+                      ? "text-foreground bg-secondary/30 border-b-2 border-foreground/50" 
+                      : "text-foreground/40 hover:text-foreground/60 active:text-foreground/80"
+                  } ${i > 0 ? "border-l border-border" : ""}`}
+                >
+                  {key.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
+            {/* Tab content - scrollable on mobile */}
+            <div className="p-4 md:p-3 space-y-3 overflow-y-auto flex-1">
+              {/* Title & subtitle */}
               <div>
-                <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">CONTEXT</span>
-                <p className="text-xs text-foreground/70 leading-relaxed mt-2">
-                  Operational environments fail when information, sequencing, and responsibility drift apart.
-                  This system converts ambiguous situations into structured, executable action.
+                <h4 className="text-[10px] font-mono font-bold text-foreground tracking-wide">
+                  {currentSubtab.title}
+                </h4>
+                <p className="text-[8px] font-mono text-foreground/40 mt-0.5">
+                  {currentSubtab.subtitle}
                 </p>
               </div>
 
-              {/* Sequence */}
-              <div>
-                <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">SEQUENCE</span>
-                <div className="mt-3 space-y-3">
-                  {phases.map((phase) => (
-                    <div key={phase.name} className="flex gap-3">
-                      <div className="w-5 h-5 flex items-center justify-center shrink-0" style={{ backgroundColor: phase.color }}>
-                        <span className="text-[8px] font-mono text-white font-bold">{phase.num}</span>
-                      </div>
-                      <div>
-                        <h4 className="text-[10px] font-mono font-bold text-foreground">{phase.name}</h4>
-                        <p className="text-[9px] text-foreground/50 mt-0.5">{phase.description}</p>
-                      </div>
+              {/* Thinking section */}
+              <div className="border-l-2 border-foreground/20 pl-2">
+                <p className="text-[8px] font-mono text-foreground/60 leading-relaxed italic">
+                  {currentSubtab.thinking}
+                </p>
+              </div>
+
+              {/* Steps */}
+              <div className="space-y-1.5">
+                {currentSubtab.steps.map((step, i) => (
+                  <div 
+                    key={step.num} 
+                    className="flex items-start gap-2 p-1.5 bg-secondary/20 border border-border/50"
+                    style={{ transform: `rotate(${(i % 2 === 0 ? -0.2 : 0.2)}deg)` }}
+                  >
+                    <div 
+                      className="w-5 h-5 flex items-center justify-center shrink-0 mt-0.5" 
+                      style={{ backgroundColor: getColor(phases[i].color) }}
+                    >
+                      <span className="text-[7px] font-mono text-white font-bold">{step.num}</span>
                     </div>
-                  ))}
-                </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[9px] font-mono font-bold text-foreground">{step.name}</span>
+                      <p className="text-[7px] font-mono text-foreground/50 mt-0.5 leading-relaxed">{step.desc}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              {/* Applied Example */}
-              <div className="border-t border-border pt-5">
-                <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">APPLIED EXAMPLE</span>
-                <div className="mt-3 bg-secondary/20 border border-border/50 p-4">
-                  <h4 className="text-[10px] font-mono font-bold text-foreground">Publix Remodel Execution</h4>
-                  <p className="text-[9px] text-foreground/55 mt-2 leading-relaxed">
-                    Sequenced turnover, trade flow, reporting cadence, and issue recovery across an active remodel environment.
-                    Coordinated multiple trades simultaneously while maintaining store operations.
-                  </p>
-                </div>
+              {/* Footer */}
+              <div className="pt-2 border-t border-border/50 text-center">
+                <span className="text-[7px] font-mono text-foreground/35 tracking-[0.15em]">
+                  {currentSubtab.title} REV.01
+                </span>
               </div>
-
-              {/* Outputs */}
-              <div className="border-t border-border pt-5">
-                <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">OUTPUTS</span>
-                <ul className="mt-3 space-y-2">
-                  {[
-                    "Cleaner project visibility",
-                    "Faster issue recovery", 
-                    "Less dropped communication",
-                    "Stronger continuity across personnel shifts"
-                  ].map((output) => (
-                    <li key={output} className="flex items-center gap-2 text-[9px] font-mono text-foreground/60">
-                      <span className="w-1 h-1 bg-foreground/30" />
-                      {output}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t border-border px-5 py-3 flex items-center justify-between text-[8px] font-mono text-foreground/30 tracking-[0.15em]">
-              <span>REV 01</span>
-              <span>BARTLETT BUILDS</span>
             </div>
           </div>
         </div>

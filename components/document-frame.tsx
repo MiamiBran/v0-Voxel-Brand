@@ -1,6 +1,7 @@
 "use client"
 
 import { type ReactNode, useEffect, useState, useCallback, createContext, useContext } from "react"
+import { useTheme } from "next-themes"
 
 // Context to share rotation state with hero
 export const RotationContext = createContext<{
@@ -25,12 +26,12 @@ interface DocumentFrameProps {
 
 // Sections map to the document structure
 const SECTIONS = [
-  { id: "TITLE", label: "F0", percent: 3 },
-  { id: "HERO", label: "—", percent: 15 },
-  { id: "PROJECTS", label: "F1", percent: 35 },
-  { id: "PROCESS", label: "F2", percent: 52 },
+  { id: "TITLE", label: "F0", percent: 12 },
+  { id: "HERO", label: "—", percent: 22 },
+  { id: "PROJECTS", label: "F1", percent: 40 },
+  { id: "PROCESS", label: "F2", percent: 55 },
   { id: "EXPERIMENTS", label: "F3", percent: 72 },
-  { id: "CONTACT", label: "F4", percent: 92 },
+  { id: "CONTACT", label: "F4", percent: 97 },
 ]
 
 export function DocumentFrame({ children }: DocumentFrameProps) {
@@ -39,6 +40,12 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
   const [isAutoRotating, setIsAutoRotating] = useState(false)
   const [showRotateCTA, setShowRotateCTA] = useState(false)
   const [rotationAngle, setRotationAngle] = useState(0)
+  const { theme, setTheme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,34 +99,41 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
     <RotationContext.Provider value={{ isAutoRotating, toggleRotation, rotationAngle, setRotationAngle }}>
       <div className="min-h-screen bg-background grid-paper paper-texture relative">
         
-        {/* LEFT MARGIN -- Floor markers on a progress track */}
-        <div className="fixed left-0 top-0 h-full w-10 md:w-12 border-r border-border bg-background/90 backdrop-blur-sm z-40">
+        {/* LEFT MARGIN -- Logo at top, floor markers on a progress track */}
+        <div className="fixed left-0 top-0 h-full w-10 md:w-12 border-r border-border bg-background/90 backdrop-blur-sm z-40 flex flex-col">
           
-          {/* Progress track */}
-          <div className="absolute left-1/2 top-8 bottom-8 w-px bg-border -translate-x-1/2">
-            {/* Fill based on scroll */}
-            <div 
-              className="absolute top-0 left-0 w-full bg-foreground/30 transition-all duration-150"
-              style={{ height: `${scrollPercent}%` }}
-            />
+          {/* Logo space at top */}
+          <div className="h-12 flex items-center justify-center border-b border-border/50">
+            <span className="text-[10px] font-mono font-bold text-foreground/60 tracking-tight">BB</span>
           </div>
+          
+          {/* Progress track container */}
+          <div className="flex-1 relative">
+            {/* Progress track */}
+            <div className="absolute left-1/2 top-4 bottom-4 w-px bg-border -translate-x-1/2">
+              {/* Fill based on scroll */}
+              <div 
+                className="absolute top-0 left-0 w-full bg-foreground/30 transition-all duration-150"
+                style={{ height: `${scrollPercent}%` }}
+              />
+            </div>
 
-          {/* Floor markers */}
-          {SECTIONS.map((s) => {
+            {/* Floor markers */}
+            {SECTIONS.map((s) => {
             const active = currentSection === s.id
             return (
               <button
                 key={s.id}
                 onClick={() => scrollToSection(s.id)}
-                className="absolute left-1/2 -translate-x-1/2 group"
-                style={{ top: `${s.percent}%` }}
+                className="absolute left-0 right-0 flex justify-center group min-h-[36px] touch-manipulation"
+                style={{ top: `${s.percent}%`, transform: 'translateY(-50%)' }}
                 aria-label={`Go to ${s.id}`}
               >
                 <span
-                  className={`block text-[10px] font-mono tracking-wide px-1.5 py-0.5 rounded transition-all duration-200 ${
+                  className={`block text-[9px] font-mono tracking-wider px-2 py-1 transition-all duration-200 ${
                     active 
-                      ? "text-foreground bg-background border border-foreground/20 font-medium" 
-                      : "text-muted-foreground/40 hover:text-foreground/60 hover:bg-background/80"
+                      ? "text-foreground font-medium" 
+                      : "text-muted-foreground/50 hover:text-foreground/70 active:text-foreground"
                   }`}
                 >
                   {s.label}
@@ -127,6 +141,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
               </button>
             )
           })}
+          </div>
         </div>
 
         {/* RIGHT MARGIN -- Compass rotation control centered, CV at top */}
@@ -135,7 +150,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
           <a
             href="/Brandon-Bartlett-CV.pdf"
             download
-            className="group flex flex-col items-center gap-1.5 p-2 hover:bg-secondary/40 transition-colors rounded"
+            className="group flex flex-col items-center gap-1.5 p-3 hover:bg-secondary/40 active:bg-secondary/50 transition-colors rounded min-h-[48px] min-w-[40px] touch-manipulation"
             title="Download Resume"
           >
             <svg 
@@ -171,10 +186,10 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
 
             <button
               onClick={toggleRotation}
-              className={`group p-2 rounded transition-all duration-300 ${
+              className={`group p-3 rounded transition-all duration-300 min-h-[48px] min-w-[48px] flex items-center justify-center touch-manipulation ${
                 isAutoRotating 
-                  ? "hover:bg-secondary/40" 
-                  : "bg-secondary/30 hover:bg-secondary/50"
+                  ? "hover:bg-secondary/40 active:bg-secondary/50" 
+                  : "bg-secondary/30 hover:bg-secondary/50 active:bg-secondary/60"
               }`}
               title={isAutoRotating ? "Pause rotation" : "Enable rotation"}
             >
@@ -191,36 +206,37 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
                 <circle 
                   cx="24" cy="24" r="20" 
                   fill="none" 
-                  stroke={isAutoRotating ? "var(--foreground)" : "var(--border)"} 
+                  stroke={isAutoRotating ? "var(--foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} 
                   strokeWidth="0.5" 
-                  opacity={isAutoRotating ? 0.5 : 0.3}
+                  opacity={isAutoRotating ? 0.5 : 0.6}
                 />
                 <circle 
                   cx="24" cy="24" r="14" 
                   fill="none" 
-                  stroke="var(--border)" 
-                  strokeWidth="0.3" 
+                  stroke={isAutoRotating ? "var(--border)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")}
+                  strokeWidth="0.3"
+                  opacity={isAutoRotating ? 1 : 0.4}
                 />
                 {/* Cardinal ticks */}
-                <line x1="24" y1="4" x2="24" y2="8" stroke="var(--muted-foreground)" strokeWidth="0.5" opacity="0.4" />
-                <line x1="44" y1="24" x2="40" y2="24" stroke="var(--muted-foreground)" strokeWidth="0.5" opacity="0.4" />
-                <line x1="24" y1="44" x2="24" y2="40" stroke="var(--muted-foreground)" strokeWidth="0.5" opacity="0.4" />
-                <line x1="4" y1="24" x2="8" y2="24" stroke="var(--muted-foreground)" strokeWidth="0.5" opacity="0.4" />
+                <line x1="24" y1="4" x2="24" y2="8" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
+                <line x1="44" y1="24" x2="40" y2="24" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
+                <line x1="24" y1="44" x2="24" y2="40" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
+                <line x1="4" y1="24" x2="8" y2="24" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
                 {/* North arrow */}
                 <polygon 
                   points="24,6 21,18 24,16 27,18" 
-                  fill={isAutoRotating ? "var(--foreground)" : "var(--muted-foreground)"} 
-                  opacity={isAutoRotating ? 0.7 : 0.3} 
+                  fill={isAutoRotating ? "var(--foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} 
+                  opacity={isAutoRotating ? 0.7 : 0.7} 
                 />
                 <polygon 
                   points="24,42 21,30 24,32 27,30" 
                   fill="none" 
-                  stroke="var(--muted-foreground)" 
+                  stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")}
                   strokeWidth="0.3" 
-                  opacity="0.25" 
+                  opacity={isAutoRotating ? 0.25 : 0.4} 
                 />
                 {/* N label */}
-                <text x="24" y="3" textAnchor="middle" fontSize="4" fill="var(--foreground)" opacity="0.4" fontFamily="monospace">N</text>
+                <text x="24" y="3" textAnchor="middle" fontSize="4" fill={isAutoRotating ? "var(--foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} opacity={isAutoRotating ? 0.4 : 0.7} fontFamily="monospace">N</text>
                 <circle 
                   cx="24" cy="24" r="1.5" 
                   fill={isAutoRotating ? "var(--foreground)" : "var(--muted-foreground)"} 
@@ -230,8 +246,46 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
             </button>
           </div>
 
-          {/* Spacer */}
-          <div className="w-4" />
+          {/* Theme toggle at bottom */}
+          <button
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            className="group flex flex-col items-center gap-1.5 p-3 hover:bg-secondary/40 active:bg-secondary/50 transition-colors rounded min-h-[48px] min-w-[40px] touch-manipulation"
+            title={mounted ? (resolvedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode") : "Toggle theme"}
+          >
+            {mounted && resolvedTheme === "dark" ? (
+              <svg 
+                width="14" 
+                height="14" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="1.5"
+                className="text-foreground/40 group-hover:text-foreground transition-colors"
+              >
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </svg>
+            ) : (
+              <svg 
+                width="14" 
+                height="14" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="1.5"
+                className="text-foreground/40 group-hover:text-foreground transition-colors"
+              >
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
+          </button>
         </div>
 
         {/* CORNER MARKS */}

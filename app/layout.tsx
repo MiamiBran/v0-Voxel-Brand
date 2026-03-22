@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Space_Mono, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { ThemeProvider } from 'next-themes'
 import './globals.css'
 
 const spaceMono = Space_Mono({ 
@@ -50,9 +51,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${spaceMono.variable} ${inter.variable} bg-background`}>
+    <html lang="en" className={`${spaceMono.variable} ${inter.variable} bg-background`} suppressHydrationWarning>
       <body className="font-sans antialiased">
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          {children}
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>

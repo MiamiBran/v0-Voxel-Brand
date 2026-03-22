@@ -27,12 +27,12 @@ export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref
 
           <a
             href="mailto:hello@bartlettbuilds.pro"
-            className="text-[11px] font-mono text-foreground hover:text-accent transition-colors tracking-wide inline-block border-b border-foreground/30 hover:border-accent pb-px"
+            className="text-[12px] md:text-[11px] font-mono text-foreground hover:text-accent active:text-accent transition-colors tracking-wide inline-block border-b border-foreground/30 hover:border-accent pb-px touch-manipulation"
           >
             hello@bartlettbuilds.pro
           </a>
 
-          <div className="flex flex-wrap gap-4 mt-6 pt-4 border-t border-border">
+          <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-border">
             {[
               { label: "SUBSTACK", href: "https://substack.com/@brandonbartlett" },
               { label: "LINKEDIN", href: "https://linkedin.com/in/brandonbartlett" },
@@ -44,7 +44,7 @@ export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[9px] font-mono tracking-wider text-foreground/40 hover:text-foreground transition-colors"
+                className="text-[10px] md:text-[9px] font-mono tracking-wider text-foreground/40 hover:text-foreground active:text-foreground transition-colors px-2 py-2 min-h-[44px] flex items-center touch-manipulation"
               >
                 {link.label}
               </a>
