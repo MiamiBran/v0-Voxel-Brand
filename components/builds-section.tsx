@@ -92,7 +92,7 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
               <h2 className={`text-xs font-mono font-bold tracking-wide transition-colors ${
                 activeTab === "builds" ? "text-foreground" : "text-foreground/40"
               }`}>
-                BUILDS
+                EXPERIMENTS
               </h2>
               <span className="text-[9px] font-mono text-muted-foreground/35 tracking-[0.2em]">F3</span>
             </div>
@@ -156,7 +156,7 @@ export const BuildsSection = forwardRef<HTMLElement>((_, ref) => {
             {/* Subtext - always visible when builds tab active */}
             <div className="px-4 md:px-5 py-3 border-b border-border">
               <p className="text-[10px] font-mono text-foreground/50 leading-relaxed">
-                Side projects, prototypes, and ongoing investigations.
+                Experiments, test builds, and systems in motion.
               </p>
             </div>
             

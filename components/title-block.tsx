@@ -38,7 +38,7 @@ export function TitleBlock({
   const navItems = [
     { num: "F1", label: "OPERATIONS", color: getColor(SECTION_COLORS.projects), onClick: onProjectsClick },
     { num: "F2", label: "SYSTEMS", color: getColor(SECTION_COLORS.process), onClick: onProcessClick },
-    { num: "F3", label: "BUILDS", color: getColor(SECTION_COLORS.builds), onClick: onBuildsClick },
+    { num: "F3", label: "EXPERIMENTS", color: getColor(SECTION_COLORS.builds), onClick: onBuildsClick },
   ]
 
   return (
