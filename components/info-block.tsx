@@ -127,7 +127,6 @@ const detailFrameData = {
 type CategoryKey = keyof typeof detailFrameData
 
 export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
-  const [showCTA, setShowCTA] = useState(false)
   const [showOverlay, setShowOverlay] = useState(false)
   const [showKeyNote, setShowKeyNote] = useState(false)
   const [activeCategory, setActiveCategory] = useState<CategoryKey>("systems")
@@ -153,25 +152,6 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
   
   const isDark = mounted && resolvedTheme === "dark"
   const getColor = (colors: { light: string; dark: string }) => isDark ? colors.dark : colors.light
-
-  // Scroll-triggered CTA
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
-          // Delay the CTA appearance for smooth feel
-          setTimeout(() => setShowCTA(true), 800)
-        } else {
-          setShowCTA(false)
-        }
-      },
-      { threshold: [0.3] }
-    )
-
-    const current = sectionRef.current
-    if (current) observer.observe(current)
-    return () => { if (current) observer.unobserve(current) }
-  }, [])
 
   return (
     <section 
@@ -201,15 +181,16 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
             onBlur={() => setShowKeyNote(false)}
           >
             <button
-              onClick={() => setShowKeyNote((current) => !current)}
-              aria-expanded={showKeyNote}
+              onClick={() => setShowOverlay(true)}
+              aria-expanded={showOverlay}
+              aria-haspopup="dialog"
               className="group inline-flex items-center gap-2 border border-border bg-background/65 px-3 py-2 min-h-[44px] text-[9px] font-mono text-foreground/55 tracking-[0.16em] hover:border-foreground/20 hover:bg-secondary/40 hover:text-foreground active:bg-secondary/50 transition-colors touch-manipulation"
             >
               <span
                 className="h-1.5 w-1.5 border border-current transition-transform duration-200 group-hover:scale-110"
                 style={{ color: getColor(phases[1].color) }}
               />
-              <span>KEY NOTE</span>
+              <span>OPEN DETAIL FRAME</span>
               <svg
                 width="12"
                 height="12"
@@ -297,27 +278,6 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
             </div>
           </article>
         ))}
-      </div>
-
-      {/* Scroll-triggered CTA - materializes from bottom-right */}
-      <div 
-        className={`fixed bottom-6 right-4 md:bottom-8 md:right-16 z-50 transition-all duration-500 ease-out ${
-          showCTA && !showOverlay
-            ? "opacity-100 translate-y-0" 
-            : "opacity-0 translate-y-4 pointer-events-none"
-        }`}
-      >
-        <button
-          onClick={() => setShowOverlay(true)}
-          className="flex items-center gap-3 px-4 py-4 min-h-[48px] bg-card/95 backdrop-blur-sm border border-border hover:bg-secondary/50 active:bg-secondary/60 transition-colors group touch-manipulation"
-        >
-          <span className="text-[10px] md:text-[9px] font-mono text-foreground/70 tracking-[0.1em] group-hover:text-foreground transition-colors">
-            OPEN DETAIL FRAME
-          </span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-foreground/40 group-hover:text-foreground transition-colors">
-            <path d="M7 17L17 7M17 7H7M17 7V17" />
-          </svg>
-        </button>
       </div>
 
       {/* Detail Frame - collage style overlay with tabs */}
