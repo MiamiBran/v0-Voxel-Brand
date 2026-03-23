@@ -185,7 +185,7 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
         </div>
 
         <div className="px-4 md:px-5 py-3 border-b border-border">
-          <p className="text-[10px] font-mono text-foreground/50 leading-relaxed max-w-xl">
+          <p className="text-[10px] font-mono text-foreground/62 leading-relaxed max-w-xl">
             Real work across field execution, coordination, handoffs, and delivery under pressure.
           </p>
         </div>

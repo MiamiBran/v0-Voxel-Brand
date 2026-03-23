@@ -37,8 +37,7 @@ const SECTIONS = [
 export function DocumentFrame({ children }: DocumentFrameProps) {
   const [scrollPercent, setScrollPercent] = useState(0)
   const [currentSection, setCurrentSection] = useState("TITLE")
-  const [isAutoRotating, setIsAutoRotating] = useState(false)
-  const [showRotateCTA, setShowRotateCTA] = useState(false)
+  const [isAutoRotating, setIsAutoRotating] = useState(true)
   const [rotationAngle, setRotationAngle] = useState(0)
   const { theme, setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -65,24 +64,6 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
     handleScroll()
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
-
-  // Show CTA after a delay on load, or when scrolling near hero
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowRotateCTA(true)
-    }, 2000)
-    
-    return () => clearTimeout(timer)
-  }, [])
-
-  // Hide CTA after user has seen it, scrolled past hero, or started rotating
-  useEffect(() => {
-    if (scrollPercent > 25 || isAutoRotating) {
-      setShowRotateCTA(false)
-    } else if (scrollPercent < 20 && currentSection === "HERO" && !isAutoRotating) {
-      setShowRotateCTA(true)
-    }
-  }, [scrollPercent, currentSection, isAutoRotating])
 
   const scrollToSection = useCallback((sectionId: string) => {
     if (typeof document === "undefined") return
@@ -169,81 +150,55 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
             <span className="text-[6px] font-mono text-foreground/30 group-hover:text-foreground/60 tracking-wider writing-vertical transition-colors">CV</span>
           </a>
 
-          {/* Compass rotation button - centered */}
-          <div className="relative">
-            {/* CTA tooltip */}
-            <div 
-              className={`absolute right-full mr-2 top-1/2 -translate-y-1/2 whitespace-nowrap transition-all duration-500 ${
-                showRotateCTA 
-                  ? "opacity-100 translate-x-0" 
-                  : "opacity-0 translate-x-2 pointer-events-none"
-              }`}
+          {/* Passive compass - centered */}
+          <div className="flex items-center justify-center p-3 min-h-[48px] min-w-[48px]">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 48 48"
+              style={{ 
+                transform: `rotate(${rotationAngle}deg)`,
+                transition: isAutoRotating ? "none" : "transform 0.5s ease-out",
+              }}
+              aria-hidden="true"
             >
-              <div className="bg-background/95 border border-border px-2 py-1 rounded text-[8px] font-mono text-foreground/70">
-                <span className="text-foreground/40">click to</span> rotate
-              </div>
-            </div>
-
-            <button
-              onClick={toggleRotation}
-              className={`group p-3 rounded transition-all duration-300 min-h-[48px] min-w-[48px] flex items-center justify-center touch-manipulation ${
-                isAutoRotating 
-                  ? "hover:bg-secondary/40 active:bg-secondary/50" 
-                  : "bg-secondary/30 hover:bg-secondary/50 active:bg-secondary/60"
-              }`}
-              title={isAutoRotating ? "Pause rotation" : "Enable rotation"}
-            >
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 48 48"
-                style={{ 
-                  transform: `rotate(${rotationAngle}deg)`,
-                  transition: isAutoRotating ? "none" : "transform 0.5s ease-out",
-                }}
-                aria-hidden="true"
-              >
-                <circle 
-                  cx="24" cy="24" r="20" 
-                  fill="none" 
-                  stroke={isAutoRotating ? "var(--foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} 
-                  strokeWidth="0.5" 
-                  opacity={isAutoRotating ? 0.5 : 0.6}
-                />
-                <circle 
-                  cx="24" cy="24" r="14" 
-                  fill="none" 
-                  stroke={isAutoRotating ? "var(--border)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")}
-                  strokeWidth="0.3"
-                  opacity={isAutoRotating ? 1 : 0.4}
-                />
-                {/* Cardinal ticks */}
-                <line x1="24" y1="4" x2="24" y2="8" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
-                <line x1="44" y1="24" x2="40" y2="24" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
-                <line x1="24" y1="44" x2="24" y2="40" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
-                <line x1="4" y1="24" x2="8" y2="24" stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} strokeWidth="0.5" opacity={isAutoRotating ? 0.4 : 0.6} />
-                {/* North arrow */}
-                <polygon 
-                  points="24,6 21,18 24,16 27,18" 
-                  fill={isAutoRotating ? "var(--foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} 
-                  opacity={isAutoRotating ? 0.7 : 0.7} 
-                />
-                <polygon 
-                  points="24,42 21,30 24,32 27,30" 
-                  fill="none" 
-                  stroke={isAutoRotating ? "var(--muted-foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")}
-                  strokeWidth="0.3" 
-                  opacity={isAutoRotating ? 0.25 : 0.4} 
-                />
-                {/* N label */}
-                <text x="24" y="3" textAnchor="middle" fontSize="4" fill={isAutoRotating ? "var(--foreground)" : (resolvedTheme === "dark" ? "#A855F7" : "#7000FF")} opacity={isAutoRotating ? 0.4 : 0.7} fontFamily="monospace">N</text>
-                <circle 
-                  cx="24" cy="24" r="1.5" 
-                  fill={isAutoRotating ? "var(--foreground)" : "var(--muted-foreground)"} 
-                  opacity={isAutoRotating ? 0.5 : 0.2} 
-                />
-              </svg>
-            </button>
+              <circle 
+                cx="24" cy="24" r="20" 
+                fill="none" 
+                stroke={resolvedTheme === "dark" ? "#A855F7" : "#7000FF"} 
+                strokeWidth="0.5" 
+                opacity={0.28}
+              />
+              <circle 
+                cx="24" cy="24" r="14" 
+                fill="none" 
+                stroke={resolvedTheme === "dark" ? "#A855F7" : "#7000FF"}
+                strokeWidth="0.3"
+                opacity={0.22}
+              />
+              <line x1="24" y1="4" x2="24" y2="8" stroke={resolvedTheme === "dark" ? "#A855F7" : "#7000FF"} strokeWidth="0.5" opacity={0.32} />
+              <line x1="44" y1="24" x2="40" y2="24" stroke={resolvedTheme === "dark" ? "#A855F7" : "#7000FF"} strokeWidth="0.5" opacity={0.32} />
+              <line x1="24" y1="44" x2="24" y2="40" stroke={resolvedTheme === "dark" ? "#A855F7" : "#7000FF"} strokeWidth="0.5" opacity={0.32} />
+              <line x1="4" y1="24" x2="8" y2="24" stroke={resolvedTheme === "dark" ? "#A855F7" : "#7000FF"} strokeWidth="0.5" opacity={0.32} />
+              <polygon 
+                points="24,6 21,18 24,16 27,18" 
+                fill={resolvedTheme === "dark" ? "#A855F7" : "#7000FF"} 
+                opacity={0.42} 
+              />
+              <polygon 
+                points="24,42 21,30 24,32 27,30" 
+                fill="none" 
+                stroke={resolvedTheme === "dark" ? "#A855F7" : "#7000FF"}
+                strokeWidth="0.3" 
+                opacity={0.22} 
+              />
+              <text x="24" y="3" textAnchor="middle" fontSize="4" fill={resolvedTheme === "dark" ? "#A855F7" : "#7000FF"} opacity={0.32} fontFamily="monospace">N</text>
+              <circle 
+                cx="24" cy="24" r="1.5" 
+                fill="var(--foreground)" 
+                opacity={0.22} 
+              />
+            </svg>
           </div>
 
           {/* Theme toggle at bottom */}

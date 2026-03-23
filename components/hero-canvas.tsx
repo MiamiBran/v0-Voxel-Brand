@@ -106,15 +106,17 @@ function IsoCube({ x, y, z, size = 1, color, strokeWidth = 0.8, opacity = 1, sca
 }
 
 export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
-  const { isAutoRotating, setRotationAngle } = useRotation()
-  const { theme, resolvedTheme } = useTheme()
+  const { isAutoRotating, toggleRotation, setRotationAngle } = useRotation()
+  const { resolvedTheme } = useTheme()
   const [hoveredFloor, setHoveredFloor] = useState<string | null>(null)
   const [activeFloorIndex, setActiveFloorIndex] = useState<number | null>(null)
+  const [defaultFloorId, setDefaultFloorId] = useState<string | null>(null)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [rotation, setRotation] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
   const animationRef = useRef<number>()
+  const hasSettledRef = useRef(false)
 
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 100)
@@ -128,8 +130,9 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
     return isDark ? floor.darkColor : floor.color
   }, [isDark])
 
-  // Is any floor hovered - triggers expansion
-  const isHovering = hoveredFloor !== null
+  // Is any floor active - triggers expansion
+  const displayedFloorId = hoveredFloor ?? (activeFloorIndex !== null ? FLOORS[activeFloorIndex].id : defaultFloorId)
+  const isHovering = displayedFloorId !== null
 
   // Sync rotation to parent context
   useEffect(() => {
@@ -161,6 +164,18 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
     }
   }, [isAutoRotating])
 
+  useEffect(() => {
+    if (!mounted || hasSettledRef.current) return
+
+    const timer = setTimeout(() => {
+      setDefaultFloorId("F1")
+      hasSettledRef.current = true
+      if (isAutoRotating) toggleRotation()
+    }, 2200)
+
+    return () => clearTimeout(timer)
+  }, [mounted, isAutoRotating, toggleRotation])
+
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
@@ -170,6 +185,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
   }, [])
 
   const handleFloorClick = (floor: typeof FLOORS[0], index: number) => {
+    setDefaultFloorId(floor.id)
     setActiveFloorIndex(index)
     setTimeout(() => {
       if (onNavigate) onNavigate(floor.section)
@@ -177,8 +193,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
     }, 400)
   }
 
-  const activeFloor = hoveredFloor ? FLOORS.find(f => f.id === hoveredFloor) : null
-  const activeFloorData = activeFloor || (activeFloorIndex !== null ? FLOORS[activeFloorIndex] : null)
+  const activeFloorData = displayedFloorId ? FLOORS.find(f => f.id === displayedFloorId) ?? null : null
 
   // Tower structure - COMPACT and STURDY like a real building model
   const towerStructure = useMemo(() => {
@@ -261,7 +276,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
     <section
       ref={containerRef}
       data-section="HERO"
-      className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden py-4"
+      className="relative w-full min-h-[72vh] md:min-h-[78vh] flex items-center justify-center overflow-hidden pt-0 pb-4"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
     >
@@ -269,8 +284,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
       <nav className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2 md:gap-4">
         {[...FLOORS].reverse().map((floor, i) => {
           const actualIndex = FLOORS.length - 1 - i
-          const isHovered = hoveredFloor === floor.id
-          const isActive = activeFloorIndex === actualIndex
+          const isActive = displayedFloorId === floor.id
           return (
             <button
               key={floor.id}
@@ -289,9 +303,9 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
               <span
                 className="text-[11px] font-mono tracking-[0.15em] transition-all duration-300 w-6"
                 style={{
-                  color: isHovered || isActive ? getFloorColor(floor) : "var(--foreground)",
-                  opacity: isHovered || isActive ? 1 : 0.4,
-                  textShadow: isHovered || isActive ? `0 0 12px ${getFloorColor(floor)}` : "none",
+                  color: isActive ? getFloorColor(floor) : "var(--foreground)",
+                  opacity: isActive ? 1 : 0.4,
+                  textShadow: isActive ? `0 0 12px ${getFloorColor(floor)}` : "none",
                 }}
               >
                 {floor.id}
@@ -299,9 +313,9 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
               <span
                 className="h-px transition-all duration-300 ease-out hidden md:block"
                 style={{
-                  width: isActive ? 60 : isHovered ? 40 : 16,
-                  backgroundColor: isHovered || isActive ? getFloorColor(floor) : "var(--border)",
-                  boxShadow: isHovered || isActive ? `0 0 8px ${getFloorColor(floor)}` : "none",
+                  width: isActive ? 56 : 16,
+                  backgroundColor: isActive ? getFloorColor(floor) : "var(--border)",
+                  boxShadow: isActive ? `0 0 8px ${getFloorColor(floor)}` : "none",
                 }}
               />
             </button>
@@ -311,9 +325,9 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
 
       {/* Main tower - LARGER */}
       <div
-        className="relative w-full max-w-4xl mx-auto px-4"
+        className="relative w-full max-w-4xl mx-auto px-4 -mt-10 md:-mt-6"
         style={{
-          transform: `translate(${mousePos.x * 6}px, ${mousePos.y * 4}px)`,
+          transform: `translate(${mousePos.x * 6}px, ${mousePos.y * 4 - 8}px)`,
           transition: "transform 0.4s ease-out",
         }}
       >
@@ -357,7 +371,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             onMouseLeave={() => setHoveredFloor(null)}
             onClick={() => handleFloorClick(FLOORS[0], 0)}
             className="cursor-pointer"
-            filter={hoveredFloor === "F1" || activeFloorIndex === 0 ? "url(#glow-F1)" : undefined}
+            filter={displayedFloorId === "F1" ? "url(#glow-F1)" : undefined}
             style={{
               transform: `translateY(${getFloorY(0) - basePositions[0]}px)`,
               transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
@@ -370,8 +384,8 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                   key={i}
                   x={c.x} y={c.y} z={c.z}
                   color={getFloorColor(FLOORS[0])}
-                  strokeWidth={hoveredFloor === "F1" || activeFloorIndex === 0 ? 1.6 : 0.9}
-                  opacity={hoveredFloor === "F1" || activeFloorIndex === 0 ? 1 : 0.75}
+                  strokeWidth={displayedFloorId === "F1" ? 1.6 : 0.9}
+                  opacity={displayedFloorId === "F1" ? 1 : 0.75}
                   scale={towerStructure.scale}
                   rotation={rotation}
                 />
@@ -385,7 +399,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             onMouseLeave={() => setHoveredFloor(null)}
             onClick={() => handleFloorClick(FLOORS[1], 1)}
             className="cursor-pointer"
-            filter={hoveredFloor === "F2" || activeFloorIndex === 1 ? "url(#glow-F2)" : undefined}
+            filter={displayedFloorId === "F2" ? "url(#glow-F2)" : undefined}
             style={{
               transform: `translateY(${getFloorY(1) - basePositions[1]}px)`,
               transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
@@ -398,8 +412,8 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                   key={i}
                   x={c.x} y={c.y} z={c.z}
                   color={getFloorColor(FLOORS[1])}
-                  strokeWidth={hoveredFloor === "F2" || activeFloorIndex === 1 ? 1.6 : 0.9}
-                  opacity={hoveredFloor === "F2" || activeFloorIndex === 1 ? 1 : 0.75}
+                  strokeWidth={displayedFloorId === "F2" ? 1.6 : 0.9}
+                  opacity={displayedFloorId === "F2" ? 1 : 0.75}
                   scale={towerStructure.scale}
                   rotation={rotation}
                 />
@@ -413,7 +427,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             onMouseLeave={() => setHoveredFloor(null)}
             onClick={() => handleFloorClick(FLOORS[2], 2)}
             className="cursor-pointer"
-            filter={hoveredFloor === "F3" || activeFloorIndex === 2 ? "url(#glow-F3)" : undefined}
+            filter={displayedFloorId === "F3" ? "url(#glow-F3)" : undefined}
             style={{
               transform: `translateY(${getFloorY(2) - basePositions[2]}px)`,
               transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
@@ -426,8 +440,8 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                   key={i}
                   x={c.x} y={c.y} z={c.z}
                   color={getFloorColor(FLOORS[2])}
-                  strokeWidth={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1.6 : 0.9}
-                  opacity={hoveredFloor === "F3" || activeFloorIndex === 2 ? 1 : 0.75}
+                  strokeWidth={displayedFloorId === "F3" ? 1.6 : 0.9}
+                  opacity={displayedFloorId === "F3" ? 1 : 0.75}
                   scale={towerStructure.scale}
                   rotation={rotation}
                 />
@@ -441,7 +455,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             onMouseLeave={() => setHoveredFloor(null)}
             onClick={() => handleFloorClick(FLOORS[3], 3)}
             className="cursor-pointer"
-            filter={hoveredFloor === "F4" || activeFloorIndex === 3 ? "url(#glow-F4)" : undefined}
+            filter={displayedFloorId === "F4" ? "url(#glow-F4)" : undefined}
             style={{
               transform: `translateY(${getFloorY(3) - basePositions[3]}px)`,
               transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
@@ -454,8 +468,8 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                   key={i}
                   x={c.x} y={c.y} z={c.z}
                   color={getFloorColor(FLOORS[3])}
-                  strokeWidth={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1.6 : 0.9}
-                  opacity={hoveredFloor === "F4" || activeFloorIndex === 3 ? 1 : 0.75}
+                  strokeWidth={displayedFloorId === "F4" ? 1.6 : 0.9}
+                  opacity={displayedFloorId === "F4" ? 1 : 0.75}
                   scale={towerStructure.scale}
                   rotation={rotation}
                 />
@@ -469,7 +483,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
       {activeFloorData ? (
         <div
           className={`absolute left-4 right-4 top-5 z-20 transition-all duration-300 md:left-auto md:right-10 md:top-1/2 md:w-72 md:-translate-y-1/2 ${
-            hoveredFloor || activeFloorIndex !== null ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
+            activeFloorData ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
           }`}
         >
           <div className="space-y-3">
@@ -498,7 +512,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
               >
                 {activeFloorData.label}
               </div>
-              <div className="text-[8px] font-mono text-foreground/50 mt-1 leading-relaxed">
+              <div className="text-[8px] font-mono text-foreground/62 mt-1 leading-relaxed">
                 {activeFloorData.desc}
               </div>
             </div>
@@ -523,7 +537,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                 >
                   {activeFloorData.noteTitle}
                 </div>
-                <p className="text-[9px] font-mono leading-relaxed text-foreground/55">
+                <p className="text-[9px] font-mono leading-relaxed text-foreground/62">
                   {activeFloorData.note}
                 </p>
               </div>
@@ -552,15 +566,15 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
               className="w-2.5 h-2.5 md:w-2 md:h-2 border transition-all duration-200"
               style={{
                 borderColor: getFloorColor(floor),
-                backgroundColor: hoveredFloor === floor.id || activeFloorIndex === i ? getFloorColor(floor) : "transparent",
-                boxShadow: hoveredFloor === floor.id || activeFloorIndex === i ? `0 0 8px ${getFloorColor(floor)}` : "none",
+                backgroundColor: displayedFloorId === floor.id ? getFloorColor(floor) : "transparent",
+                boxShadow: displayedFloorId === floor.id ? `0 0 8px ${getFloorColor(floor)}` : "none",
               }}
             />
             <span
               className="text-[8px] md:text-[7px] font-mono tracking-[0.1em] transition-all duration-200"
               style={{
-                color: hoveredFloor === floor.id || activeFloorIndex === i ? getFloorColor(floor) : "var(--foreground)",
-                opacity: hoveredFloor === floor.id || activeFloorIndex === i ? 1 : 0.4,
+                color: displayedFloorId === floor.id ? getFloorColor(floor) : "var(--foreground)",
+                opacity: displayedFloorId === floor.id ? 1 : 0.45,
               }}
             >
               {floor.label}

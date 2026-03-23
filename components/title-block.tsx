@@ -27,6 +27,7 @@ export function TitleBlock({
   const [contactHovered, setContactHovered] = useState(false)
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const thesis = "I build field systems, project structure, and technical workflows for real-world execution."
   
   useEffect(() => {
     setMounted(true)
@@ -55,12 +56,15 @@ export function TitleBlock({
           {/* Main area */}
           <div className="flex flex-col md:flex-row md:items-stretch">
             {/* Title */}
-            <div className="flex-1 px-5 py-5 md:border-r md:border-border">
-              <h1 className="text-xl md:text-2xl font-mono font-bold tracking-tight text-foreground">
+            <div className="flex-1 px-5 py-5 md:px-6 md:py-6 md:border-r md:border-border">
+              <h1 className="text-[1.7rem] md:text-[2.15rem] font-mono font-bold tracking-[-0.04em] text-foreground">
                 BRANDON BARTLETT
               </h1>
-              <p className="text-[10px] font-mono text-foreground/45 mt-2 tracking-wider">
+              <p className="text-[10px] md:text-[10.5px] font-mono text-foreground/58 mt-2 tracking-[0.14em]">
                 Execution Architect • Field Operations • Systems Builder
+              </p>
+              <p className="mt-4 max-w-2xl text-[12px] md:text-[13px] font-mono leading-[1.7] text-foreground/72">
+                {thesis}
               </p>
             </div>
 
@@ -82,7 +86,7 @@ export function TitleBlock({
                       style={{ backgroundColor: item.color }} 
                     />
                     <span className="text-[9px] font-mono text-foreground/40">{item.num}</span>
-                    <span className="text-[10px] font-mono tracking-[0.1em] text-foreground/70 group-hover:text-foreground transition-colors">
+                    <span className="text-[10px] font-mono tracking-[0.1em] text-foreground/80 group-hover:text-foreground transition-colors">
                       {item.label}
                     </span>
                   </button>
@@ -112,7 +116,7 @@ export function TitleBlock({
                       style={{ backgroundColor: getColor(SECTION_COLORS.contact) }} 
                     />
                     <span className="text-[9px] font-mono text-foreground/40">F4</span>
-                    <span className="text-[10px] font-mono tracking-[0.1em] text-foreground/70 group-hover:text-foreground transition-colors">
+                    <span className="text-[10px] font-mono tracking-[0.1em] text-foreground/80 group-hover:text-foreground transition-colors">
                       CONTACT
                     </span>
                     <svg 
