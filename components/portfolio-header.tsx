@@ -17,7 +17,7 @@ export function PortfolioHeader({
   onExperimentsClick,
   onContactClick 
 }: PortfolioHeaderProps) {
-  const [isContactMenuOpen, setIsContactMenuOpen] = useState(false)
+  const [isContactActionsOpen, setIsContactActionsOpen] = useState(false)
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   
@@ -34,12 +34,12 @@ export function PortfolioHeader({
     contact: onContactClick,
   }
 
-  const navItems = portfolioHeaderContent.navItems.map((item) => ({
+  const indexEntries = portfolioHeaderContent.indexEntries.map((item) => ({
     ...item,
     color: getColor(item.color),
     onClick: handlers[item.target as keyof typeof handlers],
   }))
-  const contactColor = getColor(portfolioHeaderContent.contact.color)
+  const contactColor = getColor(portfolioHeaderContent.contactEntry.color)
 
   return (
     <header data-section="HEADER">
@@ -47,9 +47,9 @@ export function PortfolioHeader({
         <div className="border border-border bg-card/60 backdrop-blur-sm max-w-4xl">
           {/* Metadata row */}
           <div className="border-b border-border flex flex-wrap text-[8px] font-mono text-foreground/40 tracking-[0.15em]">
-            <span className="px-3 py-1.5 border-r border-border">{portfolioHeaderContent.metadata.projection}</span>
-            <span className="px-3 py-1.5 border-r border-border hidden sm:block">{portfolioHeaderContent.metadata.substrate}</span>
-            <span className="px-3 py-1.5 ml-auto">{portfolioHeaderContent.metadata.drawingNumber}</span>
+            <span className="px-3 py-1.5 border-r border-border">{portfolioHeaderContent.drawingNotes.projection}</span>
+            <span className="px-3 py-1.5 border-r border-border hidden sm:block">{portfolioHeaderContent.drawingNotes.substrate}</span>
+            <span className="px-3 py-1.5 ml-auto">{portfolioHeaderContent.drawingNotes.drawingNumber}</span>
           </div>
 
           {/* Main area */}
@@ -70,11 +70,11 @@ export function PortfolioHeader({
             {/* Nav panel */}
             <div className="border-t md:border-t-0 border-border flex flex-col min-w-[180px]">
               <div className="border-b border-border px-4 py-1 text-[8px] font-mono text-foreground/40 tracking-[0.2em]">
-                {portfolioHeaderContent.contact.indexLabel}
+                {portfolioHeaderContent.contactEntry.indexLabel}
               </div>
 
               <nav className="flex flex-wrap md:flex-col flex-1">
-                {navItems.map((item) => (
+                {indexEntries.map((item) => (
                   <button
                     key={item.num}
                     onClick={item.onClick}
@@ -94,18 +94,18 @@ export function PortfolioHeader({
                 {/* CONTACT with hover/touch dropdown */}
                 <div 
                   className="relative flex-1"
-                  onMouseEnter={() => setIsContactMenuOpen(true)}
-                  onMouseLeave={() => setIsContactMenuOpen(false)}
-                  onTouchStart={() => setIsContactMenuOpen(true)}
+                  onMouseEnter={() => setIsContactActionsOpen(true)}
+                  onMouseLeave={() => setIsContactActionsOpen(false)}
+                  onTouchStart={() => setIsContactActionsOpen(true)}
                 >
                   <button
                     onClick={() => {
                       // On touch, toggle dropdown. On click (mouse), navigate
-                      if (isContactMenuOpen) {
+                      if (isContactActionsOpen) {
                         onContactClick()
-                        setIsContactMenuOpen(false)
+                        setIsContactActionsOpen(false)
                       } else {
-                        setIsContactMenuOpen(true)
+                        setIsContactActionsOpen(true)
                       }
                     }}
                     className="w-full h-full flex items-center gap-2 px-4 py-3 min-h-[48px] text-left group hover:bg-secondary/40 active:bg-secondary/50 transition-colors touch-manipulation"
@@ -114,9 +114,9 @@ export function PortfolioHeader({
                       className="w-2 h-2 border border-border/50 group-hover:scale-110 transition-transform flex-shrink-0"
                       style={{ backgroundColor: contactColor }}
                     />
-                    <span className="text-[9px] font-mono text-foreground/40">{portfolioHeaderContent.contact.num}</span>
+                    <span className="text-[9px] font-mono text-foreground/40">{portfolioHeaderContent.contactEntry.num}</span>
                     <span className="text-[10px] font-mono tracking-[0.1em] text-foreground/80 group-hover:text-foreground transition-colors">
-                      {portfolioHeaderContent.contact.label}
+                      {portfolioHeaderContent.contactEntry.label}
                     </span>
                     <svg 
                       width="8" 
@@ -125,7 +125,7 @@ export function PortfolioHeader({
                       fill="none" 
                       stroke="currentColor" 
                       strokeWidth="2"
-                      className={`ml-auto text-foreground/30 transition-transform duration-200 ${isContactMenuOpen ? 'rotate-180' : ''}`}
+                      className={`ml-auto text-foreground/30 transition-transform duration-200 ${isContactActionsOpen ? 'rotate-180' : ''}`}
                     >
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
@@ -134,11 +134,11 @@ export function PortfolioHeader({
                   {/* Quick actions dropdown */}
                   <div 
                     className={`absolute left-0 right-0 top-full z-50 overflow-hidden transition-all duration-200 ease-out ${
-                      isContactMenuOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
+                      isContactActionsOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
                     }`}
                   >
                     <div className="border border-t-0 border-border bg-card/95 backdrop-blur-sm">
-                      {portfolioHeaderContent.contact.actions.map((action, index) => (
+                      {portfolioHeaderContent.contactEntry.actionLinks.map((action, index) => (
                         <a
                           key={action.label}
                           href={action.href}

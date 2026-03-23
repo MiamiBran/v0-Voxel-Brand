@@ -5,7 +5,7 @@ import { useTheme } from "next-themes"
 import { useRotation } from "./portfolio-shell"
 import { heroSectionContent } from "@/lib/site-content"
 
-const FLOORS = heroSectionContent.floors
+const DRAWING_LEVELS = heroSectionContent.drawingLevels
 
 interface HeroSectionProps {
   onNavigate?: (section: string) => void
@@ -66,9 +66,9 @@ function IsoCube({ x, y, z, size = 1, color, strokeWidth = 0.8, opacity = 1, sca
 export function HeroSection({ onNavigate }: HeroSectionProps) {
   const { isAutoRotating, toggleRotation, setRotationAngle } = useRotation()
   const { resolvedTheme } = useTheme()
-  const [hoveredFloor, setHoveredFloor] = useState<string | null>(null)
-  const [activeFloorIndex, setActiveFloorIndex] = useState<number | null>(null)
-  const [defaultFloorId, setDefaultFloorId] = useState<string | null>(null)
+  const [hoveredLevel, setHoveredLevel] = useState<string | null>(null)
+  const [activeLevelIndex, setActiveLevelIndex] = useState<number | null>(null)
+  const [defaultLevelId, setDefaultLevelId] = useState<string | null>(null)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [rotation, setRotation] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -83,14 +83,14 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
   
   const isDark = mounted && resolvedTheme === "dark"
   
-  // Get floor color based on theme
-  const getFloorColor = useCallback((floor: typeof FLOORS[0]) => {
-    return isDark ? floor.darkColor : floor.color
+  // Get level color based on theme
+  const getLevelColor = useCallback((level: typeof DRAWING_LEVELS[0]) => {
+    return isDark ? level.darkColor : level.color
   }, [isDark])
 
-  // Is any floor active - triggers expansion
-  const displayedFloorId = hoveredFloor ?? (activeFloorIndex !== null ? FLOORS[activeFloorIndex].id : defaultFloorId)
-  const isHovering = displayedFloorId !== null
+  // Is any level active - triggers expansion
+  const displayedLevelId = hoveredLevel ?? (activeLevelIndex !== null ? DRAWING_LEVELS[activeLevelIndex].id : defaultLevelId)
+  const isHovering = displayedLevelId !== null
 
   // Sync rotation to parent context
   useEffect(() => {
@@ -126,7 +126,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
     if (!mounted || hasSettledRef.current) return
 
     const timer = setTimeout(() => {
-      setDefaultFloorId("F1")
+      setDefaultLevelId("F1")
       hasSettledRef.current = true
       if (isAutoRotating) toggleRotation()
     }, 2200)
@@ -142,16 +142,18 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
     setMousePos({ x, y })
   }, [])
 
-  const handleFloorClick = (floor: typeof FLOORS[0], index: number) => {
-    setDefaultFloorId(floor.id)
-    setActiveFloorIndex(index)
+  const handleLevelClick = (level: typeof DRAWING_LEVELS[0], index: number) => {
+    setDefaultLevelId(level.id)
+    setActiveLevelIndex(index)
     setTimeout(() => {
-      if (onNavigate) onNavigate(floor.section)
-      setActiveFloorIndex(null)
+      if (onNavigate) onNavigate(level.section)
+      setActiveLevelIndex(null)
     }, 400)
   }
 
-  const activeFloorData = displayedFloorId ? FLOORS.find(f => f.id === displayedFloorId) ?? null : null
+  const activeLevelKeynote = displayedLevelId
+    ? DRAWING_LEVELS.find((level) => level.id === displayedLevelId) ?? null
+    : null
 
   // Tower structure - COMPACT and STURDY like a real building model
   const towerStructure = useMemo(() => {
@@ -222,11 +224,11 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
     return { f1, f2, f3, f4, scale }
   }, [])
 
-  // Floor Y positions - COMPACT stacking (closer together)
+  // Level Y positions - COMPACT stacking (closer together)
   const basePositions = [70, 20, -30, -80] // Tight stacking
   const expandedPositions = [100, 30, -40, -120] // Spread on hover
   
-  const getFloorY = (index: number) => {
+  const getLevelY = (index: number) => {
     return isHovering ? expandedPositions[index] : basePositions[index]
   }
 
@@ -238,19 +240,19 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
     >
-      {/* Floor markers - left side */}
+      {/* Level markers - left side */}
       <nav className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2 md:gap-4">
-        {[...FLOORS].reverse().map((floor, i) => {
-          const actualIndex = FLOORS.length - 1 - i
-          const isActive = displayedFloorId === floor.id
+        {[...DRAWING_LEVELS].reverse().map((level, i) => {
+          const actualIndex = DRAWING_LEVELS.length - 1 - i
+          const isActive = displayedLevelId === level.id
           return (
             <button
-              key={floor.id}
-              onClick={() => handleFloorClick(floor, actualIndex)}
-              onMouseEnter={() => setHoveredFloor(floor.id)}
-              onMouseLeave={() => setHoveredFloor(null)}
-              onTouchStart={() => setHoveredFloor(floor.id)}
-              onTouchEnd={() => { handleFloorClick(floor, actualIndex); setHoveredFloor(null) }}
+              key={level.id}
+              onClick={() => handleLevelClick(level, actualIndex)}
+              onMouseEnter={() => setHoveredLevel(level.id)}
+              onMouseLeave={() => setHoveredLevel(null)}
+              onTouchStart={() => setHoveredLevel(level.id)}
+              onTouchEnd={() => { handleLevelClick(level, actualIndex); setHoveredLevel(null) }}
               className="group flex items-center gap-2 text-left cursor-pointer min-h-[44px] min-w-[44px] touch-manipulation"
               style={{
                 transform: mounted ? "translateX(0)" : "translateX(-20px)",
@@ -261,19 +263,19 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
               <span
                 className="text-[11px] font-mono tracking-[0.15em] transition-all duration-300 w-6"
                 style={{
-                  color: isActive ? getFloorColor(floor) : "var(--foreground)",
+                  color: isActive ? getLevelColor(level) : "var(--foreground)",
                   opacity: isActive ? 1 : 0.4,
-                  textShadow: isActive ? `0 0 12px ${getFloorColor(floor)}` : "none",
+                  textShadow: isActive ? `0 0 12px ${getLevelColor(level)}` : "none",
                 }}
               >
-                {floor.id}
+                {level.id}
               </span>
               <span
                 className="h-px transition-all duration-300 ease-out hidden md:block"
                 style={{
                   width: isActive ? 56 : 16,
-                  backgroundColor: isActive ? getFloorColor(floor) : "var(--border)",
-                  boxShadow: isActive ? `0 0 8px ${getFloorColor(floor)}` : "none",
+                  backgroundColor: isActive ? getLevelColor(level) : "var(--border)",
+                  boxShadow: isActive ? `0 0 8px ${getLevelColor(level)}` : "none",
                 }}
               />
             </button>
@@ -300,10 +302,10 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
           }}
         >
           <defs>
-            {FLOORS.map((floor) => (
-              <filter key={`glow-${floor.id}`} id={`glow-${floor.id}`} x="-100%" y="-100%" width="300%" height="300%">
+            {DRAWING_LEVELS.map((level) => (
+              <filter key={`glow-${level.id}`} id={`glow-${level.id}`} x="-100%" y="-100%" width="300%" height="300%">
                 <feGaussianBlur stdDeviation="3" result="blur" />
-                <feFlood floodColor={getFloorColor(floor)} floodOpacity="0.6" />
+                <feFlood floodColor={getLevelColor(level)} floodOpacity="0.6" />
                 <feComposite in2="blur" operator="in" />
                 <feMerge>
                   <feMergeNode />
@@ -325,13 +327,13 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
 
           {/* F1: Base - OPERATIONS */}
           <g
-            onMouseEnter={() => setHoveredFloor("F1")}
-            onMouseLeave={() => setHoveredFloor(null)}
-            onClick={() => handleFloorClick(FLOORS[0], 0)}
+            onMouseEnter={() => setHoveredLevel("F1")}
+            onMouseLeave={() => setHoveredLevel(null)}
+            onClick={() => handleLevelClick(DRAWING_LEVELS[0], 0)}
             className="cursor-pointer"
-            filter={displayedFloorId === "F1" ? "url(#glow-F1)" : undefined}
+            filter={displayedLevelId === "F1" ? "url(#glow-F1)" : undefined}
             style={{
-              transform: `translateY(${getFloorY(0) - basePositions[0]}px)`,
+              transform: `translateY(${getLevelY(0) - basePositions[0]}px)`,
               transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}
           >
@@ -341,9 +343,9 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
                 <IsoCube
                   key={i}
                   x={c.x} y={c.y} z={c.z}
-                  color={getFloorColor(FLOORS[0])}
-                  strokeWidth={displayedFloorId === "F1" ? 1.6 : 0.9}
-                  opacity={displayedFloorId === "F1" ? 1 : 0.75}
+                  color={getLevelColor(DRAWING_LEVELS[0])}
+                  strokeWidth={displayedLevelId === "F1" ? 1.6 : 0.9}
+                  opacity={displayedLevelId === "F1" ? 1 : 0.75}
                   scale={towerStructure.scale}
                   rotation={rotation}
                 />
@@ -353,13 +355,13 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
 
           {/* F2: SYSTEMS */}
           <g
-            onMouseEnter={() => setHoveredFloor("F2")}
-            onMouseLeave={() => setHoveredFloor(null)}
-            onClick={() => handleFloorClick(FLOORS[1], 1)}
+            onMouseEnter={() => setHoveredLevel("F2")}
+            onMouseLeave={() => setHoveredLevel(null)}
+            onClick={() => handleLevelClick(DRAWING_LEVELS[1], 1)}
             className="cursor-pointer"
-            filter={displayedFloorId === "F2" ? "url(#glow-F2)" : undefined}
+            filter={displayedLevelId === "F2" ? "url(#glow-F2)" : undefined}
             style={{
-              transform: `translateY(${getFloorY(1) - basePositions[1]}px)`,
+              transform: `translateY(${getLevelY(1) - basePositions[1]}px)`,
               transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}
           >
@@ -369,9 +371,9 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
                 <IsoCube
                   key={i}
                   x={c.x} y={c.y} z={c.z}
-                  color={getFloorColor(FLOORS[1])}
-                  strokeWidth={displayedFloorId === "F2" ? 1.6 : 0.9}
-                  opacity={displayedFloorId === "F2" ? 1 : 0.75}
+                  color={getLevelColor(DRAWING_LEVELS[1])}
+                  strokeWidth={displayedLevelId === "F2" ? 1.6 : 0.9}
+                  opacity={displayedLevelId === "F2" ? 1 : 0.75}
                   scale={towerStructure.scale}
                   rotation={rotation}
                 />
@@ -381,13 +383,13 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
 
           {/* F3: BUILDS */}
           <g
-            onMouseEnter={() => setHoveredFloor("F3")}
-            onMouseLeave={() => setHoveredFloor(null)}
-            onClick={() => handleFloorClick(FLOORS[2], 2)}
+            onMouseEnter={() => setHoveredLevel("F3")}
+            onMouseLeave={() => setHoveredLevel(null)}
+            onClick={() => handleLevelClick(DRAWING_LEVELS[2], 2)}
             className="cursor-pointer"
-            filter={displayedFloorId === "F3" ? "url(#glow-F3)" : undefined}
+            filter={displayedLevelId === "F3" ? "url(#glow-F3)" : undefined}
             style={{
-              transform: `translateY(${getFloorY(2) - basePositions[2]}px)`,
+              transform: `translateY(${getLevelY(2) - basePositions[2]}px)`,
               transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}
           >
@@ -397,9 +399,9 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
                 <IsoCube
                   key={i}
                   x={c.x} y={c.y} z={c.z}
-                  color={getFloorColor(FLOORS[2])}
-                  strokeWidth={displayedFloorId === "F3" ? 1.6 : 0.9}
-                  opacity={displayedFloorId === "F3" ? 1 : 0.75}
+                  color={getLevelColor(DRAWING_LEVELS[2])}
+                  strokeWidth={displayedLevelId === "F3" ? 1.6 : 0.9}
+                  opacity={displayedLevelId === "F3" ? 1 : 0.75}
                   scale={towerStructure.scale}
                   rotation={rotation}
                 />
@@ -409,13 +411,13 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
 
           {/* F4: CONTACT */}
           <g
-            onMouseEnter={() => setHoveredFloor("F4")}
-            onMouseLeave={() => setHoveredFloor(null)}
-            onClick={() => handleFloorClick(FLOORS[3], 3)}
+            onMouseEnter={() => setHoveredLevel("F4")}
+            onMouseLeave={() => setHoveredLevel(null)}
+            onClick={() => handleLevelClick(DRAWING_LEVELS[3], 3)}
             className="cursor-pointer"
-            filter={displayedFloorId === "F4" ? "url(#glow-F4)" : undefined}
+            filter={displayedLevelId === "F4" ? "url(#glow-F4)" : undefined}
             style={{
-              transform: `translateY(${getFloorY(3) - basePositions[3]}px)`,
+              transform: `translateY(${getLevelY(3) - basePositions[3]}px)`,
               transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}
           >
@@ -425,9 +427,9 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
                 <IsoCube
                   key={i}
                   x={c.x} y={c.y} z={c.z}
-                  color={getFloorColor(FLOORS[3])}
-                  strokeWidth={displayedFloorId === "F4" ? 1.6 : 0.9}
-                  opacity={displayedFloorId === "F4" ? 1 : 0.75}
+                  color={getLevelColor(DRAWING_LEVELS[3])}
+                  strokeWidth={displayedLevelId === "F4" ? 1.6 : 0.9}
+                  opacity={displayedLevelId === "F4" ? 1 : 0.75}
                   scale={towerStructure.scale}
                   rotation={rotation}
                 />
@@ -438,40 +440,40 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
         </svg>
       </div>
 
-      {activeFloorData ? (
+      {activeLevelKeynote ? (
         <div
           className={`absolute left-4 right-4 top-5 z-20 transition-all duration-300 md:left-auto md:right-10 md:top-1/2 md:w-72 md:-translate-y-1/2 ${
-            activeFloorData ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
+            activeLevelKeynote ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
           }`}
         >
           <div className="space-y-3">
             <div
               className="bg-background/90 backdrop-blur-sm border-l-2 pl-3 pr-3 py-2 shadow-[8px_8px_0_rgba(0,0,0,0.05)]"
-              style={{ borderColor: getFloorColor(activeFloorData) }}
+              style={{ borderColor: getLevelColor(activeLevelKeynote) }}
             >
               <div className="flex items-center gap-2 mb-1">
                 <div
                   className="w-2 h-2"
                   style={{
-                    backgroundColor: getFloorColor(activeFloorData),
-                    boxShadow: `0 0 6px ${getFloorColor(activeFloorData)}`,
+                    backgroundColor: getLevelColor(activeLevelKeynote),
+                    boxShadow: `0 0 6px ${getLevelColor(activeLevelKeynote)}`,
                   }}
                 />
                 <span
                   className="text-[8px] font-mono tracking-[0.2em]"
-                  style={{ color: getFloorColor(activeFloorData) }}
+                  style={{ color: getLevelColor(activeLevelKeynote) }}
                 >
-                  {activeFloorData.id}
+                  {activeLevelKeynote.id}
                 </span>
               </div>
               <div
                 className="text-xs font-mono font-bold tracking-wide"
-                style={{ color: getFloorColor(activeFloorData) }}
+                style={{ color: getLevelColor(activeLevelKeynote) }}
               >
-                {activeFloorData.label}
+                {activeLevelKeynote.label}
               </div>
               <div className="text-[8px] font-mono text-foreground/62 mt-1 leading-relaxed">
-                {activeFloorData.desc}
+                {activeLevelKeynote.legend}
               </div>
             </div>
 
@@ -482,21 +484,21 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
                 </span>
                 <span
                   className="text-[8px] font-mono tracking-[0.2em]"
-                  style={{ color: getFloorColor(activeFloorData) }}
+                  style={{ color: getLevelColor(activeLevelKeynote) }}
                 >
-                  {activeFloorData.id}
+                  {activeLevelKeynote.id}
                 </span>
               </div>
 
               <div className="space-y-2 px-3 py-3">
                 <div
                   className="text-[10px] font-mono font-bold tracking-[0.08em]"
-                  style={{ color: getFloorColor(activeFloorData) }}
+                  style={{ color: getLevelColor(activeLevelKeynote) }}
                 >
-                  {activeFloorData.noteTitle}
+                  {activeLevelKeynote.keynote.title}
                 </div>
                 <p className="text-[9px] font-mono leading-relaxed text-foreground/62">
-                  {activeFloorData.note}
+                  {activeLevelKeynote.keynote.body}
                 </p>
               </div>
             </div>
@@ -512,30 +514,30 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
           transition: "opacity 0.4s ease 0.5s",
         }}
       >
-        {FLOORS.map((floor, i) => (
+        {DRAWING_LEVELS.map((level, i) => (
           <button
-            key={floor.id}
-            onClick={() => handleFloorClick(floor, i)}
-            onMouseEnter={() => setHoveredFloor(floor.id)}
-            onMouseLeave={() => setHoveredFloor(null)}
+            key={level.id}
+            onClick={() => handleLevelClick(level, i)}
+            onMouseEnter={() => setHoveredLevel(level.id)}
+            onMouseLeave={() => setHoveredLevel(null)}
             className="flex items-center gap-1.5 group cursor-pointer px-2 py-2 min-h-[44px] touch-manipulation"
           >
             <div
               className="w-2.5 h-2.5 md:w-2 md:h-2 border transition-all duration-200"
               style={{
-                borderColor: getFloorColor(floor),
-                backgroundColor: displayedFloorId === floor.id ? getFloorColor(floor) : "transparent",
-                boxShadow: displayedFloorId === floor.id ? `0 0 8px ${getFloorColor(floor)}` : "none",
+                borderColor: getLevelColor(level),
+                backgroundColor: displayedLevelId === level.id ? getLevelColor(level) : "transparent",
+                boxShadow: displayedLevelId === level.id ? `0 0 8px ${getLevelColor(level)}` : "none",
               }}
             />
             <span
               className="text-[8px] md:text-[7px] font-mono tracking-[0.1em] transition-all duration-200"
               style={{
-                color: displayedFloorId === floor.id ? getFloorColor(floor) : "var(--foreground)",
-                opacity: displayedFloorId === floor.id ? 1 : 0.45,
+                color: displayedLevelId === level.id ? getLevelColor(level) : "var(--foreground)",
+                opacity: displayedLevelId === level.id ? 1 : 0.45,
               }}
             >
-              {floor.label}
+              {level.label}
             </span>
           </button>
         ))}

@@ -3,13 +3,13 @@
 import { forwardRef, useState } from "react"
 import { experimentsSectionContent } from "@/lib/site-content"
 
-const { experiments, testimonials, tabs, intro } = experimentsSectionContent
+const { experimentSchedule, clientNotes, drawingModes, generalNotes } = experimentsSectionContent
 
-type ExperimentsView = "experiments" | "feedback"
+type ExperimentsMode = "experiments" | "feedback"
 
 export const ExperimentsSection = forwardRef<HTMLElement>(function ExperimentsSection(_, ref) {
-  const [activeView, setActiveView] = useState<ExperimentsView>("experiments")
-  const [isExperimentsExpanded, setIsExperimentsExpanded] = useState(false)
+  const [activeMode, setActiveMode] = useState<ExperimentsMode>("experiments")
+  const [isExperimentScheduleOpen, setIsExperimentScheduleOpen] = useState(false)
 
   return (
     <section
@@ -21,25 +21,25 @@ export const ExperimentsSection = forwardRef<HTMLElement>(function ExperimentsSe
         <div className="flex border-b border-border">
           <button
             onClick={() => {
-              setActiveView("experiments")
-              if (activeView === "experiments") {
-                setIsExperimentsExpanded(!isExperimentsExpanded)
+              setActiveMode("experiments")
+              if (activeMode === "experiments") {
+                setIsExperimentScheduleOpen(!isExperimentScheduleOpen)
               } else {
-                setIsExperimentsExpanded(true)
+                setIsExperimentScheduleOpen(true)
               }
             }}
             className={`flex-1 flex items-center justify-between px-4 md:px-5 py-4 min-h-[52px] transition-colors text-left touch-manipulation ${
-              activeView === "experiments" ? "bg-secondary/30" : "hover:bg-secondary/10 active:bg-secondary/20"
+              activeMode === "experiments" ? "bg-secondary/30" : "hover:bg-secondary/10 active:bg-secondary/20"
             }`}
           >
             <div className="flex items-baseline gap-3">
               <h2 className={`text-xs font-mono font-bold tracking-wide transition-colors ${
-                activeView === "experiments" ? "text-foreground" : "text-foreground/40"
+                activeMode === "experiments" ? "text-foreground" : "text-foreground/40"
               }`}>
-                {tabs.experiments.title}
+                {drawingModes.experiments.title}
               </h2>
               <span className="text-[9px] font-mono text-muted-foreground/35 tracking-[0.2em]">
-                {tabs.experiments.floorLabel}
+                {drawingModes.experiments.floorLabel}
               </span>
             </div>
             <svg
@@ -50,8 +50,8 @@ export const ExperimentsSection = forwardRef<HTMLElement>(function ExperimentsSe
               stroke="currentColor"
               strokeWidth="2.5"
               className={`transition-all duration-300 ${
-                activeView === "experiments"
-                  ? isExperimentsExpanded ? "rotate-180 text-foreground/60" : "text-foreground/50"
+                activeMode === "experiments"
+                  ? isExperimentScheduleOpen ? "rotate-180 text-foreground/60" : "text-foreground/50"
                   : "text-foreground/20"
               }`}
             >
@@ -60,19 +60,19 @@ export const ExperimentsSection = forwardRef<HTMLElement>(function ExperimentsSe
           </button>
 
           <button
-            onClick={() => setActiveView("feedback")}
+            onClick={() => setActiveMode("feedback")}
             className={`flex-1 flex items-center justify-between px-4 md:px-5 py-4 min-h-[52px] border-l border-border transition-colors text-left touch-manipulation ${
-              activeView === "feedback" ? "bg-secondary/30" : "hover:bg-secondary/10 active:bg-secondary/20"
+              activeMode === "feedback" ? "bg-secondary/30" : "hover:bg-secondary/10 active:bg-secondary/20"
             }`}
           >
             <div className="flex items-baseline gap-3">
               <h2 className={`text-xs font-mono font-bold tracking-wide transition-colors ${
-                activeView === "feedback" ? "text-foreground" : "text-foreground/40"
+                activeMode === "feedback" ? "text-foreground" : "text-foreground/40"
               }`}>
-                {tabs.feedback.title}
+                {drawingModes.feedback.title}
               </h2>
               <span className="text-[9px] font-mono text-muted-foreground/35 tracking-[0.2em]">
-                {tabs.feedback.floorLabel}
+                {drawingModes.feedback.floorLabel}
               </span>
             </div>
             <svg
@@ -83,7 +83,7 @@ export const ExperimentsSection = forwardRef<HTMLElement>(function ExperimentsSe
               stroke="currentColor"
               strokeWidth="2.5"
               className={`transition-all duration-300 ${
-                activeView === "feedback" ? "text-foreground/50" : "text-foreground/20"
+                activeMode === "feedback" ? "text-foreground/50" : "text-foreground/20"
               }`}
             >
               <polyline points="9 6 15 12 9 18" />
@@ -94,23 +94,26 @@ export const ExperimentsSection = forwardRef<HTMLElement>(function ExperimentsSe
         <div className="relative overflow-hidden">
           <div
             className={`transition-all duration-500 ease-out ${
-              activeView === "experiments"
+              activeMode === "experiments"
                 ? "opacity-100"
                 : "opacity-0 absolute inset-x-0 pointer-events-none"
             }`}
           >
             <div className="px-4 md:px-5 py-3 border-b border-border">
-              <p className="text-[10px] font-mono text-foreground/50 leading-relaxed">
-                {intro}
+              <span className="text-[8px] font-mono text-foreground/35 tracking-[0.18em]">
+                {generalNotes.label}
+              </span>
+              <p className="mt-2 text-[10px] font-mono text-foreground/50 leading-relaxed">
+                {generalNotes.body}
               </p>
             </div>
 
             <div
               className={`overflow-hidden transition-all duration-500 ease-out ${
-                isExperimentsExpanded ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+                isExperimentScheduleOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
               }`}
             >
-              {experiments.map((experiment) => (
+              {experimentSchedule.map((experiment) => (
                 <div
                   key={experiment.id}
                   className="px-4 md:px-5 py-3 border-b border-border last:border-b-0 hover:bg-secondary/20 transition-colors"
@@ -150,17 +153,17 @@ export const ExperimentsSection = forwardRef<HTMLElement>(function ExperimentsSe
 
           <div
             className={`transition-all duration-500 ease-out ${
-              activeView === "feedback"
+              activeMode === "feedback"
                 ? "opacity-100 translate-x-0"
                 : "opacity-0 translate-x-full absolute inset-0 pointer-events-none"
             }`}
           >
             <div className="grid grid-cols-1 md:grid-cols-3">
-              {testimonials.map((testimonial, index) => (
+              {clientNotes.map((testimonial, index) => (
                 <article
                   key={testimonial.id}
                   className={`px-4 md:px-5 py-5 ${
-                    index < testimonials.length - 1 ? "border-b md:border-b-0 md:border-r border-border" : ""
+                    index < clientNotes.length - 1 ? "border-b md:border-b-0 md:border-r border-border" : ""
                   } group hover:bg-secondary/20 transition-colors`}
                 >
                   <blockquote className="text-[11px] font-mono text-foreground/65 leading-relaxed mb-4">

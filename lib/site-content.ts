@@ -19,7 +19,7 @@ export const portfolioShellContent = {
 }
 
 export const portfolioHeaderContent = {
-  metadata: {
+  drawingNotes: {
     projection: "PROJECTION: ISOMETRIC 30\u00B0",
     substrate: "SUBSTRATE: 5mm GRID",
     drawingNumber: "DWG NO. IS-2026-001",
@@ -27,7 +27,7 @@ export const portfolioHeaderContent = {
   name: "BRANDON BARTLETT",
   subtitle: "Execution Architect \u2022 Field Operations \u2022 Systems Builder",
   thesis: "I build field systems, project structure, and technical workflows for real-world execution.",
-  navItems: [
+  indexEntries: [
     {
       num: "F1",
       label: "OPERATIONS",
@@ -47,13 +47,13 @@ export const portfolioHeaderContent = {
       color: { light: "#2D9B6E", dark: "#A855F7" },
     },
   ],
-  contact: {
+  contactEntry: {
     num: "F4",
     label: "CONTACT",
     target: "contact",
     color: { light: "#C9A227", dark: "#FFD93D" },
     indexLabel: "INDEX",
-    actions: [
+    actionLinks: [
       {
         label: "BOOK A CALL",
         href: "https://cal.com/brandonbartlett",
@@ -76,16 +76,18 @@ export const portfolioHeaderContent = {
 }
 
 export const heroSectionContent = {
-  floors: [
+  drawingLevels: [
     {
       id: "F1",
       label: "OPERATIONS",
       color: "#C24B75",
       darkColor: "#FF4D8D",
       section: "operations",
-      desc: "Project index and case studies",
-      noteTitle: "OPERATIONS",
-      note: "Field execution, coordination, handoffs, and delivery under pressure.",
+      legend: "Project index and case studies",
+      keynote: {
+        title: "OPERATIONS",
+        body: "Field execution, coordination, handoffs, and delivery under pressure.",
+      },
     },
     {
       id: "F2",
@@ -93,9 +95,11 @@ export const heroSectionContent = {
       color: "#0099B3",
       darkColor: "#00D9FF",
       section: "systems",
-      desc: "Process and systems design",
-      noteTitle: "SYSTEMS",
-      note: "Execution structure for messy work, built around ownership, sequence, and follow-through.",
+      legend: "Process and systems design",
+      keynote: {
+        title: "SYSTEMS",
+        body: "Execution structure for messy work, built around ownership, sequence, and follow-through.",
+      },
     },
     {
       id: "F3",
@@ -103,9 +107,11 @@ export const heroSectionContent = {
       color: "#2D9B6E",
       darkColor: "#A855F7",
       section: "experiments",
-      desc: "Experiments, test builds, and systems in motion",
-      noteTitle: "EXPERIMENTS",
-      note: "Working prototypes, internal tools, and live systems still taking shape.",
+      legend: "Experiments, test builds, and systems in motion",
+      keynote: {
+        title: "EXPERIMENTS",
+        body: "Working prototypes, internal tools, and live systems still taking shape.",
+      },
     },
     {
       id: "F4",
@@ -113,9 +119,11 @@ export const heroSectionContent = {
       color: "#C9A227",
       darkColor: "#FFD93D",
       section: "contact",
-      desc: "Get in touch",
-      noteTitle: "BEST FIT",
-      note: "Superintendent, assistant PM, PM-track, project coordination, and systems-minded delivery roles.",
+      legend: "Get in touch",
+      keynote: {
+        title: "BEST FIT",
+        body: "Superintendent, assistant PM, PM-track, project coordination, and systems-minded delivery roles.",
+      },
     },
   ],
 }
@@ -123,12 +131,15 @@ export const heroSectionContent = {
 export const operationsSectionContent = {
   title: "OPERATIONS",
   floorLabel: "F1",
-  intro: "Real work across field execution, coordination, handoffs, and delivery under pressure.",
-  modes: {
+  generalNotes: {
+    label: "GENERAL NOTES",
+    body: "Real work across field execution, coordination, handoffs, and delivery under pressure.",
+  },
+  drawingModes: {
     caseStudies: "CASE STUDIES",
     operations: "OPERATIONS",
   },
-  tableHeaders: {
+  scheduleHeaders: {
     caseStudies: {
       project: "PROJECT",
       domain: "DOMAIN",
@@ -148,7 +159,7 @@ export const operationsSectionContent = {
     SIGNAL: "#9B6BC3",
     INFRA: "#45B07C",
   },
-  caseStudies: [
+  caseStudySchedule: [
     {
       id: "01",
       project: "SSIG",
@@ -230,7 +241,7 @@ export const operationsSectionContent = {
       keywords: ["execution", "constraints", "teams", "pressure"],
     },
   ],
-  operations: [
+  operationSchedule: [
     {
       id: "01",
       operation: "Field Execution",
@@ -276,8 +287,8 @@ export const operationsSectionContent = {
   ],
 }
 
-export type CaseStudy = (typeof operationsSectionContent.caseStudies)[number]
-export type Operation = (typeof operationsSectionContent.operations)[number]
+export type CaseStudyScheduleItem = (typeof operationsSectionContent.caseStudySchedule)[number]
+export type OperationScheduleItem = (typeof operationsSectionContent.operationSchedule)[number]
 
 export const systemsSectionContent = {
   title: "SYSTEMS DESIGN",
@@ -432,12 +443,15 @@ export const systemsSectionContent = {
 export type SystemsDetailSectionKey = keyof typeof systemsSectionContent.detailSections
 
 export const experimentsSectionContent = {
-  tabs: {
+  drawingModes: {
     experiments: { title: "EXPERIMENTS", floorLabel: "F3" },
     feedback: { title: "CLIENT FEEDBACK", floorLabel: "F3.5" },
   },
-  intro: "Experiments, test builds, and systems in motion.",
-  experiments: [
+  generalNotes: {
+    label: "GENERAL NOTES",
+    body: "Experiments, test builds, and systems in motion.",
+  },
+  experimentSchedule: [
     {
       id: "EXP-01",
       title: "Autonomous Drone Mapping",
@@ -467,7 +481,7 @@ export const experimentsSectionContent = {
       tags: ["DATA", "IOT"],
     },
   ],
-  testimonials: [
+  clientNotes: [
     {
       id: "01",
       quote:
@@ -497,21 +511,24 @@ export const experimentsSectionContent = {
   ],
 }
 
-export type Experiment = (typeof experimentsSectionContent.experiments)[number]
-export type Testimonial = (typeof experimentsSectionContent.testimonials)[number]
+export type ExperimentScheduleItem = (typeof experimentsSectionContent.experimentSchedule)[number]
+export type ClientNote = (typeof experimentsSectionContent.clientNotes)[number]
 
 export const contactSectionContent = {
   title: "CONTACT",
   floorLabel: "F4",
-  intro: "For roles, projects, or collaborations, reach out directly. Fastest path is email.",
+  generalNotes: {
+    label: "GENERAL NOTES",
+    body: "For roles, projects, or collaborations, reach out directly. Fastest path is email.",
+  },
   email: "hello@bartlettbuilds.pro",
-  socials: [
+  contactLinks: [
     { label: "SUBSTACK", href: "https://substack.com/@brandonbartlett" },
     { label: "LINKEDIN", href: "https://linkedin.com/in/brandonbartlett" },
     { label: "X", href: "https://x.com/brandonbartlett" },
     { label: "INSTAGRAM", href: "https://instagram.com/brandonbartlett" },
   ],
-  footer: {
+  documentStamp: {
     name: "BRANDON BARTLETT",
     ending: "END OF DOCUMENT",
     year: "\u00A9 2026",

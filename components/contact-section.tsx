@@ -22,8 +22,11 @@ export const ContactSection = forwardRef<HTMLElement>(function ContactSection(_,
 
         {/* Contact content */}
         <div className="px-4 md:px-5 py-5">
-          <p className="text-[10px] font-mono text-foreground/64 leading-relaxed mb-5 max-w-sm">
-            {contactSectionContent.intro}
+          <span className="text-[8px] font-mono text-foreground/35 tracking-[0.18em]">
+            {contactSectionContent.generalNotes.label}
+          </span>
+          <p className="mt-2 text-[10px] font-mono text-foreground/64 leading-relaxed mb-5 max-w-sm">
+            {contactSectionContent.generalNotes.body}
           </p>
 
           <a
@@ -34,7 +37,7 @@ export const ContactSection = forwardRef<HTMLElement>(function ContactSection(_,
           </a>
 
           <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-border">
-            {contactSectionContent.socials.map((link) => (
+            {contactSectionContent.contactLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
@@ -52,9 +55,9 @@ export const ContactSection = forwardRef<HTMLElement>(function ContactSection(_,
       {/* End of document */}
       <footer className="mt-16 pt-4 border-t border-border">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[9px] font-mono text-foreground/30 tracking-wider">
-          <span>{contactSectionContent.footer.name}</span>
-          <span className="text-foreground/20">{contactSectionContent.footer.ending}</span>
-          <span>{contactSectionContent.footer.year}</span>
+          <span>{contactSectionContent.documentStamp.name}</span>
+          <span className="text-foreground/20">{contactSectionContent.documentStamp.ending}</span>
+          <span>{contactSectionContent.documentStamp.year}</span>
         </div>
       </footer>
     </section>

@@ -4,17 +4,18 @@ This file is the codebase legend for the live portfolio on `main`.
 
 ## Naming Standard
 
-- Page-level wrappers use `Shell` or `Header`
-- Page sections end in `Section`
+- Page chrome uses `Shell` or `Header`
+- Main page blocks end in `Section`
 - Shared editable data ends in `Content`
-- Small nested UI pieces use blueprint-style names like `generalNotes`, `keynote`, and `detail`
-- Internal section IDs use the same vocabulary as the visible portfolio:
-  - `HEADER`
-  - `HERO`
-  - `OPERATIONS`
-  - `SYSTEMS`
-  - `EXPERIMENTS`
-  - `CONTACT`
+- Repeated blueprint-style content uses the same vocabulary across the site:
+  - `drawingNotes`
+  - `indexEntries`
+  - `drawingLevels`
+  - `generalNotes`
+  - `keynote`
+  - `detail`
+  - `schedule`
+  - `documentStamp`
 
 ## Live Component Tree
 
@@ -29,58 +30,16 @@ Route: `app/page.tsx`
 7. `ExperimentsSection`
 8. `ContactSection`
 
-## Component Roles
+## Section IDs
 
-### `PortfolioShell`
+The page order and scroll map use these IDs:
 
-- File: `components/portfolio-shell.tsx`
-- Purpose: page chrome, left rail, right rail, scroll tracking, theme toggle, rotation control
-- Content source: `portfolioShellContent` in `lib/site-content.ts`
-
-### `PortfolioHeader`
-
-- File: `components/portfolio-header.tsx`
-- Purpose: top identity bar and section navigation
-- Content source: `portfolioHeaderContent` in `lib/site-content.ts`
-
-### `HeroSection`
-
-- File: `components/hero-section.tsx`
-- Purpose: 3D tower hero and hover legend
-- Content source: `heroSectionContent` in `lib/site-content.ts`
-- Internal helper: `IsoCube`
-
-### `OperationsSection`
-
-- File: `components/operations-section.tsx`
-- Purpose: case studies plus operations table
-- Content source: `operationsSectionContent` in `lib/site-content.ts`
-- Internal rows:
-  - `CaseStudyRow`
-  - `OperationRow`
-
-### `SystemsSection`
-
-- File: `components/systems-section.tsx`
-- Purpose: systems methodology, general notes, key note, and detail
-- Content source: `systemsSectionContent` in `lib/site-content.ts`
-- Important nested names:
-  - `generalNotes` = the always-visible explanatory note block
-  - `keynote` = the small note trigger and attached note popup
-  - `detail` = the larger expandable detail surface
-  - `detailSections` = the top-level groups inside that detail surface
-
-### `ExperimentsSection`
-
-- File: `components/experiments-section.tsx`
-- Purpose: experiments tab plus client feedback tab
-- Content source: `experimentsSectionContent` in `lib/site-content.ts`
-
-### `ContactSection`
-
-- File: `components/contact-section.tsx`
-- Purpose: contact links and footer
-- Content source: `contactSectionContent` in `lib/site-content.ts`
+- `HEADER`
+- `HERO`
+- `OPERATIONS`
+- `SYSTEMS`
+- `EXPERIMENTS`
+- `CONTACT`
 
 ## Shared Content Tree
 
@@ -95,48 +54,154 @@ The editable source of truth is `lib/site-content.ts`.
 7. `experimentsSectionContent`
 8. `contactSectionContent`
 
-## Blueprint Glossary
+## Component Map
 
-This is the part that used to feel the most confusing.
+### `PortfolioShell`
 
-- `generalNotes`
-  Developer meaning: the always-visible note block for the section
-  Current UI: the explanatory note under the systems header
+- File: `components/portfolio-shell.tsx`
+- Purpose: rails, progress markers, theme toggle, rotation state
+- Content source: `portfolioShellContent`
+- Important content keys:
+  - `logo`
+  - `sections`
+
+### `PortfolioHeader`
+
+- File: `components/portfolio-header.tsx`
+- Purpose: identity block, drawing notes row, index, contact actions
+- Content source: `portfolioHeaderContent`
+- Important content keys:
+  - `drawingNotes`
+  - `name`
+  - `subtitle`
+  - `thesis`
+  - `indexEntries`
+  - `contactEntry`
+  - `contactEntry.actionLinks`
+
+### `HeroSection`
+
+- File: `components/hero-section.tsx`
+- Purpose: isometric tower, level markers, active legend, active key note
+- Content source: `heroSectionContent`
+- Important content keys:
+  - `drawingLevels`
+  - `drawingLevels[].legend`
+  - `drawingLevels[].keynote`
+
+### `OperationsSection`
+
+- File: `components/operations-section.tsx`
+- Purpose: operations drawing set with schedules and expandable project rows
+- Content source: `operationsSectionContent`
+- Important content keys:
+  - `generalNotes`
+  - `drawingModes`
+  - `scheduleHeaders`
+  - `caseStudySchedule`
+  - `operationSchedule`
+  - `typeColors`
+
+### `SystemsSection`
+
+- File: `components/systems-section.tsx`
+- Purpose: systems methodology with general notes, key note, and detail
+- Content source: `systemsSectionContent`
+- Important content keys:
+  - `generalNotes`
+  - `keynote`
+  - `detail`
+  - `detailSections`
+
+### `ExperimentsSection`
+
+- File: `components/experiments-section.tsx`
+- Purpose: experiments drawing set plus client notes
+- Content source: `experimentsSectionContent`
+- Important content keys:
+  - `drawingModes`
+  - `generalNotes`
+  - `experimentSchedule`
+  - `clientNotes`
+
+### `ContactSection`
+
+- File: `components/contact-section.tsx`
+- Purpose: contact note block, direct email, outgoing links, document stamp
+- Content source: `contactSectionContent`
+- Important content keys:
+  - `generalNotes`
+  - `email`
+  - `contactLinks`
+  - `documentStamp`
+
+## Whole-Site Blueprint Glossary
+
+This is the shared vocabulary the site now uses.
+
+- `drawingNotes`
+  Developer meaning: the small metadata row at the top of the sheet
+  Current UI: projection, substrate, drawing number
+
+- `indexEntries`
+  Developer meaning: the main section navigation entries in the header
+  Current UI: `OPERATIONS`, `SYSTEMS`, `EXPERIMENTS`
+
+- `contactEntry`
+  Developer meaning: the contact item in the header index and its quick actions
+  Current UI: `CONTACT` plus dropdown links
+
+- `drawingLevels`
+  Developer meaning: the major levels in the hero tower
+  Current UI: `F1` through `F4`
+
+- `legend`
+  Developer meaning: the short explanatory line tied to an active level
+  Current UI: the small top callout in the hero
 
 - `keynote`
-  Developer meaning: the small note trigger and attached note popup inside `SystemsSection`
-  Current UI: `KEY NOTE`
+  Developer meaning: a highlighted note attached to a section or level
+  Current UI:
+  - hero right-side `KEY NOTE`
+  - systems `KEY NOTE`
+
+- `generalNotes`
+  Developer meaning: the always-visible explanatory note block for a section
+  Current UI:
+  - operations intro block
+  - systems intro block
+  - experiments intro block
+  - contact intro block
 
 - `detail`
-  Developer meaning: the large expandable detail surface opened from `SystemsSection`
-  Current UI: `DETAIL F2.1`, `OPEN DETAIL`
+  Developer meaning: the larger expandable surface for deeper structured content
+  Current UI: `OPEN DETAIL`, `DETAIL F2.1`
 
-- `detailSections`
-  Developer meaning: the top-level tab groups inside the detail surface
-  Current groups:
-  - `systems`
-  - `workflows`
-  - `routines`
+- `schedule`
+  Developer meaning: a tabular listing of structured entries
+  Current UI:
+  - operations case study schedule
+  - operations service schedule
+  - experiments schedule
 
-- `detail tabs`
-  Developer meaning: the second-level tabs inside each detail section
-  Examples:
-  - `digital`, `analog`
-  - `project`, `review`
-  - `daily`, `weekly`
+- `clientNotes`
+  Developer meaning: quoted proof, feedback, or endorsements
+  Current UI: `CLIENT FEEDBACK`
 
-## Safe Editing Rules
+- `documentStamp`
+  Developer meaning: the closing footer mark for the page
+  Current UI: name, end-of-document text, year
 
-- If you want to change page order, start in `app/page.tsx`
-- If you want to change copy, labels, links, or lists, start in `lib/site-content.ts`
-- If you want to change layout or interaction behavior, go to the matching `components/*` file
-- If a name sounds visual and fuzzy, check this map first before renaming anything else
+## Where To Edit
 
-## What Is Not Live
+- If you want to change page order: start in `app/page.tsx`
+- If you want to change text, labels, links, or rows: start in `lib/site-content.ts`
+- If you want to change layout or interactions: go to the matching `components/*` file
+- If you are unsure what something is called: check this map before renaming code
+
+## Not Live
 
 These files are not part of the live page anymore:
 
 - `components/builds-section.tsx`
 - `components/testimonials-section.tsx`
-
-The live page now uses the clearer names above.

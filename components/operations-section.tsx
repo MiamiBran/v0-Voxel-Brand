@@ -1,13 +1,22 @@
 "use client"
 
 import { forwardRef, useState } from "react"
-import { operationsSectionContent, type CaseStudy, type Operation } from "@/lib/site-content"
+import { operationsSectionContent, type CaseStudyScheduleItem, type OperationScheduleItem } from "@/lib/site-content"
 
-const { caseStudies, operations, modes, tableHeaders, title, floorLabel, intro, typeColors } = operationsSectionContent
+const {
+  caseStudySchedule,
+  operationSchedule,
+  drawingModes,
+  scheduleHeaders,
+  title,
+  floorLabel,
+  generalNotes,
+  typeColors,
+} = operationsSectionContent
 
 export const OperationsSection = forwardRef<HTMLElement>(function OperationsSection(_, ref) {
-  const [activeView, setActiveView] = useState<"case-studies" | "operations">("case-studies")
-  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [activeMode, setActiveMode] = useState<"case-studies" | "operations">("case-studies")
+  const [expandedCaseStudyId, setExpandedCaseStudyId] = useState<string | null>(null)
 
   return (
     <section 
@@ -26,68 +35,71 @@ export const OperationsSection = forwardRef<HTMLElement>(function OperationsSect
           {/* Toggle */}
           <div className="flex">
             <button
-              onClick={() => { setActiveView("case-studies"); setExpandedId(null) }}
+              onClick={() => { setActiveMode("case-studies"); setExpandedCaseStudyId(null) }}
               className={`px-3 py-3 min-h-[44px] text-[10px] font-mono tracking-wider transition-colors border-r border-border touch-manipulation ${
-                activeView === "case-studies"
+                activeMode === "case-studies"
                   ? "text-foreground bg-secondary/40 font-medium"
                   : "text-foreground/40 hover:text-foreground/60 active:text-foreground/80"
               }`}
             >
-              {modes.caseStudies}
+              {drawingModes.caseStudies}
             </button>
             <button
-              onClick={() => { setActiveView("operations"); setExpandedId(null) }}
+              onClick={() => { setActiveMode("operations"); setExpandedCaseStudyId(null) }}
               className={`px-3 py-3 min-h-[44px] text-[10px] font-mono tracking-wider transition-colors touch-manipulation ${
-                activeView === "operations"
+                activeMode === "operations"
                   ? "text-foreground bg-secondary/40 font-medium"
                   : "text-foreground/40 hover:text-foreground/60 active:text-foreground/80"
               }`}
             >
-              {modes.operations}
+              {drawingModes.operations}
             </button>
           </div>
         </div>
 
         <div className="px-4 md:px-5 py-3 border-b border-border">
-          <p className="text-[10px] font-mono text-foreground/62 leading-relaxed max-w-xl">
-            {intro}
+          <span className="text-[8px] font-mono text-foreground/35 tracking-[0.18em]">
+            {generalNotes.label}
+          </span>
+          <p className="mt-2 text-[10px] font-mono text-foreground/62 leading-relaxed max-w-xl">
+            {generalNotes.body}
           </p>
         </div>
 
         {/* CASE STUDIES view */}
-        {activeView === "case-studies" && (
+        {activeMode === "case-studies" && (
           <>
             {/* Table header */}
             <div className="hidden md:flex items-center border-b border-border text-[8px] font-mono text-muted-foreground/35 tracking-[0.15em]">
-              <span className="w-36 px-4 py-2 border-r border-border">{tableHeaders.caseStudies.project}</span>
-              <span className="flex-1 px-4 py-2 border-r border-border">{tableHeaders.caseStudies.domain}</span>
-              <span className="w-20 px-3 py-2 border-r border-border text-center">{tableHeaders.caseStudies.type}</span>
-              <span className="w-28 px-3 py-2 text-center">{tableHeaders.caseStudies.palette}</span>
+              <span className="w-36 px-4 py-2 border-r border-border">{scheduleHeaders.caseStudies.project}</span>
+              <span className="flex-1 px-4 py-2 border-r border-border">{scheduleHeaders.caseStudies.domain}</span>
+              <span className="w-20 px-3 py-2 border-r border-border text-center">{scheduleHeaders.caseStudies.type}</span>
+              <span className="w-28 px-3 py-2 text-center">{scheduleHeaders.caseStudies.palette}</span>
             </div>
 
-            {caseStudies.map((study) => (
-              <CaseStudyRow
+            {caseStudySchedule.map((study) => (
+              <CaseStudyScheduleRow
                 key={study.id}
                 study={study}
-                isExpanded={expandedId === study.id}
-                onToggle={() => setExpandedId(expandedId === study.id ? null : study.id)}
+                isExpanded={expandedCaseStudyId === study.id}
+                onToggle={() => setExpandedCaseStudyId(expandedCaseStudyId === study.id ? null : study.id)}
               />
             ))}
           </>
         )}
 
         {/* OPERATIONS view */}
-        {activeView === "operations" && (
+        {activeMode === "operations" && (
           <>
             {/* Table header */}
             <div className="hidden md:flex items-center border-b border-border text-[8px] font-mono text-muted-foreground/35 tracking-[0.15em]">
-              <span className="w-40 px-4 py-2 border-r border-border">{tableHeaders.operations.operation}</span>
-              <span className="flex-1 px-4 py-2 border-r border-border">{tableHeaders.operations.scope}</span>
-              <span className="w-64 px-4 py-2">{tableHeaders.operations.output}</span>
+              <span className="w-40 px-4 py-2 border-r border-border">{scheduleHeaders.operations.operation}</span>
+              <span className="flex-1 px-4 py-2 border-r border-border">{scheduleHeaders.operations.scope}</span>
+              <span className="w-64 px-4 py-2">{scheduleHeaders.operations.output}</span>
             </div>
 
-            {operations.map((op) => (
-              <OperationRow key={op.id} operation={op} />
+            {operationSchedule.map((operation) => (
+              <OperationScheduleRow key={operation.id} operation={operation} />
             ))}
           </>
         )}
@@ -96,8 +108,8 @@ export const OperationsSection = forwardRef<HTMLElement>(function OperationsSect
   )
 })
 
-function CaseStudyRow({ study, isExpanded, onToggle }: {
-  study: CaseStudy
+function CaseStudyScheduleRow({ study, isExpanded, onToggle }: {
+  study: CaseStudyScheduleItem
   isExpanded: boolean
   onToggle: () => void
 }) {
@@ -141,7 +153,7 @@ function CaseStudyRow({ study, isExpanded, onToggle }: {
         </div>
       </button>
 
-      {/* Expanded detail */}
+      {/* Expanded keynote */}
       <div
         className={`overflow-hidden transition-all duration-500 ease-out ${
           isExpanded ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
@@ -182,7 +194,7 @@ function CaseStudyRow({ study, isExpanded, onToggle }: {
   )
 }
 
-function OperationRow({ operation }: { operation: Operation }) {
+function OperationScheduleRow({ operation }: { operation: OperationScheduleItem }) {
   return (
     <article className="border-b border-border last:border-b-0 hover:bg-secondary/10 transition-colors">
       <div className="flex items-stretch">
