@@ -14,7 +14,7 @@ const FLOORS = [
     darkColor: "#FF4D8D",
     section: "projects",
     desc: "Project index and case studies",
-    noteLabel: "KEY NOTE",
+    noteTitle: "OPERATIONS",
     note: "Field execution, coordination, handoffs, and delivery under pressure.",
   },
   {
@@ -24,7 +24,7 @@ const FLOORS = [
     darkColor: "#00D9FF",
     section: "process",
     desc: "Process and systems design",
-    noteLabel: "KEY NOTE",
+    noteTitle: "SYSTEMS",
     note: "Execution structure for messy work, built around ownership, sequence, and follow-through.",
   },
   {
@@ -34,7 +34,7 @@ const FLOORS = [
     darkColor: "#A855F7",
     section: "experiments",
     desc: "Experiments, test builds, and systems in motion",
-    noteLabel: "KEY NOTE",
+    noteTitle: "EXPERIMENTS",
     note: "Working prototypes, internal tools, and live systems still taking shape.",
   },
   {
@@ -44,7 +44,7 @@ const FLOORS = [
     darkColor: "#FFD93D",
     section: "contact",
     desc: "Get in touch",
-    noteLabel: "BEST FIT",
+    noteTitle: "BEST FIT",
     note: "Superintendent, assistant PM, PM-track, project coordination, and systems-minded delivery roles.",
   },
 ]
@@ -463,82 +463,70 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             </g>
           </g>
 
-          {/* Hover info panel */}
-          {activeFloorData && (
-            <foreignObject
-              x="148"
-              y={basePositions[FLOORS.findIndex(f => f.id === activeFloorData.id)] - 34}
-              width="172"
-              height="74"
-              style={{
-                opacity: hoveredFloor || activeFloorIndex !== null ? 1 : 0,
-                transition: "opacity 0.2s ease",
-                overflow: "visible",
-              }}
-            >
-              <div 
-                className="bg-background/90 backdrop-blur-sm border-l-2 pl-3 pr-3 py-2"
-                style={{ borderColor: activeFloorData.color }}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <div 
-                    className="w-2 h-2" 
-                    style={{ 
-                      backgroundColor: activeFloorData.color,
-                      boxShadow: `0 0 6px ${activeFloorData.color}`,
-                    }} 
-                  />
-                  <span 
-                    className="text-[8px] font-mono tracking-[0.2em]" 
-                    style={{ color: activeFloorData.color }}
-                  >
-                    {activeFloorData.id}
-                  </span>
-                </div>
-                <div 
-                  className="text-xs font-mono font-bold tracking-wide"
-                  style={{ color: activeFloorData.color }}
-                >
-                  {activeFloorData.label}
-                </div>
-                <div className="text-[8px] font-mono text-foreground/50 mt-1 leading-relaxed">
-                  {activeFloorData.desc}
-                </div>
-              </div>
-            </foreignObject>
-          )}
         </svg>
       </div>
 
       {activeFloorData ? (
         <div
-          className={`absolute left-4 right-4 top-5 z-20 transition-all duration-300 md:left-auto md:right-10 md:top-10 md:w-72 ${
+          className={`absolute left-4 right-4 top-5 z-20 transition-all duration-300 md:left-auto md:right-10 md:top-1/2 md:w-72 md:-translate-y-1/2 ${
             hoveredFloor || activeFloorIndex !== null ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
           }`}
         >
-          <div className="border border-border bg-background/92 backdrop-blur-sm shadow-[8px_8px_0_rgba(0,0,0,0.06)]">
-            <div className="flex items-center justify-between gap-3 border-b border-border px-3 py-2">
-              <span className="text-[8px] font-mono text-foreground/45 tracking-[0.2em]">
-                {activeFloorData.noteLabel}
-              </span>
-              <span
-                className="text-[8px] font-mono tracking-[0.2em]"
-                style={{ color: getFloorColor(activeFloorData) }}
-              >
-                {activeFloorData.id}
-              </span>
-            </div>
-
-            <div className="space-y-2 px-3 py-3">
+          <div className="space-y-3">
+            <div
+              className="bg-background/90 backdrop-blur-sm border-l-2 pl-3 pr-3 py-2 shadow-[8px_8px_0_rgba(0,0,0,0.05)]"
+              style={{ borderColor: getFloorColor(activeFloorData) }}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <div
+                  className="w-2 h-2"
+                  style={{
+                    backgroundColor: getFloorColor(activeFloorData),
+                    boxShadow: `0 0 6px ${getFloorColor(activeFloorData)}`,
+                  }}
+                />
+                <span
+                  className="text-[8px] font-mono tracking-[0.2em]"
+                  style={{ color: getFloorColor(activeFloorData) }}
+                >
+                  {activeFloorData.id}
+                </span>
+              </div>
               <div
-                className="text-[10px] font-mono font-bold tracking-[0.08em]"
+                className="text-xs font-mono font-bold tracking-wide"
                 style={{ color: getFloorColor(activeFloorData) }}
               >
                 {activeFloorData.label}
               </div>
-              <p className="text-[9px] font-mono leading-relaxed text-foreground/55">
-                {activeFloorData.note}
-              </p>
+              <div className="text-[8px] font-mono text-foreground/50 mt-1 leading-relaxed">
+                {activeFloorData.desc}
+              </div>
+            </div>
+
+            <div className="border border-border bg-background/92 backdrop-blur-sm shadow-[8px_8px_0_rgba(0,0,0,0.06)]">
+              <div className="flex items-center justify-between gap-3 border-b border-border px-3 py-2">
+                <span className="text-[8px] font-mono text-foreground/45 tracking-[0.2em]">
+                  KEY NOTE
+                </span>
+                <span
+                  className="text-[8px] font-mono tracking-[0.2em]"
+                  style={{ color: getFloorColor(activeFloorData) }}
+                >
+                  {activeFloorData.id}
+                </span>
+              </div>
+
+              <div className="space-y-2 px-3 py-3">
+                <div
+                  className="text-[10px] font-mono font-bold tracking-[0.08em]"
+                  style={{ color: getFloorColor(activeFloorData) }}
+                >
+                  {activeFloorData.noteTitle}
+                </div>
+                <p className="text-[9px] font-mono leading-relaxed text-foreground/55">
+                  {activeFloorData.note}
+                </p>
+              </div>
             </div>
           </div>
         </div>

@@ -230,7 +230,7 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
             >
               <div className="border border-border bg-background/95 backdrop-blur-sm shadow-[8px_8px_0_rgba(0,0,0,0.06)]">
                 <div className="flex items-center justify-between gap-3 border-b border-border px-3 py-2">
-                  <span className="text-[8px] font-mono text-foreground/45 tracking-[0.2em]">SYSTEMS NOTE</span>
+                  <span className="text-[8px] font-mono text-foreground/45 tracking-[0.2em]">KEY NOTE</span>
                   <span
                     className="text-[8px] font-mono tracking-[0.2em]"
                     style={{ color: getColor(phases[1].color) }}
@@ -240,8 +240,11 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
                 </div>
 
                 <div className="space-y-3 px-3 py-3">
-                  <h3 className="text-[10px] font-mono font-bold tracking-[0.08em] text-foreground">
-                    I build execution structure around messy work.
+                  <h3
+                    className="text-[10px] font-mono font-bold tracking-[0.08em]"
+                    style={{ color: getColor(phases[1].color) }}
+                  >
+                    SYSTEMS
                   </h3>
                   <p className="text-[9px] font-mono leading-relaxed text-foreground/55">
                     Ownership, sequence, communication, and follow-through. The goal is not just progress. It is cleaner execution.
