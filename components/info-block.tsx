@@ -174,12 +174,15 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
           </div>
 
           <div
-            className="relative"
+            className="relative flex flex-col items-end gap-1"
             onMouseEnter={() => setShowKeyNote(true)}
             onMouseLeave={() => setShowKeyNote(false)}
             onFocus={() => setShowKeyNote(true)}
             onBlur={() => setShowKeyNote(false)}
           >
+            <span className="text-[8px] font-mono text-foreground/40 tracking-[0.18em]">
+              KEY NOTE
+            </span>
             <button
               onClick={() => setShowOverlay(true)}
               aria-expanded={showOverlay}
@@ -205,8 +208,8 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
             </button>
 
             <div
-              className={`absolute right-0 top-full mt-2 w-[min(20rem,calc(100vw-3rem))] transition-all duration-300 ${
-                showKeyNote ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1 pointer-events-none"
+              className={`absolute right-0 bottom-full mb-2 w-[min(20rem,calc(100vw-3rem))] transition-all duration-300 ${
+                showKeyNote ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1 pointer-events-none"
               }`}
             >
               <div className="border border-border bg-background/95 backdrop-blur-sm shadow-[8px_8px_0_rgba(0,0,0,0.06)]">
@@ -230,6 +233,14 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
                   <p className="text-[9px] font-mono leading-relaxed text-foreground/55">
                     Ownership, sequence, communication, and follow-through. The goal is not just progress. It is cleaner execution.
                   </p>
+                  <div className="border-t border-border pt-3">
+                    <div className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">
+                      DETAIL FRAME
+                    </div>
+                    <p className="mt-1 text-[8px] font-mono leading-relaxed text-foreground/50">
+                      Opens the full systems, workflows, and routines frame.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
