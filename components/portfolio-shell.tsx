@@ -2,6 +2,7 @@
 
 import { type ReactNode, useEffect, useState, useCallback, createContext, useContext } from "react"
 import { useTheme } from "next-themes"
+import { portfolioShellContent } from "@/lib/site-content"
 
 // Context to share rotation state with hero
 export const RotationContext = createContext<{
@@ -20,26 +21,16 @@ export function useRotation() {
   return useContext(RotationContext)
 }
 
-interface DocumentFrameProps {
+interface PortfolioShellProps {
   children: ReactNode
 }
 
-// Sections map to the document structure
-const SECTIONS = [
-  { id: "TITLE", label: "F0", percent: 12 },
-  { id: "HERO", label: "—", percent: 22 },
-  { id: "PROJECTS", label: "F1", percent: 40 },
-  { id: "PROCESS", label: "F2", percent: 55 },
-  { id: "EXPERIMENTS", label: "F3", percent: 72 },
-  { id: "CONTACT", label: "F4", percent: 97 },
-]
-
-export function DocumentFrame({ children }: DocumentFrameProps) {
+export function PortfolioShell({ children }: PortfolioShellProps) {
   const [scrollPercent, setScrollPercent] = useState(0)
-  const [currentSection, setCurrentSection] = useState("TITLE")
+  const [currentSection, setCurrentSection] = useState("HEADER")
   const [isAutoRotating, setIsAutoRotating] = useState(true)
   const [rotationAngle, setRotationAngle] = useState(0)
-  const { theme, setTheme, resolvedTheme } = useTheme()
+  const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -56,7 +47,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
       sections.forEach((s) => {
         const rect = s.getBoundingClientRect()
         if (rect.top <= 120 && rect.bottom >= 120) {
-          setCurrentSection(s.getAttribute("data-section") || "TITLE")
+          setCurrentSection(s.getAttribute("data-section") || "HEADER")
         }
       })
     }
@@ -72,8 +63,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
   }, [])
 
   const toggleRotation = useCallback(() => {
-    setIsAutoRotating(prev => !prev)
-    setShowRotateCTA(false)
+    setIsAutoRotating((prev) => !prev)
   }, [])
 
   return (
@@ -85,7 +75,9 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
           
           {/* Logo space at top */}
           <div className="h-12 flex items-center justify-center border-b border-border/50">
-            <span className="text-[10px] font-mono font-bold text-foreground/60 tracking-tight">BB</span>
+            <span className="text-[10px] font-mono font-bold text-foreground/60 tracking-tight">
+              {portfolioShellContent.logo}
+            </span>
           </div>
           
           {/* Progress track container */}
@@ -100,7 +92,7 @@ export function DocumentFrame({ children }: DocumentFrameProps) {
             </div>
 
             {/* Floor markers */}
-            {SECTIONS.map((s) => {
+            {portfolioShellContent.sections.map((s) => {
             const active = currentSection === s.id
             return (
               <button

@@ -1,204 +1,68 @@
 "use client"
 
 import { forwardRef, useState } from "react"
+import { operationsSectionContent, type CaseStudy, type Operation } from "@/lib/site-content"
 
-// Real case studies based on actual work
-const caseStudies = [
-  {
-    id: "01",
-    project: "SSIG",
-    domain: "Construction / Infrastructure",
-    role: "Founder / Operator",
-    signal: "Commercial remodel systems and structural execution thinking",
-    type: "FIELD",
-    palette: ["#505558", "#8C9196", "#4A6FA5", "#7B68EE"],
-    keywords: ["durability", "execution", "systems", "field intelligence"],
-  },
-  {
-    id: "02",
-    project: "Bartlett Builds",
-    domain: "Personal Brand / Portfolio",
-    role: "Creative Director / Systems Builder",
-    signal: "Public-facing identity layer for work, writing, and capability",
-    type: "SIGNAL",
-    palette: ["#FAF9F6", "#6B6B6B", "#1A1A1A", "#7000FF"],
-    keywords: ["operator", "architectural", "restrained", "precise"],
-  },
-  {
-    id: "03",
-    project: "RunFrame",
-    domain: "Execution Software / Personal OS",
-    role: "Product Architect",
-    signal: "Daily execution surface for routines, tasks, and module-based workflows",
-    type: "SYSTEM",
-    palette: ["#0A0A0A", "#7000FF", "#4ECDC4", "#6B7280"],
-    keywords: ["execution", "modular", "alive", "kinetic"],
-  },
-  {
-    id: "04",
-    project: "RootFrame",
-    domain: "Memory Engine / Knowledge Infrastructure",
-    role: "Systems Architect",
-    signal: "Structured memory base for AI, documents, and reusable context",
-    type: "INFRA",
-    palette: ["#1C1C1C", "#8B5CF6", "#D4D0C8", "#14B8A6"],
-    keywords: ["depth", "cognition", "framework", "continuity"],
-  },
-  {
-    id: "05",
-    project: "The Art of Progress",
-    domain: "Media / Writing / Analysis",
-    role: "Strategist / Writer / Host",
-    signal: "Narrative engine for worldview, systems thinking, and public intellectual output",
-    type: "SIGNAL",
-    palette: ["#1A1A1A", "#FFFFF0", "#7B68EE", "#B8860B"],
-    keywords: ["analysis", "persuasion", "worldview", "signal"],
-  },
-  {
-    id: "06",
-    project: "OpenCLAW Ops Engine",
-    domain: "Agent Systems / Automation",
-    role: "Agent Designer / Workflow Architect",
-    signal: "Autonomous operational support for planning, capture, scheduling, and execution",
-    type: "BUILD",
-    palette: ["#0A0A0A", "#4B5563", "#22C55E", "#7000FF"],
-    keywords: ["autonomous", "operational", "capture", "orchestration"],
-  },
-  {
-    id: "07",
-    project: "Publix Remodel Execution",
-    domain: "Field Operations / Construction",
-    role: "Superintendent / Execution Lead",
-    signal: "Real-world proof of logistics, coordination, sequencing, and chaos containment",
-    type: "FIELD",
-    palette: ["#FFFFFF", "#4B5563", "#4ADE80", "#F59E0B"],
-    keywords: ["logistics", "coordination", "sequencing", "delivery"],
-  },
-  {
-    id: "08",
-    project: "Comet Construction",
-    domain: "Operations / Remodel Delivery",
-    role: "Day Superintendent",
-    signal: "Live execution under real constraints, teams, timelines, and turnover pressure",
-    type: "FIELD",
-    palette: ["#6B7280", "#1A1A1A", "#3B82F6", "#F97316"],
-    keywords: ["execution", "constraints", "teams", "pressure"],
-  },
-]
+const { caseStudies, operations, modes, tableHeaders, title, floorLabel, intro, typeColors } = operationsSectionContent
 
-// Operations view - what you actually do across all projects
-const operations = [
-  {
-    id: "01",
-    operation: "Field Execution",
-    scope: "Active construction sites",
-    output: "Coordinated delivery across trades, schedule, access, constraints",
-    tools: "Field coordination, daily planning, trade sequencing",
-  },
-  {
-    id: "02",
-    operation: "Systems Design",
-    scope: "Workflows, planning, team structure",
-    output: "Repeatable execution frameworks that survive turnover",
-    tools: "Process architecture, documentation, training systems",
-  },
-  {
-    id: "03",
-    operation: "Documentation",
-    scope: "Reports, tracking, punch logic, communication",
-    output: "Cleaner visibility, fewer dropped details, faster recovery",
-    tools: "Reporting cadence, issue tracking, status systems",
-  },
-  {
-    id: "04",
-    operation: "Operational Architecture",
-    scope: "Projects, products, internal systems",
-    output: "Structures that convert ambiguity into action",
-    tools: "Workflow design, role mapping, decision frameworks",
-  },
-  {
-    id: "05",
-    operation: "Automation Thinking",
-    scope: "AI workflows, capture systems, scheduling tools",
-    output: "Less manual friction, tighter follow-through",
-    tools: "Agent systems, automation logic, integration design",
-  },
-  {
-    id: "06",
-    operation: "Creative Strategy",
-    scope: "Portfolio, writing, public-facing work",
-    output: "Clearer identity, stronger signal, coherent narrative",
-    tools: "Brand systems, content architecture, editorial direction",
-  },
-]
-
-// Type colors
-const TYPE_COLORS: Record<string, string> = {
-  FIELD: "#E85D4C",
-  SYSTEM: "#4A90A4",
-  BUILD: "#F5C842",
-  SIGNAL: "#9B6BC3",
-  INFRA: "#45B07C",
-}
-
-export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(_, ref) {
-  const [mode, setMode] = useState<"case-studies" | "operations">("case-studies")
+export const OperationsSection = forwardRef<HTMLElement>(function OperationsSection(_, ref) {
+  const [activeView, setActiveView] = useState<"case-studies" | "operations">("case-studies")
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   return (
     <section 
       ref={ref} 
       className="py-12 md:py-20 px-5 md:px-10" 
-      data-section="PROJECTS"
+      data-section="OPERATIONS"
     >
       <div className="border border-border bg-card/50 backdrop-blur-sm">
         {/* Section header with toggle */}
         <div className="flex items-center justify-between px-4 md:px-5 py-3 border-b border-border">
           <div className="flex items-baseline gap-3">
-            <h2 className="text-xs font-mono font-bold tracking-wide text-foreground">OPERATIONS</h2>
-            <span className="text-[9px] font-mono text-foreground/35 tracking-[0.2em]">F1</span>
+            <h2 className="text-xs font-mono font-bold tracking-wide text-foreground">{title}</h2>
+            <span className="text-[9px] font-mono text-foreground/35 tracking-[0.2em]">{floorLabel}</span>
           </div>
           
           {/* Toggle */}
           <div className="flex">
             <button
-              onClick={() => { setMode("case-studies"); setExpandedId(null) }}
+              onClick={() => { setActiveView("case-studies"); setExpandedId(null) }}
               className={`px-3 py-3 min-h-[44px] text-[10px] font-mono tracking-wider transition-colors border-r border-border touch-manipulation ${
-                mode === "case-studies" 
-                  ? "text-foreground bg-secondary/40 font-medium" 
+                activeView === "case-studies"
+                  ? "text-foreground bg-secondary/40 font-medium"
                   : "text-foreground/40 hover:text-foreground/60 active:text-foreground/80"
               }`}
             >
-              CASE STUDIES
+              {modes.caseStudies}
             </button>
             <button
-              onClick={() => { setMode("operations"); setExpandedId(null) }}
+              onClick={() => { setActiveView("operations"); setExpandedId(null) }}
               className={`px-3 py-3 min-h-[44px] text-[10px] font-mono tracking-wider transition-colors touch-manipulation ${
-                mode === "operations" 
-                  ? "text-foreground bg-secondary/40 font-medium" 
+                activeView === "operations"
+                  ? "text-foreground bg-secondary/40 font-medium"
                   : "text-foreground/40 hover:text-foreground/60 active:text-foreground/80"
               }`}
             >
-              OPERATIONS
+              {modes.operations}
             </button>
           </div>
         </div>
 
         <div className="px-4 md:px-5 py-3 border-b border-border">
           <p className="text-[10px] font-mono text-foreground/62 leading-relaxed max-w-xl">
-            Real work across field execution, coordination, handoffs, and delivery under pressure.
+            {intro}
           </p>
         </div>
 
         {/* CASE STUDIES view */}
-        {mode === "case-studies" && (
+        {activeView === "case-studies" && (
           <>
             {/* Table header */}
             <div className="hidden md:flex items-center border-b border-border text-[8px] font-mono text-muted-foreground/35 tracking-[0.15em]">
-              <span className="w-36 px-4 py-2 border-r border-border">PROJECT</span>
-              <span className="flex-1 px-4 py-2 border-r border-border">DOMAIN</span>
-              <span className="w-20 px-3 py-2 border-r border-border text-center">TYPE</span>
-              <span className="w-28 px-3 py-2 text-center">PALETTE</span>
+              <span className="w-36 px-4 py-2 border-r border-border">{tableHeaders.caseStudies.project}</span>
+              <span className="flex-1 px-4 py-2 border-r border-border">{tableHeaders.caseStudies.domain}</span>
+              <span className="w-20 px-3 py-2 border-r border-border text-center">{tableHeaders.caseStudies.type}</span>
+              <span className="w-28 px-3 py-2 text-center">{tableHeaders.caseStudies.palette}</span>
             </div>
 
             {caseStudies.map((study) => (
@@ -213,13 +77,13 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
         )}
 
         {/* OPERATIONS view */}
-        {mode === "operations" && (
+        {activeView === "operations" && (
           <>
             {/* Table header */}
             <div className="hidden md:flex items-center border-b border-border text-[8px] font-mono text-muted-foreground/35 tracking-[0.15em]">
-              <span className="w-40 px-4 py-2 border-r border-border">OPERATION</span>
-              <span className="flex-1 px-4 py-2 border-r border-border">SCOPE</span>
-              <span className="w-64 px-4 py-2">OUTPUT</span>
+              <span className="w-40 px-4 py-2 border-r border-border">{tableHeaders.operations.operation}</span>
+              <span className="flex-1 px-4 py-2 border-r border-border">{tableHeaders.operations.scope}</span>
+              <span className="w-64 px-4 py-2">{tableHeaders.operations.output}</span>
             </div>
 
             {operations.map((op) => (
@@ -233,10 +97,12 @@ export const ProjectsSection = forwardRef<HTMLElement>(function ProjectsSection(
 })
 
 function CaseStudyRow({ study, isExpanded, onToggle }: {
-  study: (typeof caseStudies)[0]
+  study: CaseStudy
   isExpanded: boolean
   onToggle: () => void
 }) {
+  const studyType = study.type as keyof typeof typeColors
+
   return (
     <article className="border-b border-border last:border-b-0">
       <button
@@ -261,7 +127,7 @@ function CaseStudyRow({ study, isExpanded, onToggle }: {
         <div className="hidden md:flex w-20 shrink-0 items-center justify-center border-r border-border py-3">
           <span 
             className="text-[8px] font-mono tracking-wider px-2 py-0.5"
-            style={{ color: TYPE_COLORS[study.type], borderColor: TYPE_COLORS[study.type], borderWidth: 1 }}
+            style={{ color: typeColors[studyType], borderColor: typeColors[studyType], borderWidth: 1 }}
           >
             {study.type}
           </span>
@@ -316,7 +182,7 @@ function CaseStudyRow({ study, isExpanded, onToggle }: {
   )
 }
 
-function OperationRow({ operation }: { operation: (typeof operations)[0] }) {
+function OperationRow({ operation }: { operation: Operation }) {
   return (
     <article className="border-b border-border last:border-b-0 hover:bg-secondary/10 transition-colors">
       <div className="flex items-stretch">

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Space_Mono, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from 'next-themes'
+import { portfolioMetadata } from '@/lib/site-content'
 import './globals.css'
 
 const spaceMono = Space_Mono({ 
@@ -16,9 +17,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Isometric Strata — Architectural Diagrams',
-  description: 'Exploring architectural form through isometric visualization. Constructivist, Deconstructivist, Brutalist, and Metabolist studies.',
-  generator: 'v0.app',
+  title: portfolioMetadata.title,
+  description: portfolioMetadata.description,
+  generator: portfolioMetadata.generator,
   icons: {
     icon: [
       {
@@ -42,7 +43,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  themeColor: '#ebe8e3',
+  themeColor: portfolioMetadata.viewportThemeColor,
 }
 
 export default function RootLayout({

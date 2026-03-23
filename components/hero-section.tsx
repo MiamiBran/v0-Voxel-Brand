@@ -2,54 +2,12 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react"
 import { useTheme } from "next-themes"
-import { useRotation } from "./document-frame"
+import { useRotation } from "./portfolio-shell"
+import { heroSectionContent } from "@/lib/site-content"
 
-// Floors aligned with document sections - 4 floors
-// Light mode uses muted versions, dark mode uses vibrant neon
-const FLOORS = [
-  {
-    id: "F1",
-    label: "OPERATIONS",
-    color: "#C24B75",
-    darkColor: "#FF4D8D",
-    section: "projects",
-    desc: "Project index and case studies",
-    noteTitle: "OPERATIONS",
-    note: "Field execution, coordination, handoffs, and delivery under pressure.",
-  },
-  {
-    id: "F2",
-    label: "SYSTEMS",
-    color: "#0099B3",
-    darkColor: "#00D9FF",
-    section: "process",
-    desc: "Process and systems design",
-    noteTitle: "SYSTEMS",
-    note: "Execution structure for messy work, built around ownership, sequence, and follow-through.",
-  },
-  {
-    id: "F3",
-    label: "EXPERIMENTS",
-    color: "#2D9B6E",
-    darkColor: "#A855F7",
-    section: "experiments",
-    desc: "Experiments, test builds, and systems in motion",
-    noteTitle: "EXPERIMENTS",
-    note: "Working prototypes, internal tools, and live systems still taking shape.",
-  },
-  {
-    id: "F4",
-    label: "CONTACT",
-    color: "#C9A227",
-    darkColor: "#FFD93D",
-    section: "contact",
-    desc: "Get in touch",
-    noteTitle: "BEST FIT",
-    note: "Superintendent, assistant PM, PM-track, project coordination, and systems-minded delivery roles.",
-  },
-]
+const FLOORS = heroSectionContent.floors
 
-interface HeroCanvasProps {
+interface HeroSectionProps {
   onNavigate?: (section: string) => void
 }
 
@@ -105,7 +63,7 @@ function IsoCube({ x, y, z, size = 1, color, strokeWidth = 0.8, opacity = 1, sca
   )
 }
 
-export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
+export function HeroSection({ onNavigate }: HeroSectionProps) {
   const { isAutoRotating, toggleRotation, setRotationAngle } = useRotation()
   const { resolvedTheme } = useTheme()
   const [hoveredFloor, setHoveredFloor] = useState<string | null>(null)
@@ -115,7 +73,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
   const [rotation, setRotation] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | null>(null)
   const hasSettledRef = useRef(false)
 
   useEffect(() => {
@@ -142,7 +100,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
   // Continuous rotation animation
   useEffect(() => {
     if (!isAutoRotating) {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current)
+      if (animationRef.current !== null) cancelAnimationFrame(animationRef.current)
       return
     }
 
@@ -160,7 +118,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
     animationRef.current = requestAnimationFrame(animate)
 
     return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current)
+      if (animationRef.current !== null) cancelAnimationFrame(animationRef.current)
     }
   }, [isAutoRotating])
 
@@ -229,7 +187,7 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
       f2.push({ x: 3, y: 3, z })
     }
 
-    // F3: Central tower (BUILDS)
+    // F3: Central tower (EXPERIMENTS)
     const f3: Array<{ x: number; y: number; z: number }> = []
     for (let x = -3; x <= 3; x++) {
       for (let y = -3; y <= 3; y++) {

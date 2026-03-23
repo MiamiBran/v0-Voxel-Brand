@@ -1,8 +1,9 @@
 "use client"
 
 import { forwardRef } from "react"
+import { contactSectionContent } from "@/lib/site-content"
 
-export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref) {
+export const ContactSection = forwardRef<HTMLElement>(function ContactSection(_, ref) {
   return (
     <section 
       ref={ref} 
@@ -14,31 +15,26 @@ export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref
         {/* Section header inside the card */}
         <div className="flex items-baseline justify-between px-4 md:px-5 py-3 border-b border-border">
           <div className="flex items-baseline gap-3">
-            <h2 className="text-xs font-mono font-bold tracking-wide text-foreground">CONTACT</h2>
-            <span className="text-[9px] font-mono text-foreground/35 tracking-[0.2em]">F4</span>
+            <h2 className="text-xs font-mono font-bold tracking-wide text-foreground">{contactSectionContent.title}</h2>
+            <span className="text-[9px] font-mono text-foreground/35 tracking-[0.2em]">{contactSectionContent.floorLabel}</span>
           </div>
         </div>
 
         {/* Contact content */}
         <div className="px-4 md:px-5 py-5">
           <p className="text-[10px] font-mono text-foreground/64 leading-relaxed mb-5 max-w-sm">
-            For roles, projects, or collaborations, reach out directly. Fastest path is email.
+            {contactSectionContent.intro}
           </p>
 
           <a
-            href="mailto:hello@bartlettbuilds.pro"
+            href={`mailto:${contactSectionContent.email}`}
             className="text-[12px] md:text-[11px] font-mono text-foreground hover:text-accent active:text-accent transition-colors tracking-wide inline-block border-b border-foreground/30 hover:border-accent pb-px touch-manipulation"
           >
-            hello@bartlettbuilds.pro
+            {contactSectionContent.email}
           </a>
 
           <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-border">
-            {[
-              { label: "SUBSTACK", href: "https://substack.com/@brandonbartlett" },
-              { label: "LINKEDIN", href: "https://linkedin.com/in/brandonbartlett" },
-              { label: "X", href: "https://x.com/brandonbartlett" },
-              { label: "INSTAGRAM", href: "https://instagram.com/brandonbartlett" },
-            ].map((link) => (
+            {contactSectionContent.socials.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
@@ -56,9 +52,9 @@ export const ContactBlock = forwardRef<HTMLElement>(function ContactBlock(_, ref
       {/* End of document */}
       <footer className="mt-16 pt-4 border-t border-border">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[9px] font-mono text-foreground/30 tracking-wider">
-          <span>BRANDON BARTLETT</span>
-          <span className="text-foreground/20">END OF DOCUMENT</span>
-          <span>{'© 2026'}</span>
+          <span>{contactSectionContent.footer.name}</span>
+          <span className="text-foreground/20">{contactSectionContent.footer.ending}</span>
+          <span>{contactSectionContent.footer.year}</span>
         </div>
       </footer>
     </section>
