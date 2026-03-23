@@ -59,10 +59,10 @@ export function PortfolioHeader({
               <h1 className="text-[1.7rem] md:text-[2.15rem] font-mono font-bold tracking-[-0.04em] text-foreground">
                 {portfolioHeaderContent.name}
               </h1>
-              <p className="text-[10px] md:text-[10.5px] font-mono text-foreground/58 mt-2 tracking-[0.14em]">
+              <p className="text-[10px] md:text-[10.5px] font-mono text-foreground/60 mt-2 tracking-[0.1em]">
                 {portfolioHeaderContent.subtitle}
               </p>
-              <p className="mt-4 max-w-2xl text-[12px] md:text-[13px] font-mono leading-[1.7] text-foreground/72">
+              <p className="mt-3 max-w-xl text-[13px] md:text-[14px] font-mono leading-[1.55] tracking-[0.01em] text-foreground/78">
                 {portfolioHeaderContent.thesis}
               </p>
             </div>

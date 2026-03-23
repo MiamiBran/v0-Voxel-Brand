@@ -26,7 +26,7 @@ export const portfolioHeaderContent = {
   },
   name: "BRANDON BARTLETT",
   subtitle: "Execution Architect \u2022 Field Operations \u2022 Systems Builder",
-  thesis: "I build field systems, project structure, and technical workflows for real-world execution.",
+  thesis: "Field systems, project structure, and technical workflows for real-world execution.",
   indexEntries: [
     {
       num: "F1",
