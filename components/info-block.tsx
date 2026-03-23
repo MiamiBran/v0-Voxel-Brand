@@ -197,12 +197,30 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
             className="relative"
             onMouseEnter={() => setShowKeyNote(true)}
             onMouseLeave={() => setShowKeyNote(false)}
+            onFocus={() => setShowKeyNote(true)}
+            onBlur={() => setShowKeyNote(false)}
           >
             <button
               onClick={() => setShowKeyNote((current) => !current)}
-              className="text-[9px] font-mono text-foreground/40 tracking-[0.16em] hover:text-foreground active:text-foreground transition-colors px-2 py-2 min-h-[44px] touch-manipulation"
+              aria-expanded={showKeyNote}
+              className="group inline-flex items-center gap-2 border border-border bg-background/65 px-3 py-2 min-h-[44px] text-[9px] font-mono text-foreground/55 tracking-[0.16em] hover:border-foreground/20 hover:bg-secondary/40 hover:text-foreground active:bg-secondary/50 transition-colors touch-manipulation"
             >
-              KEY NOTE
+              <span
+                className="h-1.5 w-1.5 border border-current transition-transform duration-200 group-hover:scale-110"
+                style={{ color: getColor(phases[1].color) }}
+              />
+              <span>KEY NOTE</span>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                className={`text-foreground/35 transition-transform duration-200 ${showKeyNote ? "translate-x-0.5" : ""}`}
+              >
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
             </button>
 
             <div

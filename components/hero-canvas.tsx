@@ -468,8 +468,8 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
             <foreignObject
               x="148"
               y={basePositions[FLOORS.findIndex(f => f.id === activeFloorData.id)] - 34}
-              width="192"
-              height="136"
+              width="172"
+              height="74"
               style={{
                 opacity: hoveredFloor || activeFloorIndex !== null ? 1 : 0,
                 transition: "opacity 0.2s ease",
@@ -504,21 +504,45 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                 <div className="text-[8px] font-mono text-foreground/50 mt-1 leading-relaxed">
                   {activeFloorData.desc}
                 </div>
-                {activeFloorData.note ? (
-                  <div className="mt-2 border-t border-border/60 pt-2">
-                    <div className="text-[7px] font-mono text-foreground/35 tracking-[0.2em]">
-                      {activeFloorData.noteLabel}
-                    </div>
-                    <div className="mt-1 text-[8px] font-mono text-foreground/55 leading-relaxed">
-                      {activeFloorData.note}
-                    </div>
-                  </div>
-                ) : null}
               </div>
             </foreignObject>
           )}
         </svg>
       </div>
+
+      {activeFloorData ? (
+        <div
+          className={`absolute left-4 right-4 top-5 z-20 transition-all duration-300 md:left-auto md:right-10 md:top-10 md:w-72 ${
+            hoveredFloor || activeFloorIndex !== null ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
+          }`}
+        >
+          <div className="border border-border bg-background/92 backdrop-blur-sm shadow-[8px_8px_0_rgba(0,0,0,0.06)]">
+            <div className="flex items-center justify-between gap-3 border-b border-border px-3 py-2">
+              <span className="text-[8px] font-mono text-foreground/45 tracking-[0.2em]">
+                {activeFloorData.noteLabel}
+              </span>
+              <span
+                className="text-[8px] font-mono tracking-[0.2em]"
+                style={{ color: getFloorColor(activeFloorData) }}
+              >
+                {activeFloorData.id}
+              </span>
+            </div>
+
+            <div className="space-y-2 px-3 py-3">
+              <div
+                className="text-[10px] font-mono font-bold tracking-[0.08em]"
+                style={{ color: getFloorColor(activeFloorData) }}
+              >
+                {activeFloorData.label}
+              </div>
+              <p className="text-[9px] font-mono leading-relaxed text-foreground/55">
+                {activeFloorData.note}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {/* Bottom legend */}
       <div
