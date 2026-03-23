@@ -129,6 +129,7 @@ type CategoryKey = keyof typeof detailFrameData
 export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
   const [showCTA, setShowCTA] = useState(false)
   const [showOverlay, setShowOverlay] = useState(false)
+  const [showKeyNote, setShowKeyNote] = useState(false)
   const [activeCategory, setActiveCategory] = useState<CategoryKey>("systems")
   const [activeSubtab, setActiveSubtab] = useState<string>("digital")
   const sectionRef = useRef<HTMLElement>(null)
@@ -190,6 +191,46 @@ export const InfoBlock = forwardRef<HTMLElement>(function InfoBlock(_, ref) {
           <div className="flex items-baseline gap-3">
             <h2 className="text-xs font-mono font-bold tracking-wide text-foreground">SYSTEMS DESIGN</h2>
             <span className="text-[9px] font-mono text-foreground/35 tracking-[0.2em]">F2</span>
+          </div>
+
+          <div
+            className="relative"
+            onMouseEnter={() => setShowKeyNote(true)}
+            onMouseLeave={() => setShowKeyNote(false)}
+          >
+            <button
+              onClick={() => setShowKeyNote((current) => !current)}
+              className="text-[9px] font-mono text-foreground/40 tracking-[0.16em] hover:text-foreground active:text-foreground transition-colors px-2 py-2 min-h-[44px] touch-manipulation"
+            >
+              KEY NOTE
+            </button>
+
+            <div
+              className={`absolute right-0 top-full mt-2 w-[min(20rem,calc(100vw-3rem))] transition-all duration-300 ${
+                showKeyNote ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1 pointer-events-none"
+              }`}
+            >
+              <div className="border border-border bg-background/95 backdrop-blur-sm shadow-[8px_8px_0_rgba(0,0,0,0.06)]">
+                <div className="flex items-center justify-between gap-3 border-b border-border px-3 py-2">
+                  <span className="text-[8px] font-mono text-foreground/45 tracking-[0.2em]">SYSTEMS NOTE</span>
+                  <span
+                    className="text-[8px] font-mono tracking-[0.2em]"
+                    style={{ color: getColor(phases[1].color) }}
+                  >
+                    F2
+                  </span>
+                </div>
+
+                <div className="space-y-3 px-3 py-3">
+                  <h3 className="text-[10px] font-mono font-bold tracking-[0.08em] text-foreground">
+                    I build execution structure around messy work.
+                  </h3>
+                  <p className="text-[9px] font-mono leading-relaxed text-foreground/55">
+                    Ownership, sequence, communication, and follow-through. The goal is not just progress. It is cleaner execution.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

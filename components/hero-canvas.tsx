@@ -7,10 +7,46 @@ import { useRotation } from "./document-frame"
 // Floors aligned with document sections - 4 floors
 // Light mode uses muted versions, dark mode uses vibrant neon
 const FLOORS = [
-  { id: "F1", label: "OPERATIONS", color: "#C24B75", darkColor: "#FF4D8D", section: "projects", desc: "Project index and case studies" },
-  { id: "F2", label: "SYSTEMS", color: "#0099B3", darkColor: "#00D9FF", section: "process", desc: "Process and systems design" },
-  { id: "F3", label: "EXPERIMENTS", color: "#2D9B6E", darkColor: "#A855F7", section: "experiments", desc: "Experiments, test builds, and systems in motion" },
-  { id: "F4", label: "CONTACT", color: "#C9A227", darkColor: "#FFD93D", section: "contact", desc: "Get in touch" },
+  {
+    id: "F1",
+    label: "OPERATIONS",
+    color: "#C24B75",
+    darkColor: "#FF4D8D",
+    section: "projects",
+    desc: "Project index and case studies",
+    noteLabel: "KEY NOTE",
+    note: "Field execution, coordination, handoffs, and delivery under pressure.",
+  },
+  {
+    id: "F2",
+    label: "SYSTEMS",
+    color: "#0099B3",
+    darkColor: "#00D9FF",
+    section: "process",
+    desc: "Process and systems design",
+    noteLabel: "KEY NOTE",
+    note: "Execution structure for messy work, built around ownership, sequence, and follow-through.",
+  },
+  {
+    id: "F3",
+    label: "EXPERIMENTS",
+    color: "#2D9B6E",
+    darkColor: "#A855F7",
+    section: "experiments",
+    desc: "Experiments, test builds, and systems in motion",
+    noteLabel: "KEY NOTE",
+    note: "Working prototypes, internal tools, and live systems still taking shape.",
+  },
+  {
+    id: "F4",
+    label: "CONTACT",
+    color: "#C9A227",
+    darkColor: "#FFD93D",
+    section: "contact",
+    desc: "Get in touch",
+    noteLabel: "BEST FIT",
+    note: "Superintendent, assistant PM, PM-track, project coordination, and systems-minded delivery roles.",
+  },
 ]
 
 interface HeroCanvasProps {
@@ -143,7 +179,6 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
 
   const activeFloor = hoveredFloor ? FLOORS.find(f => f.id === hoveredFloor) : null
   const activeFloorData = activeFloor || (activeFloorIndex !== null ? FLOORS[activeFloorIndex] : null)
-  const showSystemsDetail = activeFloorData?.id === "F2"
 
   // Tower structure - COMPACT and STURDY like a real building model
   const towerStructure = useMemo(() => {
@@ -431,13 +466,14 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
           {/* Hover info panel */}
           {activeFloorData && (
             <foreignObject
-              x="160"
-              y={basePositions[FLOORS.findIndex(f => f.id === activeFloorData.id)] - 30}
-              width="160"
-              height="80"
+              x="148"
+              y={basePositions[FLOORS.findIndex(f => f.id === activeFloorData.id)] - 34}
+              width="192"
+              height="136"
               style={{
                 opacity: hoveredFloor || activeFloorIndex !== null ? 1 : 0,
                 transition: "opacity 0.2s ease",
+                overflow: "visible",
               }}
             >
               <div 
@@ -468,46 +504,20 @@ export function HeroCanvas({ onNavigate }: HeroCanvasProps) {
                 <div className="text-[8px] font-mono text-foreground/50 mt-1 leading-relaxed">
                   {activeFloorData.desc}
                 </div>
+                {activeFloorData.note ? (
+                  <div className="mt-2 border-t border-border/60 pt-2">
+                    <div className="text-[7px] font-mono text-foreground/35 tracking-[0.2em]">
+                      {activeFloorData.noteLabel}
+                    </div>
+                    <div className="mt-1 text-[8px] font-mono text-foreground/55 leading-relaxed">
+                      {activeFloorData.note}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </foreignObject>
           )}
         </svg>
-      </div>
-
-      <div
-        className={`absolute left-4 right-4 top-6 z-20 md:left-auto md:right-10 md:top-1/2 md:w-80 md:-translate-y-1/2 transition-all duration-300 ${
-          showSystemsDetail ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
-        }`}
-      >
-        <div className="border border-border bg-background/92 backdrop-blur-sm shadow-[8px_8px_0_rgba(0,0,0,0.06)]">
-          <div className="flex items-center justify-between gap-3 border-b border-border px-3 py-2">
-            <span className="text-[8px] font-mono text-foreground/45 tracking-[0.2em]">SYSTEMS NOTE</span>
-            <span
-              className="text-[8px] font-mono tracking-[0.2em]"
-              style={{ color: getFloorColor(FLOORS[1]) }}
-            >
-              F2
-            </span>
-          </div>
-
-          <div className="space-y-4 px-3 py-3">
-            <div>
-              <h3 className="text-[10px] font-mono font-bold tracking-[0.08em] text-foreground">
-                I build execution structure around messy work.
-              </h3>
-              <p className="mt-2 text-[9px] font-mono leading-relaxed text-foreground/55">
-                Ownership, sequence, communication, and follow-through. The goal is not just progress. It is cleaner execution.
-              </p>
-            </div>
-
-            <div className="border-t border-border pt-3">
-              <span className="text-[8px] font-mono text-foreground/35 tracking-[0.2em]">BEST FIT</span>
-              <p className="mt-2 text-[9px] font-mono leading-relaxed text-foreground/50">
-                Superintendent, assistant PM, PM-track, project coordinator, field operations, owner-side coordination, and project or product operations roles where execution, communication, and systems thinking matter.
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Bottom legend */}
